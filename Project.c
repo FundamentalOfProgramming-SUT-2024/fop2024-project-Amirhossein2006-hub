@@ -3,8 +3,15 @@
 #include <ctype.h>
 #include <string.h>
 
+typedef struct
+{
+    char username[100];
+    char password[100];
+    char email[100];
+} Player;
+
 int menu();
-void sign_in();
+void sign_in(Player player);
 int ivalue(char username[], char password[], char email[]);
 int username_check(char username[]);
 int password_check(char password[]);
@@ -14,14 +21,6 @@ void settings();
 void profile();
 void score_table();
 
-typedef struct
-{
-    char username[100];
-    char password[100];
-    char email[100];
-} Player;
-
-
 int main()
 {
     initscr();
@@ -30,10 +29,11 @@ int main()
     keypad(stdscr, TRUE);
     start_color();
 
+    Player player;
     switch (menu())
     {
     case 0:
-        sign_in();
+        sign_in(player);
         break;
     case 1:
         //login();
@@ -96,10 +96,9 @@ int menu()
     return choice;
 }
 
-void sign_in()
+void sign_in(Player player)
 {
     clear();
-    Player player;
     char username[100];
     char password[100];
     char email[100];
@@ -117,11 +116,15 @@ void sign_in()
     noecho();
     curs_set(FALSE);
 
-    if (ivalue(username, password, email) == 0) sign_in();
+    if (ivalue(username, password, email) == 0) sign_in(player);
     else
     {
         FILE *players_info = fopen("Players_Info.txt", "a");
         fprintf(players_info, "username: (%s), password: (%s), email: (%s)\n", username, password, email);
+
+        strcpy(player.username, username);
+        strcpy(player.password, password);
+        strcpy(player.email, email);
     }
     clear();
 }
