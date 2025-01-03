@@ -16,7 +16,8 @@ int ivalue(char username[], char password[], char email[]);
 int username_check(char username[]);
 int password_check(char password[]);
 int email_check(char email[]);
-void login();
+void login(Player player);
+int ivalue2(char username[], char password[]);
 void settings();
 void profile();
 void score_table();
@@ -36,7 +37,7 @@ int main()
         sign_in(player);
         break;
     case 1:
-        //login();
+        login(player);
         break;
     case 2:
         //settings();
@@ -145,7 +146,7 @@ int username_check(char username[])
     while (fgets(temp, sizeof(temp), players_info))
     {
         char user[100];
-        int j;
+        int j = 0;
         for (int i = 11; temp[i] != ')'; i++)
             user[j++] = temp[i];
         
@@ -257,4 +258,87 @@ int email_check(char email[])
 
     return 1;
 }
+
+void login(Player player)
+{
+    init_pair(1, COLOR_RED, COLOR_BLACK);
+    clear();
+    char username[100];
+    char password[100];
+
+    attron(A_REVERSE);
+    mvprintw(9, 35, "Login as guest (if you don't want just press down key)");
+    attroff(A_REVERSE);
+    mvprintw(11, 50, "Username: ");
+    mvprintw(12, 50, "Password: ");
+
+    int c = getch();
+    if (c == KEY_DOWN)
+    {
+        mvprintw(9, 35, "Login as guest (if you don't want just press down key)");
+        echo();
+        curs_set(TRUE);
+        mvgetstr(11, 60, username);
+        mvgetstr(12, 60, password);
+        noecho();
+        curs_set(FALSE);
+        FILE *players_info = fopen("Players_Info.txt", "r");
+
+        char temp[1000];
+        while (fgets(temp, sizeof(temp), players_info))
+        {
+            char user[100], pass[100];
+            int j = 0, k = 0;
+            for (int i = 11; temp[i] != ')'; i++)
+                user[j++] = temp[i];
+            user[j] = '\0';
+
+            if (strcmp(user, username) == 0)
+            {
+                for (int i = 25 + j; temp[i] != ')'; i++)
+                    pass[k++] = temp[i];
+                pass[k] = '\0';
+
+                if (strcmp(pass, password) == 0)
+                {
+                    strcpy(player.username, user); 
+                    strcpy(player.password, pass); 
+                    strcpy(player.email, "NULL");
+                    fclose(players_info);
+                    clear();
+                    return;
+                }
+                else
+                {
+                    clear();
+                    attron(COLOR_PAIR(1));
+                    mvprintw(15, 48, "Invalid password");
+                    attroff(COLOR_PAIR(1));
+                    mvprintw(16, 46, "Press any key to reset");
+                    getch();
+                    login(player);
+                    return;
+                }
+            }
+        }
+        fclose(players_info);
+        clear();
+        attron(COLOR_PAIR(1));
+        mvprintw(15, 48, "Invalid username");
+        attroff(COLOR_PAIR(1));
+        mvprintw(16, 46, "Press any key to reset");
+        getch();
+        login(player);
+        return;
+    }
+    else if (c == 10)
+    {
+        strcpy(player.username, "Guest"); 
+        strcpy(player.password, "NULL"); 
+        strcpy(player.email, "NULL");
+        clear();
+    }
+}
+
+
 
