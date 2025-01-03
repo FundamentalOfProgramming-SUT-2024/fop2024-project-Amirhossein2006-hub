@@ -16,16 +16,22 @@ typedef struct
     int color;
 } Game;
 
+typedef struct
+{
+    char temp[1000];
+    int score;
+} Score;
+
 int menu();
-void sign_in(Player player);
+void sign_in(Player *player);
 int ivalue(char username[], char password[], char email[]);
 int username_check(char username[]);
 int password_check(char password[]);
 int email_check(char email[]);
-void login(Player player);
+void login(Player *player);
 int before_game_menu();
-void settings(Game game);
-void score_table();
+void settings(Game *game);
+void score_table(Player *player);
 void profile();
 
 
@@ -45,10 +51,10 @@ int main()
     switch (menu())
     {
     case 0:
-        sign_in(player);
+        sign_in(&player);
         break;
     case 1:
-        login(player);
+        login(&player);
         break;
     }
 
@@ -64,10 +70,10 @@ int main()
             //login(player);
             break;
         case 2:
-            settings(game);
+            settings(&game);
             break;
         case 3:
-            //login(player);
+            score_table(&player);
             break;
         case 4:
             //login(player);
@@ -124,7 +130,7 @@ int menu()
     return choice;
 }
 
-void sign_in(Player player)
+void sign_in(Player *player)
 {
     clear();
     char username[100];
@@ -152,12 +158,12 @@ void sign_in(Player player)
         fclose(players_info);
 
         FILE *players_score = fopen("Players_Score.txt", "a");
-        fprintf(players_score, "username: (%s), score: (0)\n", username);
+        fprintf(players_score, "Username: (%s), Score: (0), Gold Aquared: (0), Finished Games: (0), Time Played: (0)\n", username);
         fclose(players_score);
 
-        strcpy(player.username, username);
-        strcpy(player.password, password);
-        strcpy(player.email, email);
+        strcpy(player->username, username);
+        strcpy(player->password, password);
+        strcpy(player->email, email);
     }
     clear();
 }
@@ -291,7 +297,7 @@ int email_check(char email[])
     return 1;
 }
 
-void login(Player player)
+void login(Player *player)
 {
     init_pair(1, COLOR_RED, COLOR_BLACK);
     clear();
@@ -333,9 +339,9 @@ void login(Player player)
 
                 if (strcmp(pass, password) == 0)
                 {
-                    strcpy(player.username, user); 
-                    strcpy(player.password, pass); 
-                    strcpy(player.email, "NULL");
+                    strcpy(player->username, user); 
+                    strcpy(player->password, pass); 
+                    strcpy(player->email, "NULL");
                     fclose(players_info);
                     clear();
                     return;
@@ -365,42 +371,19 @@ void login(Player player)
     }
     else if (c == 10)
     {
-        strcpy(player.username, "Guest"); 
-        strcpy(player.password, "NULL"); 
-        strcpy(player.email, "NULL");
+        strcpy(player->username, "Guest"); 
+        strcpy(player->password, "NULL"); 
+        strcpy(player->email, "NULL");
 
         FILE *players_info = fopen("Players_Info.txt", "a");
-        fprintf(players_info, "username: (%s), password: (%s), email: (%s)\n", player.username, player.password, player.email);
+        fprintf(players_info, "username: (%s), password: (%s), email: (%s)\n", player->username, player->password, player->email);
         fclose(players_info);
 
         FILE *players_score = fopen("Players_Score.txt", "a");
-        fprintf(players_score, "username: (%s), score: (0)\n", player.username);
+        fprintf(players_score, "Username: (%s), Score: (0), Gold Aquared: (0), Finished Games: (0), Time Played: (0)\n", player->username);
         fclose(players_score);
 
         clear();
-    }
-}
-
-void score_table()
-{
-    clear();
-    FILE *players_score = fopen("Players_Score.txt", "r");
-
-    char temp[1000];
-    int count = 0;
-    while (fgets(temp, sizeof(temp), players_score))
-    {
-        char user[100], score[100];
-        int j = 0, k = 0;
-        for (int i = 11; temp[i] != ')'; i++)
-            user[j++] = temp[i];
-        user[j] = '\0';
-
-        for (int i = 22 + j; temp[i] != ')'; i++)
-            score[k++] = temp[i];
-        score[k] = '\0';
-
-        mvprintw(1 + count++, 1, "%s : %s", user, score);
     }
 }
 
@@ -446,7 +429,7 @@ int before_game_menu()
     return choice;
 }
 
-void settings(Game game)
+void settings(Game *game)
 {
     clear();
     mvprintw(13, 50, "Difficulty:");
@@ -488,7 +471,7 @@ void settings(Game game)
         }
         else if (c == 10)
         {
-            game.difficulty = choice;
+            game->difficulty = choice;
             break;
         }
     }
@@ -522,10 +505,79 @@ void settings(Game game)
         }
         else if (c == 10)
         {
-            game.color = choice;
+            game->color = choice;
             break;
         }
     }
     clear();
+}
+
+void score_table(Player *player)
+{
+    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(2, COLOR_CYAN, COLOR_BLACK);
+    init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+    clear();
+    Score players[100];
+    int counter = 0;
+    FILE *players_score = fopen("Players_Score.txt", "r");
+
+    char temp[1000];
+    while (fgets(temp, sizeof(temp), players_score))
+    {
+        char score[100];
+        int j = 0, k = 0;
+        for (int i = 11; temp[i] != ')'; i++)
+            j++;
+
+        for (int i = 22 + j; temp[i] != ')'; i++)
+            score[k++] = temp[i];
+        score[k] = '\0';
+
+        Score s;
+        strcpy(s.temp, temp);
+        s.score = strtol(score, NULL, 10);
+        players[counter++] = s;
+    }
+    fclose(players_score);
+    for (int i = 0; i < counter - 1; i++)
+    {
+        for (int j = 0; j < counter - i - 1; j++)
+        {
+            if (players[j].score < players[j + 1].score)
+            {
+                Score t = players[j];
+                players[j] = players[j + 1];
+                players[j + 1] = t;
+            }
+        }
+    }
+
+    for (int i = 0; i < counter; i++)
+    {
+        char user[100];
+        int k = 0;
+        for (int j = 11; players[i].temp[j] != ')'; j++)
+            user[k++] = players[i].temp[j];
+        
+        user[k] = '\0';
+
+        if (strcmp(user, player->username) == 0)
+            attron(A_UNDERLINE);
+        if (i < 3)
+            attron(COLOR_PAIR(i + 1));
+
+        mvprintw(2 + i, 5, "%s", players[i].temp);
+
+        attroff(A_UNDERLINE);
+        if (i < 3)
+            attroff(COLOR_PAIR(i + 1));
+    }
+    
+    attron(A_REVERSE);
+    mvprintw(0, 0, "Press Any Key To Back");
+    attroff(A_REVERSE);
+
+    getch();
 }
 
