@@ -10,6 +10,12 @@ typedef struct
     char email[100];
 } Player;
 
+typedef struct
+{
+    int difficulty;
+    int color;
+} Game;
+
 int menu();
 void sign_in(Player player);
 int ivalue(char username[], char password[], char email[]);
@@ -17,10 +23,11 @@ int username_check(char username[]);
 int password_check(char password[]);
 int email_check(char email[]);
 void login(Player player);
-int ivalue2(char username[], char password[]);
-void settings();
-void profile();
+int before_game_menu();
+void settings(Game game);
 void score_table();
+void profile();
+
 
 int main()
 {
@@ -31,6 +38,10 @@ int main()
     start_color();
 
     Player player;
+    Game game;
+    game.difficulty = 0;
+    game.color = 0;
+
     switch (menu())
     {
     case 0:
@@ -39,15 +50,31 @@ int main()
     case 1:
         login(player);
         break;
-    case 2:
-        //settings();
-        break;
-    case 3:
-        //profile();
-        break;
-    case 4:
-        //score_table();
-        break;
+    }
+
+    int choice;
+    while (1)
+    {
+        switch (choice = before_game_menu())
+        {
+        case 0:
+            //sign_in(player);
+            break;
+        case 1:
+            //login(player);
+            break;
+        case 2:
+            settings(game);
+            break;
+        case 3:
+            //login(player);
+            break;
+        case 4:
+            //login(player);
+            break;
+        }
+
+        if (choice < 1) break;
     }
 
     char c = getch();
@@ -58,16 +85,16 @@ int main()
 
 int menu()
 {
-    char menu_options[5][15] = {"Sign In", "Login", "Settings", "Profile", "Score Table"};
+    char menu_options[5][15] = {"Sign In", "Login"};
     int choice = 0;
 
     while (1)
     {
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 2; i++)
         {
             if (i == choice)
                 attron(A_REVERSE);
-            mvprintw(12 + i, 53, "%s", menu_options[i]);
+            mvprintw(13 + i, 53, "%s", menu_options[i]);
             if (i == choice)
                 attroff(A_REVERSE);
         }
@@ -79,11 +106,11 @@ int menu()
             if (choice != 0)
                 choice--;
             else
-                choice = 4;
+                choice = 1;
         }
         else if (c == KEY_DOWN)
         {
-            if (choice != 4)
+            if (choice != 1)
                 choice++;
             else
                 choice = 0;
@@ -122,6 +149,11 @@ void sign_in(Player player)
     {
         FILE *players_info = fopen("Players_Info.txt", "a");
         fprintf(players_info, "username: (%s), password: (%s), email: (%s)\n", username, password, email);
+        fclose(players_info);
+
+        FILE *players_score = fopen("Players_Score.txt", "a");
+        fprintf(players_score, "username: (%s), score: (0)\n", username);
+        fclose(players_score);
 
         strcpy(player.username, username);
         strcpy(player.password, password);
@@ -336,9 +368,164 @@ void login(Player player)
         strcpy(player.username, "Guest"); 
         strcpy(player.password, "NULL"); 
         strcpy(player.email, "NULL");
+
+        FILE *players_info = fopen("Players_Info.txt", "a");
+        fprintf(players_info, "username: (%s), password: (%s), email: (%s)\n", player.username, player.password, player.email);
+        fclose(players_info);
+
+        FILE *players_score = fopen("Players_Score.txt", "a");
+        fprintf(players_score, "username: (%s), score: (0)\n", player.username);
+        fclose(players_score);
+
         clear();
     }
 }
 
+void score_table()
+{
+    clear();
+    FILE *players_score = fopen("Players_Score.txt", "r");
 
+    char temp[1000];
+    int count = 0;
+    while (fgets(temp, sizeof(temp), players_score))
+    {
+        char user[100], score[100];
+        int j = 0, k = 0;
+        for (int i = 11; temp[i] != ')'; i++)
+            user[j++] = temp[i];
+        user[j] = '\0';
+
+        for (int i = 22 + j; temp[i] != ')'; i++)
+            score[k++] = temp[i];
+        score[k] = '\0';
+
+        mvprintw(1 + count++, 1, "%s : %s", user, score);
+    }
+}
+
+int before_game_menu()
+{
+    clear();
+    char menu_options[5][15] = {"New Game", "Load Game", "Settings", "Score Table", "Profile"};
+    int choice = 0;
+
+    while (1)
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            if (i == choice)
+                attron(A_REVERSE);
+            mvprintw(11 + i, 53, "%s", menu_options[i]);
+            if (i == choice)
+                attroff(A_REVERSE);
+        }
+
+        int c = getch();
+
+        if (c == KEY_UP)
+        {
+            if (choice != 0)
+                choice--;
+            else
+                choice = 4;
+        }
+        else if (c == KEY_DOWN)
+        {
+            if (choice != 4)
+                choice++;
+            else
+                choice = 0;
+        }
+        else if (c == 10)
+        {
+            break;
+        }
+    }
+
+    return choice;
+}
+
+void settings(Game game)
+{
+    clear();
+    mvprintw(13, 50, "Difficulty:");
+    mvprintw(18, 50, "Charecter Color:");
+    mvprintw(19, 53, "Yellow");
+    mvprintw(20, 53, "Red");
+    mvprintw(21, 53, "Green");
+    mvprintw(22, 53, "Blue");
+    char diff[3][10] = {"Easy", "Medium", "Hard"};
+    char color[4][10] = {"Yellow", "Red", "Green", "Blue"};
+    int choice = 0;
+
+    while (1)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (i == choice)
+                attron(A_REVERSE);
+            mvprintw(14 + i, 53, "%s", diff[i]);
+            if (i == choice)
+                attroff(A_REVERSE);
+        }
+
+        int c = getch();
+
+        if (c == KEY_UP)
+        {
+            if (choice != 0)
+                choice--;
+            else
+                choice = 2;
+        }
+        else if (c == KEY_DOWN)
+        {
+            if (choice != 2)
+                choice++;
+            else
+                choice = 0;
+        }
+        else if (c == 10)
+        {
+            game.difficulty = choice;
+            break;
+        }
+    }
+
+    while (1)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (i == choice)
+                attron(A_REVERSE);
+            mvprintw(19 + i, 53, "%s", color[i]);
+            if (i == choice)
+                attroff(A_REVERSE);
+        }
+
+        int c = getch();
+
+        if (c == KEY_UP)
+        {
+            if (choice != 0)
+                choice--;
+            else
+                choice = 3;
+        }
+        else if (c == KEY_DOWN)
+        {
+            if (choice != 3)
+                choice++;
+            else
+                choice = 0;
+        }
+        else if (c == 10)
+        {
+            game.color = choice;
+            break;
+        }
+    }
+    clear();
+}
 
