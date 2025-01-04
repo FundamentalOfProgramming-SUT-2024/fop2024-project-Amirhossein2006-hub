@@ -399,13 +399,18 @@ void login(Player *player)
         strcpy(player->password, "NULL"); 
         strcpy(player->email, "NULL");
 
-        FILE *players_info = fopen("Players_Info.txt", "a");
-        fprintf(players_info, "username: (%s), password: (%s), email: (%s)\n", player->username, player->password, player->email);
-        fclose(players_info);
+        player->score = 0;
+        player->gold = 0;
+        player->finished_games = 0;
+        player->experience = 0;
+        
+        // FILE *players_info = fopen("Players_Info.txt", "a");
+        // fprintf(players_info, "username: (%s), password: (%s), email: (%s)\n", player->username, player->password, player->email);
+        // fclose(players_info);
 
-        FILE *players_score = fopen("Players_Score.txt", "a");
-        fprintf(players_score, "Username: (%s), Score: (0), Gold Aquared: (0), Finished Games: (0), Time Played: (0)\n", player->username);
-        fclose(players_score);
+        // FILE *players_score = fopen("Players_Score.txt", "a");
+        // fprintf(players_score, "Username: (%s), Score: (0), Gold Aquared: (0), Finished Games: (0), Time Played: (0)\n", player->username);
+        // fclose(players_score);
 
         clear();
     }
