@@ -8,6 +8,10 @@ typedef struct
     char username[100];
     char password[100];
     char email[100];
+    int score;
+    int gold;
+    int finished_games;
+    int experience;
 } Player;
 
 typedef struct
@@ -32,7 +36,7 @@ void login(Player *player);
 int before_game_menu();
 void settings(Game *game);
 void score_table(Player *player);
-void profile();
+void profile(Player *player);
 
 
 int main()
@@ -76,7 +80,7 @@ int main()
             score_table(&player);
             break;
         case 4:
-            //login(player);
+            profile(&player);
             break;
         }
 
@@ -164,6 +168,10 @@ void sign_in(Player *player)
         strcpy(player->username, username);
         strcpy(player->password, password);
         strcpy(player->email, email);
+        player->score = 0;
+        player->gold = 0;
+        player->experience = 0;
+        player->finished_games = 0;
     }
     clear();
 }
@@ -343,6 +351,22 @@ void login(Player *player)
                     strcpy(player->password, pass); 
                     strcpy(player->email, "NULL");
                     fclose(players_info);
+
+                    FILE *players_score = fopen("Players_Score.txt", "r");
+                    char a[100];
+                    int b, c, d, e;
+                    while (fscanf(players_score, "Username: (%99[^)]), Score: (%d), Gold Aquared: (%d), Finished Games: (%d), Time Played: (%d)", a, &b, &c, &d, &e))
+                    {
+                        if (strcmp(user, a) == 0)
+                        {
+                            player->score = b;
+                            player->gold = c;
+                            player->finished_games = d;
+                            player->experience = e;
+                        }
+                    }
+                    
+                    fclose(players_score);
                     clear();
                     return;
                 }
@@ -562,14 +586,14 @@ void score_table(Player *player)
         
         user[k] = '\0';
 
-        if (strcmp(user, player->username) == 0)
-            attron(A_UNDERLINE);
         if (i < 3)
             attron(COLOR_PAIR(i + 1));
 
-        mvprintw(2 + i, 5, "%s", players[i].temp);
+        if (strcmp(user, player->username) == 0)
+            mvprintw(2 + 2 * i, 2, "->");
 
-        attroff(A_UNDERLINE);
+        mvprintw(2 + 2 * i, 5, "(%d) %s", i + 1, players[i].temp);
+
         if (i < 3)
             attroff(COLOR_PAIR(i + 1));
     }
@@ -580,4 +604,22 @@ void score_table(Player *player)
 
     getch();
 }
+
+void profile(Player *player)
+{
+    clear();
+
+    mvprintw(3, 5, "Username: %s", player->username);
+    mvprintw(5, 5, "Score: %d", player->score);
+    mvprintw(7, 5, "Gold Aquared: %d", player->gold);
+    mvprintw(9, 5, "Finished Games: %d", player->finished_games);
+    mvprintw(11, 5, "Experience: %d", player->experience);
+
+    attron(A_REVERSE);
+    mvprintw(0, 0, "Press Any Key To Back");
+    attroff(A_REVERSE);
+
+    getch();
+}
+
 

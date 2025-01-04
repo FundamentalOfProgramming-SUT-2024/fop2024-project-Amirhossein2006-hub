@@ -2,3 +2,4 @@ Username: (amir), Score: (10), Gold Aquared: (0), Finished Games: (0), Time Play
 Username: (sepehr), Score: (2), Gold Aquared: (0), Finished Games: (0), Time Played: (0)
 Username: (navid), Score: (5), Gold Aquared: (0), Finished Games: (0), Time Played: (0)
 Username: (neda), Score: (3), Gold Aquared: (0), Finished Games: (0), Time Played: (0)
+Username: (Guest), Score: (0), Gold Aquared: (0), Finished Games: (0), Time Played: (0)
