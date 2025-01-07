@@ -36,11 +36,11 @@ typedef struct
 //     int y1_renge;
 // } Map;
 
-char game_map[120][30];
-char floor1[120][30];
-char floor2[120][30];
-char floor3[120][30];
-char floor4[120][30];
+char game_map[30][120];
+char floor1[30][120];
+char floor2[30][120];
+char floor3[30][120];
+char floor4[30][120];
 
 int menu();
 void sign_in(Player *player);
@@ -56,6 +56,7 @@ void profile(Player *player);
 //int random(int a, int b);
 //void map_maker(Map *map);
 void load_map(int i);
+void print_map();
 
 
 int main()
@@ -107,7 +108,9 @@ int main()
         if (choice < 1) break;
     }
 
-
+    clear();
+    load_map(1);
+    print_map();
 
     char c = getch();
     refresh();
@@ -669,16 +672,16 @@ void load_map(int i)
     switch (i)
     {
     case 1:
-        map = fopen("Floor1.txt", "r");
+        map = fopen("Floor_1.txt", "r");
         break;
     case 2:
-        map = fopen("Floor2.txt", "r");
+        map = fopen("Floor_2.txt", "r");
         break;
     case 3:
-        map = fopen("Floor3.txt", "r");
+        map = fopen("Floor_3.txt", "r");
         break;
     case 4:
-        map = fopen("Floor4.txt", "r");
+        map = fopen("Floor_4.txt", "r");
         break;
     }
 
@@ -686,12 +689,17 @@ void load_map(int i)
     int counter = 0;
     while (fgets(temp, sizeof(temp), map))
     {
-        for (int i = 0; i < 120; i++)
+        if (counter % 2 == 0)
         {
-            game_map[counter][i] = temp[i];
+            for (int i = 0; i < 120; i++)
+            {
+                game_map[counter / 2][i] = temp[i];
+            }
         }
         counter++;
     }
+
+    fclose(map);
 }
 
 void print_map()
@@ -700,9 +708,9 @@ void print_map()
     {
         for (int j = 0; j < 120; j++)
         {
+            if (game_map[i][j] == '-') printw(" ");
             printw("%c", game_map[i][j]);
         }
-        printw("\n");
     }
 }
 
