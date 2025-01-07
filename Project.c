@@ -694,3 +694,15 @@ void load_map(int i)
     }
 }
 
+void print_map()
+{
+    for (int i = 0; i < 30; i++)
+    {
+        for (int j = 0; j < 120; j++)
+        {
+            printw("%c", game_map[i][j]);
+        }
+        printw("\n");
+    }
+}
+
