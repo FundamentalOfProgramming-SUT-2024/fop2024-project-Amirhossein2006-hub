@@ -742,46 +742,58 @@ int move_ivalue(int move, Explorer_Position *ep)
 {
     if (move == 'k')
     {
-        ep->y++;
+        if (game_map[ep->y + 1][ep->x] != '_') ep->y++;
     }
 
     else if (move == 'j')
     {
-        ep->y--;
+        if (game_map[ep->y - 1][ep->x] != '_') ep->y--;
     }
 
     else if (move == 'l')
     {
-        ep->x++;
+        if (game_map[ep->y][ep->x + 1] != '|') ep->x++;
     }
 
     else if (move == 'h')
     {
-        ep->x--;
+        if (game_map[ep->y][ep->x - 1] != '|') ep->x--;
     }
 
     else if (move == 'n')
     {
-        ep->x++;
-        ep->y++;
+        if (game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y + 1][ep->x] != '_')
+        {
+            ep->x++;
+            ep->y++;
+        }
     }
 
     else if (move == 'b')
     {
-        ep->y++;
-        ep->x--;
+        if (game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y + 1][ep->x] != '_')
+        {
+            ep->y++;
+            ep->x--;
+        }
     }
 
     else if (move == 'u')
     {
-        ep->x++;
-        ep->y--;
+        if (game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y - 1][ep->x] != '_')
+        {
+            ep->x++;
+            ep->y--;
+        }
     }
 
     else if (move == 'y')
     {
-        ep->y--;
-        ep->x--;
+        if (game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y - 1][ep->x] != '_')
+        {
+            ep->y--;
+            ep->x--;
+        }
     }
 }
 
