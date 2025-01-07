@@ -26,6 +26,22 @@ typedef struct
     int score;
 } Score;
 
+// typedef struct
+// {
+//     int x1_start;
+//     int x1_end;
+//     int y1_start;
+//     int y1_end;
+//     int x1_renge;
+//     int y1_renge;
+// } Map;
+
+char game_map[120][30];
+char floor1[120][30];
+char floor2[120][30];
+char floor3[120][30];
+char floor4[120][30];
+
 int menu();
 void sign_in(Player *player);
 int ivalue(char username[], char password[], char email[]);
@@ -37,6 +53,9 @@ int before_game_menu();
 void settings(Game *game);
 void score_table(Player *player);
 void profile(Player *player);
+//int random(int a, int b);
+//void map_maker(Map *map);
+void load_map(int i);
 
 
 int main()
@@ -49,6 +68,7 @@ int main()
 
     Player player;
     Game game;
+    //Map map;
     game.difficulty = 0;
     game.color = 0;
 
@@ -86,6 +106,8 @@ int main()
 
         if (choice < 1) break;
     }
+
+
 
     char c = getch();
     refresh();
@@ -403,7 +425,7 @@ void login(Player *player)
         player->gold = 0;
         player->finished_games = 0;
         player->experience = 0;
-        
+
         // FILE *players_info = fopen("Players_Info.txt", "a");
         // fprintf(players_info, "username: (%s), password: (%s), email: (%s)\n", player->username, player->password, player->email);
         // fclose(players_info);
@@ -627,4 +649,48 @@ void profile(Player *player)
     getch();
 }
 
+// int random(int a, int b)
+// {
+//     return rand() % (b - a + 1) + a;
+// }
+
+// void map_maker(Map *map)
+// {
+//     map->x1_start = random(10, 100);
+//     map->y1_start = random(5, 15);
+//     map->x1_renge = random(4, 10);
+//     map->y1_renge = random(4, 10);
+// }
+
+void load_map(int i)
+{
+    FILE *map;
+
+    switch (i)
+    {
+    case 1:
+        map = fopen("Floor1.txt", "r");
+        break;
+    case 2:
+        map = fopen("Floor2.txt", "r");
+        break;
+    case 3:
+        map = fopen("Floor3.txt", "r");
+        break;
+    case 4:
+        map = fopen("Floor4.txt", "r");
+        break;
+    }
+
+    char temp[121];
+    int counter = 0;
+    while (fgets(temp, sizeof(temp), map))
+    {
+        for (int i = 0; i < 120; i++)
+        {
+            game_map[counter][i] = temp[i];
+        }
+        counter++;
+    }
+}
 
