@@ -26,6 +26,12 @@ typedef struct
     int score;
 } Score;
 
+typedef struct
+{
+    int x;
+    int y;
+} Explorer_Position;
+
 // typedef struct
 // {
 //     int x1_start;
@@ -55,8 +61,8 @@ void score_table(Player *player);
 void profile(Player *player);
 //int random(int a, int b);
 //void map_maker(Map *map);
-void load_map(int i);
-void print_map();
+void load_map(int i, Explorer_Position *ep);
+void print_map(Explorer_Position *ep);
 
 
 int main()
@@ -70,6 +76,7 @@ int main()
     Player player;
     Game game;
     //Map map;
+    Explorer_Position ep;
     game.difficulty = 0;
     game.color = 0;
 
@@ -109,8 +116,13 @@ int main()
     }
 
     clear();
-    load_map(1);
-    print_map();
+    load_map(1, &ep);
+
+    while (1)
+    {
+        print_map(&ep);
+        int move = getch();
+    }
 
     char c = getch();
     refresh();
@@ -665,7 +677,7 @@ void profile(Player *player)
 //     map->y1_renge = random(4, 10);
 // }
 
-void load_map(int i)
+void load_map(int i, Explorer_Position *ep)
 {
     FILE *map;
 
@@ -692,7 +704,14 @@ void load_map(int i)
         if (counter % 2 == 0)
         {
             for (int i = 0; i < 120; i++)
-            {
+            {   
+                if (temp[i] == 'X')
+                {
+                    ep->x = i;
+                    ep->y = counter / 2;
+                    temp[i] = '.';
+                }
+
                 game_map[counter / 2][i] = temp[i];
             }
         }
@@ -702,15 +721,17 @@ void load_map(int i)
     fclose(map);
 }
 
-void print_map()
+void print_map(Explorer_Position *ep)
 {
     for (int i = 0; i < 30; i++)
     {
         for (int j = 0; j < 120; j++)
         {
             if (game_map[i][j] == '-') printw(" ");
-            printw("%c", game_map[i][j]);
+            else printw("%c", game_map[i][j]);
         }
     }
+    
+    mvprintw(ep->y, ep->x, "X");
 }
 
