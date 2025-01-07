@@ -63,6 +63,7 @@ void profile(Player *player);
 //void map_maker(Map *map);
 void load_map(int i, Explorer_Position *ep);
 void print_map(Explorer_Position *ep);
+int move_ivalue(int move, Explorer_Position *ep);
 
 
 int main()
@@ -121,7 +122,9 @@ int main()
     while (1)
     {
         print_map(&ep);
-        int move = getch();
+        int move = tolower(getch());
+        move_ivalue(move, &ep);
+        clear();
     }
 
     char c = getch();
@@ -733,5 +736,52 @@ void print_map(Explorer_Position *ep)
     }
     
     mvprintw(ep->y, ep->x, "X");
+}
+
+int move_ivalue(int move, Explorer_Position *ep)
+{
+    if (move == 'k')
+    {
+        ep->y++;
+    }
+
+    else if (move == 'j')
+    {
+        ep->y--;
+    }
+
+    else if (move == 'l')
+    {
+        ep->x++;
+    }
+
+    else if (move == 'h')
+    {
+        ep->x--;
+    }
+
+    else if (move == 'n')
+    {
+        ep->x++;
+        ep->y++;
+    }
+
+    else if (move == 'b')
+    {
+        ep->y++;
+        ep->x--;
+    }
+
+    else if (move == 'u')
+    {
+        ep->x++;
+        ep->y--;
+    }
+
+    else if (move == 'y')
+    {
+        ep->y--;
+        ep->x--;
+    }
 }
 
