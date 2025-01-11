@@ -75,6 +75,8 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game);
 void move_ivalue(int move, Explorer_Position *ep);
 void new_game(Explorer_Position *ep, Explorer *explorer);
 void trap(Explorer_Position *ep, Explorer *explorer);
+void stair(Explorer *explorer, Explorer_Position *ep);
+int move_ivalue_help(Explorer_Position *ep);
 
 
 int main()
@@ -134,8 +136,18 @@ int main()
     {
         print_map(&ep, &explorer, game);
         trap(&ep, &explorer);
+        if (game_map[ep.y][ep.x] == '>')
+        {
+            mvprintw(0, 25, "Wow! You reached the stair, press 'S' to go up!");
+            int stair_yes = tolower(getch());
+            if (stair_yes == 's')
+            {
+                stair(&explorer, &ep);
+            }
+        }
         int move = tolower(getch());
         move_ivalue(move, &ep);
+
         clear();
     }
 
@@ -767,35 +779,35 @@ void move_ivalue(int move, Explorer_Position *ep)
 {
     if (move == 's')
     {
-        if ((game_map[ep->y][ep->x] == '.' || game_map[ep->y][ep->x] == '^') && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x] != 'O') ep->y++;
+        if (move_ivalue_help(ep) && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x] != 'O') ep->y++;
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] == '.')) ep->y++;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] == '+')) ep->y++;
     }
 
     else if (move == 'w')
     {
-        if ((game_map[ep->y][ep->x] == '.' || game_map[ep->y][ep->x] == '^') && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x] != 'O') ep->y--;
+        if (move_ivalue_help(ep) && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x] != 'O') ep->y--;
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '.')) ep->y--;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '+')) ep->y--;
     }
 
     else if (move == 'd')
     {
-        if ((game_map[ep->y][ep->x] == '.' || game_map[ep->y][ep->x] == '^') && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y][ep->x + 1] != 'O') ep->x++;
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y][ep->x + 1] != 'O') ep->x++;
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] == '.')) ep->x++;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] == '+')) ep->x++;
     }
 
     else if (move == 'a')
     {
-        if ((game_map[ep->y][ep->x] == '.' || game_map[ep->y][ep->x] == '^') && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y][ep->x - 1] != 'O') ep->x--;
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y][ep->x - 1] != 'O') ep->x--;
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x - 1] == '#' || game_map[ep->y][ep->x - 1] == '.')) ep->x--;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y][ep->x - 1] == '#' || game_map[ep->y][ep->x - 1] == '+')) ep->x--;
     }
 
     else if (move == 'c')
     {
-        if ((game_map[ep->y][ep->x] == '.' || game_map[ep->y][ep->x] == '^') && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x + 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x + 1] != 'O')
         {
             ep->x++;
             ep->y++;
@@ -804,7 +816,7 @@ void move_ivalue(int move, Explorer_Position *ep)
 
     else if (move == 'z')
     {
-        if ((game_map[ep->y][ep->x] == '.' || game_map[ep->y][ep->x] == '^') && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x - 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x - 1] != 'O')
         {
             ep->y++;
             ep->x--;
@@ -813,7 +825,7 @@ void move_ivalue(int move, Explorer_Position *ep)
 
     else if (move == 'e')
     {
-        if ((game_map[ep->y][ep->x] == '.' || game_map[ep->y][ep->x] == '^') && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x + 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x + 1] != 'O')
         {
             ep->x++;
             ep->y--;
@@ -822,7 +834,7 @@ void move_ivalue(int move, Explorer_Position *ep)
 
     else if (move == 'q')
     {
-        if ((game_map[ep->y][ep->x] == '.' || game_map[ep->y][ep->x] == '^') && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x - 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x - 1] != 'O')
         {
             ep->y--;
             ep->x--;
@@ -851,5 +863,65 @@ void trap(Explorer_Position *ep, Explorer *explorer)
         explorer->health -= 10;
         game_map[ep->y][ep->x] = '^';
     }
+}
+
+void stair(Explorer *explorer, Explorer_Position *ep)
+{
+    int floor = explorer->level;
+    switch (floor)
+    {
+    case 1:
+    {
+        for (int i = 0; i < 30; i++)
+        {
+            for (int j = 0; j < 120; j++)
+                floor1[i][j] = game_map[i][j];
+        }
+        break;
+    }
+
+    case 2:
+    {
+        for (int i = 0; i < 30; i++)
+        {
+            for (int j = 0; j < 120; j++)
+                floor2[i][j] = game_map[i][j];
+        }
+        break;
+    }
+
+    case 3:
+    {
+        for (int i = 0; i < 30; i++)
+        {
+            for (int j = 0; j < 120; j++)
+                floor3[i][j] = game_map[i][j];
+        }
+        break;
+    }
+
+    case 4:
+    {
+        for (int i = 0; i < 30; i++)
+        {
+            for (int j = 0; j < 120; j++)
+                floor4[i][j] = game_map[i][j];
+        }
+        break;
+    }
+    }
+
+    load_map(floor + 1, ep);
+}
+
+int move_ivalue_help(Explorer_Position *ep)
+{
+    if (game_map[ep->y][ep->x] == '.' || 
+        game_map[ep->y][ep->x] == '^' ||
+        game_map[ep->y][ep->x] == '>' || 
+        game_map[ep->y][ep->x] == '<')
+        return 1;
+
+    else return 0;
 }
 
