@@ -32,6 +32,14 @@ typedef struct
     int y;
 } Explorer_Position;
 
+typedef struct
+{
+    int health;
+    int score;
+    int experience;
+    int gold;
+} Explorer;
+
 // typedef struct
 // {
 //     int x1_start;
@@ -64,6 +72,7 @@ void profile(Player *player);
 void load_map(int i, Explorer_Position *ep);
 void print_map(Explorer_Position *ep);
 int move_ivalue(int move, Explorer_Position *ep);
+void new_game(Explorer_Position *ep);
 
 
 int main()
@@ -97,10 +106,12 @@ int main()
         switch (choice = before_game_menu())
         {
         case 0:
-            //sign_in(player);
+        {
+            new_game(&ep);
             break;
+        }
         case 1:
-            //login(player);
+            //resume(player);
             break;
         case 2:
             settings(&game);
@@ -115,9 +126,6 @@ int main()
 
         if (choice < 1) break;
     }
-
-    clear();
-    load_map(1, &ep);
 
     while (1)
     {
@@ -740,35 +748,35 @@ void print_map(Explorer_Position *ep)
 
 int move_ivalue(int move, Explorer_Position *ep)
 {
-    if (move == 'k')
+    if (move == 's')
     {
         if (game_map[ep->y][ep->x] == '.' && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x] != 'O') ep->y++;
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] == '.')) ep->y++;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] == '+')) ep->y++;
     }
 
-    else if (move == 'j')
+    else if (move == 'w')
     {
         if (game_map[ep->y][ep->x] == '.' && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x] != 'O') ep->y--;
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '.')) ep->y--;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '+')) ep->y--;
     }
 
-    else if (move == 'l')
+    else if (move == 'd')
     {
         if (game_map[ep->y][ep->x] == '.' && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y][ep->x + 1] != 'O') ep->x++;
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] == '.')) ep->x++;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] == '+')) ep->x++;
     }
 
-    else if (move == 'h')
+    else if (move == 'a')
     {
         if (game_map[ep->y][ep->x] == '.' && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y][ep->x - 1] != 'O') ep->x--;
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x - 1] == '#' || game_map[ep->y][ep->x - 1] == '.')) ep->x--;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y][ep->x - 1] == '#' || game_map[ep->y][ep->x - 1] == '+')) ep->x--;
     }
 
-    else if (move == 'n')
+    else if (move == 'c')
     {
         if (game_map[ep->y][ep->x] == '.' && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x + 1] != 'O')
         {
@@ -777,7 +785,7 @@ int move_ivalue(int move, Explorer_Position *ep)
         }
     }
 
-    else if (move == 'b')
+    else if (move == 'z')
     {
         if (game_map[ep->y][ep->x] == '.' && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x - 1] != 'O')
         {
@@ -786,7 +794,7 @@ int move_ivalue(int move, Explorer_Position *ep)
         }
     }
 
-    else if (move == 'u')
+    else if (move == 'e')
     {
         if (game_map[ep->y][ep->x] == '.' && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x + 1] != 'O')
         {
@@ -795,7 +803,7 @@ int move_ivalue(int move, Explorer_Position *ep)
         }
     }
 
-    else if (move == 'y')
+    else if (move == 'q')
     {
         if (game_map[ep->y][ep->x] == '.' && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x - 1] != 'O')
         {
@@ -803,5 +811,11 @@ int move_ivalue(int move, Explorer_Position *ep)
             ep->x--;
         }
     }
+}
+
+void new_game(Explorer_Position *ep)
+{
+    clear();
+    load_map(1, ep);
 }
 
