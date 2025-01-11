@@ -71,7 +71,7 @@ void profile(Player *player);
 //int random(int a, int b);
 //void map_maker(Map *map);
 void load_map(int i, Explorer_Position *ep);
-void print_map(Explorer_Position *ep, Explorer *explorer);
+void print_map(Explorer_Position *ep, Explorer *explorer, Game game);
 int move_ivalue(int move, Explorer_Position *ep);
 void new_game(Explorer_Position *ep, Explorer *explorer);
 
@@ -131,7 +131,7 @@ int main()
 
     while (1)
     {
-        print_map(&ep, &explorer);
+        print_map(&ep, &explorer, game);
         int move = tolower(getch());
         move_ivalue(move, &ep);
         clear();
@@ -734,8 +734,13 @@ void load_map(int i, Explorer_Position *ep)
     fclose(map);
 }
 
-void print_map(Explorer_Position *ep, Explorer *explorer)
+void print_map(Explorer_Position *ep, Explorer *explorer, Game game)
 {
+    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(2, COLOR_RED, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+    init_pair(4, COLOR_BLUE, COLOR_BLACK);
+
     for (int i = 0; i < 30; i++)
     {
         for (int j = 0; j < 120; j++)
@@ -744,8 +749,10 @@ void print_map(Explorer_Position *ep, Explorer *explorer)
             else printw("%c", game_map[i][j]);
         }
     }
-    
+    attron(COLOR_PAIR(game.color + 1));
     mvprintw(ep->y, ep->x, "X");
+    attroff(COLOR_PAIR(game.color + 1));
+    
     mvprintw(29, 15, "Health : %d", explorer->health);
     mvprintw(29, 35, "Score : %d", explorer->score);
     mvprintw(29, 50, "Level : %d", explorer->level);
