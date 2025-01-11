@@ -136,18 +136,20 @@ int main()
     {
         print_map(&ep, &explorer, game);
         trap(&ep, &explorer);
+        int move;
         if (game_map[ep.y][ep.x] == '>')
         {
-            mvprintw(0, 25, "Wow! You reached the stair, press 'S' to go up!");
-            int stair_yes = tolower(getch());
-            if (stair_yes == 's')
+            mvprintw(0, 25, "Wow! You reached the stair, press 'U' to go up!");
+            move = tolower(getch());
+            if (move == 'u')
             {
                 stair(&explorer, &ep);
             }
         }
-        int move = tolower(getch());
-        move_ivalue(move, &ep);
+        
+        else move = tolower(getch());
 
+        move_ivalue(move, &ep);
         clear();
     }
 
@@ -704,11 +706,11 @@ void profile(Player *player)
 //     map->y1_renge = random(4, 10);
 // }
 
-void load_map(int i, Explorer_Position *ep)
+void load_map(int k, Explorer_Position *ep)
 {
     FILE *map;
 
-    switch (i)
+    switch (k)
     {
     case 1:
         map = fopen("Floor_1.txt", "r");
@@ -736,7 +738,8 @@ void load_map(int i, Explorer_Position *ep)
                 {
                     ep->x = i;
                     ep->y = counter / 2;
-                    temp[i] = '.';
+                    if (k > 1) temp[i] = '<';
+                    else temp[i] = '.';
                 }
 
                 game_map[counter / 2][i] = temp[i];
@@ -868,6 +871,8 @@ void trap(Explorer_Position *ep, Explorer *explorer)
 void stair(Explorer *explorer, Explorer_Position *ep)
 {
     int floor = explorer->level;
+    explorer->level++;
+    
     switch (floor)
     {
     case 1:
