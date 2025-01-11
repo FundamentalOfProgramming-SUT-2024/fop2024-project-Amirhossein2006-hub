@@ -748,6 +748,7 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game)
         for (int j = 0; j < 120; j++)
         {
             if (game_map[i][j] == '-') printw(" ");
+            else if (game_map[i][j] == 'T') printw(".");
             else printw("%c", game_map[i][j]);
         }
     }
@@ -844,10 +845,11 @@ void trap(Explorer_Position *ep, Explorer *explorer)
 {
     char temp = game_map[ep->y][ep->x];
 
-    if (temp == '^')
+    if (temp == '^' || temp == 'T')
     {
         mvprintw(0, 25, "Opps! There Was a Trap!");
         explorer->health -= 10;
+        game_map[ep->y][ep->x] = '^';
     }
 }
 
