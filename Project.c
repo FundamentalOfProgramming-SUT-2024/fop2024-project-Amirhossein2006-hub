@@ -38,6 +38,7 @@ typedef struct
     int score;
     int experience;
     int gold;
+    int level;
 } Explorer;
 
 // typedef struct
@@ -70,9 +71,9 @@ void profile(Player *player);
 //int random(int a, int b);
 //void map_maker(Map *map);
 void load_map(int i, Explorer_Position *ep);
-void print_map(Explorer_Position *ep);
+void print_map(Explorer_Position *ep, Explorer *explorer);
 int move_ivalue(int move, Explorer_Position *ep);
-void new_game(Explorer_Position *ep);
+void new_game(Explorer_Position *ep, Explorer *explorer);
 
 
 int main()
@@ -87,6 +88,7 @@ int main()
     Game game;
     //Map map;
     Explorer_Position ep;
+    Explorer explorer;
     game.difficulty = 0;
     game.color = 0;
 
@@ -107,7 +109,7 @@ int main()
         {
         case 0:
         {
-            new_game(&ep);
+            new_game(&ep, &explorer);
             break;
         }
         case 1:
@@ -129,7 +131,7 @@ int main()
 
     while (1)
     {
-        print_map(&ep);
+        print_map(&ep, &explorer);
         int move = tolower(getch());
         move_ivalue(move, &ep);
         clear();
@@ -732,7 +734,7 @@ void load_map(int i, Explorer_Position *ep)
     fclose(map);
 }
 
-void print_map(Explorer_Position *ep)
+void print_map(Explorer_Position *ep, Explorer *explorer)
 {
     for (int i = 0; i < 30; i++)
     {
@@ -744,6 +746,11 @@ void print_map(Explorer_Position *ep)
     }
     
     mvprintw(ep->y, ep->x, "X");
+    mvprintw(29, 15, "Health : %d", explorer->health);
+    mvprintw(29, 35, "Score : %d", explorer->score);
+    mvprintw(29, 50, "Level : %d", explorer->level);
+    mvprintw(29, 65, "Gold : %d", explorer->gold);
+    mvprintw(29, 80, "Experience : %d", explorer->experience);
 }
 
 int move_ivalue(int move, Explorer_Position *ep)
@@ -813,9 +820,14 @@ int move_ivalue(int move, Explorer_Position *ep)
     }
 }
 
-void new_game(Explorer_Position *ep)
+void new_game(Explorer_Position *ep, Explorer *explorer)
 {
     clear();
     load_map(1, ep);
+    explorer->health = 100;
+    explorer->score = 0;
+    explorer->level = 1;
+    explorer->gold = 0;
+    explorer->experience = 0;
 }
 
