@@ -863,52 +863,35 @@ void trap(Explorer_Position *ep, Explorer *explorer)
 
 void stair(Explorer *explorer, Explorer_Position *ep)
 {
+    FILE *map;
     int floor = explorer->level;
     explorer->level++;
-    
+
     switch (floor)
     {
     case 1:
-    {
-        for (int i = 0; i < 30; i++)
-        {
-            for (int j = 0; j < 120; j++)
-                floor1[i][j] = game_map[i][j];
-        }
+        map = fopen("Floor_1.txt", "w");
         break;
-    }
-
     case 2:
-    {
-        for (int i = 0; i < 30; i++)
-        {
-            for (int j = 0; j < 120; j++)
-                floor2[i][j] = game_map[i][j];
-        }
+        map = fopen("Floor_2.txt", "w");
         break;
-    }
-
     case 3:
-    {
-        for (int i = 0; i < 30; i++)
-        {
-            for (int j = 0; j < 120; j++)
-                floor3[i][j] = game_map[i][j];
-        }
+        map = fopen("Floor_3.txt", "w");
         break;
-    }
-
     case 4:
-    {
-        for (int i = 0; i < 30; i++)
-        {
-            for (int j = 0; j < 120; j++)
-                floor4[i][j] = game_map[i][j];
-        }
+        map = fopen("Floor_4.txt", "w");
         break;
     }
+
+    //game_map[ep->y][ep->x] = 'X';
+    for (int i = 0; i < 30; i++) {
+        for (int j = 0; j < 120; j++) {
+            fprintf(map, "%c", game_map[i][j]);
+        }
+        fprintf(map, "\n");
     }
 
+    fclose(map);
     load_map(floor + 1, ep);
 }
 
@@ -916,7 +899,7 @@ int stair_check(Explorer *explorer, Explorer_Position *ep)
 {
     mvprintw(0, 25, "Wow! You reached the stair, press 'U' to go up!");
     int move = tolower(getch());
-    
+
     if (move == 'u') stair(explorer, ep);
     else return move;
 }
