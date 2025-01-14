@@ -76,6 +76,7 @@ void move_ivalue(int move, Explorer_Position *ep);
 void new_game(Explorer_Position *ep, Explorer *explorer);
 void trap(Explorer_Position *ep, Explorer *explorer);
 void stair(Explorer *explorer, Explorer_Position *ep);
+int stair_check(Explorer *explorer, Explorer_Position *ep);
 int move_ivalue_help(Explorer_Position *ep);
 
 
@@ -137,16 +138,8 @@ int main()
         print_map(&ep, &explorer, game);
         trap(&ep, &explorer);
         int move;
-        if (game_map[ep.y][ep.x] == '>')
-        {
-            mvprintw(0, 25, "Wow! You reached the stair, press 'U' to go up!");
-            move = tolower(getch());
-            if (move == 'u')
-            {
-                stair(&explorer, &ep);
-            }
-        }
-        
+
+        if (game_map[ep.y][ep.x] == '>') move = stair_check(&explorer, &ep);
         else move = tolower(getch());
 
         move_ivalue(move, &ep);
@@ -919,6 +912,15 @@ void stair(Explorer *explorer, Explorer_Position *ep)
     load_map(floor + 1, ep);
 }
 
+int stair_check(Explorer *explorer, Explorer_Position *ep)
+{
+    mvprintw(0, 25, "Wow! You reached the stair, press 'U' to go up!");
+    int move = tolower(getch());
+    
+    if (move == 'u') stair(explorer, ep);
+    else return move;
+}
+
 int move_ivalue_help(Explorer_Position *ep)
 {
     if (game_map[ep->y][ep->x] == '.' || 
@@ -929,4 +931,6 @@ int move_ivalue_help(Explorer_Position *ep)
 
     else return 0;
 }
+
+
 
