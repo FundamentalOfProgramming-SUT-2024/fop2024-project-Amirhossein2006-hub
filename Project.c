@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <string.h>
 #include <time.h>
+#include <wchar.h>
+#include <locale.h>
 
 typedef struct
 {
@@ -81,6 +83,7 @@ int move_ivalue_help(Explorer_Position *ep);
 int main()
 {
     initscr();
+    setlocale(LC_ALL, "en_US.UTF-8");
     noecho();
     curs_set(FALSE);
     keypad(stdscr, TRUE);
