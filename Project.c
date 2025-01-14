@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct
 {
@@ -52,10 +53,7 @@ typedef struct
 // } Map;
 
 char game_map[30][120];
-char floor1[30][120];
-char floor2[30][120];
-char floor3[30][120];
-char floor4[30][120];
+clock_t start;
 
 int menu();
 void sign_in(Player *player);
@@ -144,6 +142,8 @@ int main()
 
         move_ivalue(move, &ep);
         clear();
+
+        explorer.experience = (time(NULL) - start);
     }
 
     char c = getch();
@@ -840,6 +840,7 @@ void move_ivalue(int move, Explorer_Position *ep)
 
 void new_game(Explorer_Position *ep, Explorer *explorer)
 {
+    start = time(NULL);
     clear();
     load_map(1, ep);
     explorer->health = 100;
