@@ -68,7 +68,7 @@ int before_game_menu();
 void settings(Game *game);
 void score_table(Player *player);
 void profile(Player *player);
-//int random(int a, int b);
+int random_renge(int a, int b);
 //void map_maker(Map *map);
 void load_map(int i, Explorer_Position *ep);
 void print_map(Explorer_Position *ep, Explorer *explorer, Game game);
@@ -79,6 +79,8 @@ void stair(Explorer *explorer, Explorer_Position *ep);
 int stair_check(Explorer *explorer, Explorer_Position *ep);
 int move_ivalue_help(Explorer_Position *ep);
 void food(Explorer_Position *ep, Explorer *explorer);
+void gold(Explorer_Position *ep, Explorer *explorer);
+void black_gold(Explorer_Position *ep, Explorer *explorer);
 
 
 int main()
@@ -140,6 +142,8 @@ int main()
         print_map(&ep, &explorer, game);
         trap(&ep, &explorer);
         food(&ep, &explorer);
+        gold(&ep, &explorer);
+        black_gold(&ep, &explorer);
         int move;
 
         if (game_map[ep.y][ep.x] == '>') move = stair_check(&explorer, &ep);
@@ -693,10 +697,10 @@ void profile(Player *player)
     getch();
 }
 
-// int random(int a, int b)
-// {
-//     return rand() % (b - a + 1) + a;
-// }
+int random_renge(int a, int b)
+{
+    return rand() % (b - a + 1) + a;
+}
 
 // void map_maker(Map *map)
 // {
@@ -757,6 +761,7 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game)
     init_pair(2, COLOR_RED, COLOR_BLACK);
     init_pair(3, COLOR_GREEN, COLOR_BLACK);
     init_pair(4, COLOR_BLUE, COLOR_BLACK);
+    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
 
     for (int i = 0; i < 30; i++)
     {
@@ -769,6 +774,18 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game)
                 attron(COLOR_PAIR(2));
                 printw("F");
                 attroff(COLOR_PAIR(2));
+            }
+            else if (game_map[i][j] == 'G')
+            {
+                attron(COLOR_PAIR(1));
+                printw("G");
+                attroff(COLOR_PAIR(1));
+            }
+            else if (game_map[i][j] == 'B')
+            {
+                attron(COLOR_PAIR(5));
+                printw("B");
+                attroff(COLOR_PAIR(5));
             }
             else printw("%c", game_map[i][j]);
         }
@@ -938,6 +955,34 @@ void food(Explorer_Position *ep, Explorer *explorer)
         mvprintw(0, 25, "Wow! You eat a food!");
         if (explorer->health <= 90) explorer->health += 10;
         else explorer->health = 100;
+        game_map[ep->y][ep->x] = '.';
+    }
+}
+
+void gold(Explorer_Position *ep, Explorer *explorer)
+{
+    char temp = game_map[ep->y][ep->x];
+
+    if (temp == 'G')
+    {
+        int g = random_renge(1, 5);
+        mvprintw(0, 25, "Wow! You reach %d gold!", g);
+        explorer->gold += g;
+        explorer->score += g * 2;
+        game_map[ep->y][ep->x] = '.';
+    }
+}
+
+void black_gold(Explorer_Position *ep, Explorer *explorer)
+{
+    char temp = game_map[ep->y][ep->x];
+
+    if (temp == 'B')
+    {
+        int g = random_renge(5, 10);
+        mvprintw(0, 25, "Wow! You reach %d black gold!", g);
+        explorer->gold += g;
+        explorer->score += g * 2;
         game_map[ep->y][ep->x] = '.';
     }
 }
