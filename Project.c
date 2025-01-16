@@ -78,6 +78,7 @@ void trap(Explorer_Position *ep, Explorer *explorer);
 void stair(Explorer *explorer, Explorer_Position *ep);
 int stair_check(Explorer *explorer, Explorer_Position *ep);
 int move_ivalue_help(Explorer_Position *ep);
+void food(Explorer_Position *ep, Explorer *explorer);
 
 
 int main()
@@ -138,6 +139,7 @@ int main()
     {
         print_map(&ep, &explorer, game);
         trap(&ep, &explorer);
+        food(&ep, &explorer);
         int move;
 
         if (game_map[ep.y][ep.x] == '>') move = stair_check(&explorer, &ep);
@@ -762,6 +764,12 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game)
         {
             if (game_map[i][j] == '-') printw(" ");
             else if (game_map[i][j] == 'T') printw(".");
+            else if (game_map[i][j] == 'F')
+            {
+                attron(COLOR_PAIR(2));
+                printw("F");
+                attroff(COLOR_PAIR(2));
+            }
             else printw("%c", game_map[i][j]);
         }
     }
@@ -921,5 +929,16 @@ int move_ivalue_help(Explorer_Position *ep)
     else return 0;
 }
 
+void food(Explorer_Position *ep, Explorer *explorer)
+{
+    char temp = game_map[ep->y][ep->x];
 
+    if (temp == 'F')
+    {
+        mvprintw(0, 25, "Wow! You eat a food!");
+        if (explorer->health <= 90) explorer->health += 10;
+        else explorer->health = 100;
+        game_map[ep->y][ep->x] = '.';
+    }
+}
 
