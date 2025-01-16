@@ -146,7 +146,7 @@ int main()
         move_ivalue(move, &ep);
         clear();
 
-        explorer.experience = (time(NULL) - start);
+        explorer.experience = (time(NULL) - start) / 60;
     }
 
     char c = getch();
