@@ -44,15 +44,17 @@ typedef struct
     int level;
 } Explorer;
 
-// typedef struct
-// {
-//     int x1_start;
-//     int x1_end;
-//     int y1_start;
-//     int y1_end;
-//     int x1_renge;
-//     int y1_renge;
-// } Map;
+typedef struct
+{
+    char weapon[20];
+    int count;
+} Weapon_Count;
+
+typedef struct
+{
+    Weapon_Count weapons[10];
+    int count;
+} Weapon;
 
 char game_map[30][120];
 clock_t start;
@@ -69,7 +71,6 @@ void settings(Game *game);
 void score_table(Player *player);
 void profile(Player *player);
 int random_renge(int a, int b);
-//void map_maker(Map *map);
 void load_map(int i, Explorer_Position *ep);
 void print_map(Explorer_Position *ep, Explorer *explorer, Game game);
 void move_ivalue(int move, Explorer_Position *ep);
@@ -81,6 +82,10 @@ int move_ivalue_help(Explorer_Position *ep);
 void food(Explorer_Position *ep, Explorer *explorer);
 void gold(Explorer_Position *ep, Explorer *explorer);
 void black_gold(Explorer_Position *ep, Explorer *explorer);
+void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon);
+void find(char name[], Weapon *weapon);
+
+void weapon_show(Weapon weapon);
 
 
 int main()
@@ -94,11 +99,15 @@ int main()
 
     Player player;
     Game game;
-    //Map map;
     Explorer_Position ep;
     Explorer explorer;
+    Weapon weapon;
+
     game.difficulty = 0;
     game.color = 0;
+    weapon.count = 1;
+    strcpy(weapon.weapons[0].weapon, "Mace");
+    weapon.weapons[0].count = 1;
 
     switch (menu())
     {
@@ -144,12 +153,14 @@ int main()
         food(&ep, &explorer);
         gold(&ep, &explorer);
         black_gold(&ep, &explorer);
+        weapons(&ep, &explorer, &weapon);
         int move;
 
         if (game_map[ep.y][ep.x] == '>') move = stair_check(&explorer, &ep);
         else move = tolower(getch());
 
-        move_ivalue(move, &ep);
+        if (move == 'i') weapon_show(weapon);
+        else move_ivalue(move, &ep);
         clear();
 
         explorer.experience = (time(NULL) - start) / 60;
@@ -702,14 +713,6 @@ int random_renge(int a, int b)
     return rand() % (b - a + 1) + a;
 }
 
-// void map_maker(Map *map)
-// {
-//     map->x1_start = random(10, 100);
-//     map->y1_start = random(5, 15);
-//     map->x1_renge = random(4, 10);
-//     map->y1_renge = random(4, 10);
-// }
-
 void load_map(int k, Explorer_Position *ep)
 {
     FILE *map;
@@ -787,6 +790,18 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game)
                 printw("B");
                 attroff(COLOR_PAIR(5));
             }
+
+            else if (game_map[i][j] == 'M' ||
+                     game_map[i][j] == 'D' ||
+                     game_map[i][j] == 'W' ||
+                     game_map[i][j] == 'A' ||
+                     game_map[i][j] == 'S')
+            {
+                attron(COLOR_PAIR(4));
+                printw("%c", game_map[i][j]);
+                attroff(COLOR_PAIR(4));
+            }
+
             else printw("%c", game_map[i][j]);
         }
     }
@@ -985,5 +1000,87 @@ void black_gold(Explorer_Position *ep, Explorer *explorer)
         explorer->score += g * 2;
         game_map[ep->y][ep->x] = '.';
     }
+}
+
+void find(char name[], Weapon *weapon)
+{
+    int ivalue = 0;
+    for (int i = 0; i < weapon->count; i++)
+    {
+        if (strcmp(weapon->weapons[i].weapon, name) == 0)
+        {
+            ivalue = 1;
+            weapon->weapons[i].count++;
+        }
+    }
+    if (ivalue == 0)
+    {
+        strcpy(weapon->weapons[weapon->count].weapon, name);
+        weapon->weapons[weapon->count++].count = 1;
+    }
+}
+
+void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon)
+{
+    char temp = game_map[ep->y][ep->x];
+
+    if (temp == 'M')
+    {
+        mvprintw(0, 25, "Wow! You reach Mace!");
+        find("Mace", weapon);
+        game_map[ep->y][ep->x] = '.';
+    }
+
+    else if (temp == 'D')
+    {
+        mvprintw(0, 25, "Wow! You reach Dagger!");
+        find("Dagger", weapon);
+        game_map[ep->y][ep->x] = '.';
+    }
+
+    else if (temp == 'W')
+    {
+        mvprintw(0, 25, "Wow! You reach Magic Wand!");
+        find("Magic Wand", weapon);
+        game_map[ep->y][ep->x] = '.';
+    }
+
+    else if (temp == 'A')
+    {
+        mvprintw(0, 25, "Wow! You reach Normal Arrow!");
+        find("Normal Arrow", weapon);
+        game_map[ep->y][ep->x] = '.';
+    }
+
+    else if (temp == 'S')
+    {
+        mvprintw(0, 25, "Wow! You reach Sword!");
+        find("Sword", weapon);
+        game_map[ep->y][ep->x] = '.';
+    }
+}
+
+void weapon_show(Weapon weapon)
+{
+    WINDOW *win;
+    win = newwin(12, 25, 10, 45);    
+
+    for (int i = 0; i < weapon.count; i++)
+    {
+        mvwprintw(win, 1 + i, 2, "%s", weapon.weapons[i].weapon);
+        mvwprintw(win, 1 + i, 20, "(%d)", weapon.weapons[i].count);
+    }
+
+    mvwprintw(win, 0, 0, "-------------------------");
+    mvwprintw(win, 11, 0, "-------------------------");
+    for (int i = 0; i < 12; i++)
+    {
+        mvwprintw(win, i, 0, "|");
+        mvwprintw(win, i, 24, "|");
+    }
+
+    wrefresh(win);
+    getch();
+    delwin(win);
 }
 
