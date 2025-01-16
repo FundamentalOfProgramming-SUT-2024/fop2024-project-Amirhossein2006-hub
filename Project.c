@@ -147,6 +147,8 @@ int main()
         clear();
 
         explorer.experience = (time(NULL) - start) / 60;
+
+        if ((time(NULL) - start) % 60 == 0) explorer.health--;
     }
 
     char c = getch();
@@ -730,7 +732,7 @@ void load_map(int k, Explorer_Position *ep)
         {
             for (int i = 0; i < 120; i++)
             {   
-                if (temp[i] == 'X')
+                if (temp[i] == '<')
                 {
                     ep->x = i;
                     ep->y = counter / 2;
