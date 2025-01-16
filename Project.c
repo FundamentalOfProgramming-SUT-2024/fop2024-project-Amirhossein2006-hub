@@ -737,7 +737,7 @@ void load_map(int k, Explorer_Position *ep)
                     ep->x = i;
                     ep->y = counter / 2;
                     if (k > 1) temp[i] = '<';
-                    else temp[i] = '.';
+                    else temp[i] = '<';
                 }
 
                 game_map[counter / 2][i] = temp[i];
