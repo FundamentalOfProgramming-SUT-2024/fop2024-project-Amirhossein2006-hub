@@ -778,14 +778,14 @@ void move_ivalue(int move, Explorer_Position *ep)
 {
     if (move == 's')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x] != 'O') ep->y++;
+        if (move_ivalue_help(ep) && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x] != 'O') ep->y++;
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] == '.')) ep->y++;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] == '+')) ep->y++;
     }
 
     else if (move == 'w')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x] != 'O') ep->y--;
+        if (move_ivalue_help(ep) && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x] != 'O') ep->y--;
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '.')) ep->y--;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '+')) ep->y--;
     }
@@ -806,7 +806,7 @@ void move_ivalue(int move, Explorer_Position *ep)
 
     else if (move == 'c')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x + 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x + 1] != 'O')
         {
             ep->x++;
             ep->y++;
@@ -815,7 +815,7 @@ void move_ivalue(int move, Explorer_Position *ep)
 
     else if (move == 'z')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y + 1][ep->x] != '_' && game_map[ep->y + 1][ep->x - 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x - 1] != 'O')
         {
             ep->y++;
             ep->x--;
@@ -824,7 +824,7 @@ void move_ivalue(int move, Explorer_Position *ep)
 
     else if (move == 'e')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x + 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x + 1] != 'O')
         {
             ep->x++;
             ep->y--;
@@ -833,7 +833,7 @@ void move_ivalue(int move, Explorer_Position *ep)
 
     else if (move == 'q')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y - 1][ep->x] != '_' && game_map[ep->y - 1][ep->x - 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x - 1] != 'O')
         {
             ep->y--;
             ep->x--;
