@@ -56,6 +56,18 @@ typedef struct
     int count;
 } Weapon;
 
+typedef struct
+{
+    char spell[20];
+    int count;
+} Spell_Count;
+
+typedef struct
+{
+    Spell_Count spells[10];
+    int count;
+} Spell;
+
 char game_map[30][120];
 clock_t start;
 
@@ -83,9 +95,11 @@ void food(Explorer_Position *ep, Explorer *explorer);
 void gold(Explorer_Position *ep, Explorer *explorer);
 void black_gold(Explorer_Position *ep, Explorer *explorer);
 void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon);
-void find(char name[], Weapon *weapon);
-
+void find_weapon(char name[], Weapon *weapon);
 void weapon_show(Weapon weapon);
+void spells(Explorer_Position *ep, Explorer *explorer, Spell *spell);
+void find_spell(char name[], Spell *spell);
+void spell_show(Spell spell);
 
 
 int main()
@@ -102,6 +116,7 @@ int main()
     Explorer_Position ep;
     Explorer explorer;
     Weapon weapon;
+    Spell spell;
 
     game.difficulty = 0;
     game.color = 0;
@@ -154,12 +169,15 @@ int main()
         gold(&ep, &explorer);
         black_gold(&ep, &explorer);
         weapons(&ep, &explorer, &weapon);
+        spells(&ep, &explorer, &spell);
+
         int move;
 
         if (game_map[ep.y][ep.x] == '>') move = stair_check(&explorer, &ep);
         else move = tolower(getch());
 
         if (move == 'i') weapon_show(weapon);
+        if (move == 'o') spell_show(spell);
         else move_ivalue(move, &ep);
         clear();
 
@@ -802,6 +820,15 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game)
                 attroff(COLOR_PAIR(4));
             }
 
+            else if (game_map[i][j] == 'H' ||
+                     game_map[i][j] == 'Z' ||
+                     game_map[i][j] == 'C')
+            {
+                attron(COLOR_PAIR(3));
+                printw("%c", game_map[i][j]);
+                attroff(COLOR_PAIR(3));
+            }
+
             else printw("%c", game_map[i][j]);
         }
     }
@@ -1002,7 +1029,7 @@ void black_gold(Explorer_Position *ep, Explorer *explorer)
     }
 }
 
-void find(char name[], Weapon *weapon)
+void find_weapon(char name[], Weapon *weapon)
 {
     int ivalue = 0;
     for (int i = 0; i < weapon->count; i++)
@@ -1027,35 +1054,35 @@ void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon)
     if (temp == 'M')
     {
         mvprintw(0, 25, "Wow! You reach Mace!");
-        find("Mace", weapon);
+        find_weapon("Mace", weapon);
         game_map[ep->y][ep->x] = '.';
     }
 
     else if (temp == 'D')
     {
         mvprintw(0, 25, "Wow! You reach Dagger!");
-        find("Dagger", weapon);
+        find_weapon("Dagger", weapon);
         game_map[ep->y][ep->x] = '.';
     }
 
     else if (temp == 'W')
     {
         mvprintw(0, 25, "Wow! You reach Magic Wand!");
-        find("Magic Wand", weapon);
+        find_weapon("Magic Wand", weapon);
         game_map[ep->y][ep->x] = '.';
     }
 
     else if (temp == 'A')
     {
         mvprintw(0, 25, "Wow! You reach Normal Arrow!");
-        find("Normal Arrow", weapon);
+        find_weapon("Normal Arrow", weapon);
         game_map[ep->y][ep->x] = '.';
     }
 
     else if (temp == 'S')
     {
         mvprintw(0, 25, "Wow! You reach Sword!");
-        find("Sword", weapon);
+        find_weapon("Sword", weapon);
         game_map[ep->y][ep->x] = '.';
     }
 }
@@ -1069,6 +1096,74 @@ void weapon_show(Weapon weapon)
     {
         mvwprintw(win, 1 + i, 2, "%s", weapon.weapons[i].weapon);
         mvwprintw(win, 1 + i, 20, "(%d)", weapon.weapons[i].count);
+    }
+
+    mvwprintw(win, 0, 0, "-------------------------");
+    mvwprintw(win, 11, 0, "-------------------------");
+    for (int i = 0; i < 12; i++)
+    {
+        mvwprintw(win, i, 0, "|");
+        mvwprintw(win, i, 24, "|");
+    }
+
+    wrefresh(win);
+    getch();
+    delwin(win);
+}
+
+void find_spell(char name[], Spell *spell)
+{
+    int ivalue = 0;
+    for (int i = 0; i < spell->count; i++)
+    {
+        if (strcmp(spell->spells[i].spell, name) == 0)
+        {
+            ivalue = 1;
+            spell->spells[i].count++;
+        }
+    }
+    if (ivalue == 0)
+    {
+        strcpy(spell->spells[spell->count].spell, name);
+        spell->spells[spell->count++].count = 1;
+    }
+}
+
+void spells(Explorer_Position *ep, Explorer *explorer, Spell *spell)
+{
+    char temp = game_map[ep->y][ep->x];
+
+    if (temp == 'H')
+    {
+        mvprintw(0, 25, "Wow! You reach Health Spell!");
+        find_spell("Health", spell);
+        game_map[ep->y][ep->x] = '.';
+    }
+
+    else if (temp == 'Z')
+    {
+        mvprintw(0, 25, "Wow! You reach Speed Spell!");
+        find_spell("Speed", spell);
+        game_map[ep->y][ep->x] = '.';
+    }
+
+    else if (temp == 'C')
+    {
+        mvprintw(0, 25, "Wow! You reach Damage Spell!");
+        find_spell("Damage", spell);
+        game_map[ep->y][ep->x] = '.';
+    }
+}
+
+void spell_show(Spell spell)
+{
+    WINDOW *win;
+    win = newwin(12, 25, 10, 45);    
+
+    for (int i = 0; i < spell.count; i++)
+    {
+        mvwprintw(win, 1 + i, 2, "%s", spell.spells[i].spell);
+        mvwprintw(win, 1 + i, 20, "(%d)", spell.spells[i].count);
     }
 
     mvwprintw(win, 0, 0, "-------------------------");
