@@ -100,6 +100,7 @@ void weapon_show(Weapon weapon);
 void spells(Explorer_Position *ep, Explorer *explorer, Spell *spell);
 void find_spell(char name[], Spell *spell);
 void spell_show(Spell spell);
+int end_game(Explorer_Position *ep, Explorer *explorer, Player *player);
 
 
 int main()
@@ -161,6 +162,8 @@ int main()
         if (choice < 1) break;
     }
 
+    int step_counter = 0;
+
     while (1)
     {
         print_map(&ep, &explorer, game);
@@ -182,11 +185,12 @@ int main()
         clear();
 
         explorer.experience = (time(NULL) - start) / 60;
+        step_counter++;
+        if (step_counter % 10 == 0) explorer.health -= 2;
 
-        if ((time(NULL) - start) % 60 == 0) explorer.health--;
+        if (end_game(&ep, &explorer, &player)) break;
     }
 
-    char c = getch();
     refresh();
     endwin();
     return 0;
@@ -1177,5 +1181,24 @@ void spell_show(Spell spell)
     wrefresh(win);
     getch();
     delwin(win);
+}
+
+int end_game(Explorer_Position *ep, Explorer *explorer, Player *player)
+{
+    if (explorer->level == 4 && game_map[ep->y][ep->x] == '>')
+    {
+        clear();
+        mvprintw(15, 45, "Congradulations!!! You have finished the game.");
+        mvprintw(16, 45, "I hope to see you again :)");
+        mvprintw(17, 45, "Press any key to exit...");
+        getch();
+        player->experience = explorer->experience;
+        player->finished_games++;
+        player->gold = explorer->gold;
+        player->score = explorer->score;
+        return 1;
+    }
+
+    return 0;
 }
 
