@@ -186,11 +186,6 @@ int main()
         black_gold(&ep, &explorer);
         weapons(&ep, &explorer, &weapon);
         spells(&ep, &explorer, &spell);
-        if (step_counter % 10 == 0)
-        {
-            explorer.health -= 2;
-            mvprintw(0, 25, "Opps! You are tired! Your health reduced!");
-        }
 
         int move;
 
@@ -204,6 +199,14 @@ int main()
 
         explorer.experience = (time(NULL) - start) / 60;
         step_counter++;
+        if (step_counter % 10 == 0)
+        {
+            explorer.health -= 2;
+            print_map(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
+            mvprintw(0, 25, "Opps! You are tired! Your health reduced!");
+            move(0, 0);
+            getch();
+        }
 
         if (end_game(&ep, &explorer, &player)) break;
     }
@@ -1097,9 +1100,10 @@ void food(Explorer_Position *ep, Explorer *explorer)
 
     if (temp == 'F')
     {
-        mvprintw(0, 25, "Wow! You eat a food!");
+        mvprintw(0, 25, "Wow! You eat a food! Score increases!");
         if (explorer->health <= 90) explorer->health += 10;
         else explorer->health = 100;
+        explorer->score += 2;
         game_map[ep->y][ep->x] = '.';
     }
 }
@@ -1156,37 +1160,42 @@ void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon)
 
     if (temp == 'M')
     {
-        mvprintw(0, 25, "Wow! You reach Mace!");
+        mvprintw(0, 25, "Wow! You reach Mace! Score increases!");
         find_weapon("Mace", weapon);
         game_map[ep->y][ep->x] = '.';
+        explorer->score += 3;
     }
 
     else if (temp == 'D')
     {
-        mvprintw(0, 25, "Wow! You reach Dagger!");
+        mvprintw(0, 25, "Wow! You reach Dagger! Score increases!");
         find_weapon("Dagger", weapon);
         game_map[ep->y][ep->x] = '.';
+        explorer->score += 3;
     }
 
     else if (temp == 'W')
     {
-        mvprintw(0, 25, "Wow! You reach Magic Wand!");
+        mvprintw(0, 25, "Wow! You reach Magic Wand! Score increases!");
         find_weapon("Magic Wand", weapon);
         game_map[ep->y][ep->x] = '.';
+        explorer->score += 3;
     }
 
     else if (temp == 'A')
     {
-        mvprintw(0, 25, "Wow! You reach Normal Arrow!");
+        mvprintw(0, 25, "Wow! You reach Normal Arrow! Score increases!");
         find_weapon("Normal Arrow", weapon);
         game_map[ep->y][ep->x] = '.';
+        explorer->score += 3;
     }
 
     else if (temp == 'S')
     {
-        mvprintw(0, 25, "Wow! You reach Sword!");
+        mvprintw(0, 25, "Wow! You reach Sword! Score increases!");
         find_weapon("Sword", weapon);
         game_map[ep->y][ep->x] = '.';
+        explorer->score += 3;
     }
 }
 
@@ -1238,23 +1247,26 @@ void spells(Explorer_Position *ep, Explorer *explorer, Spell *spell)
 
     if (temp == 'H')
     {
-        mvprintw(0, 25, "Wow! You reach Health Spell!");
+        mvprintw(0, 25, "Wow! You reach Health Spell! Score increases!");
         find_spell("Health", spell);
         game_map[ep->y][ep->x] = '.';
+        explorer->score += 4;
     }
 
     else if (temp == 'Z')
     {
-        mvprintw(0, 25, "Wow! You reach Speed Spell!");
+        mvprintw(0, 25, "Wow! You reach Speed Spell! Score increases!");
         find_spell("Speed", spell);
         game_map[ep->y][ep->x] = '.';
+        explorer->score += 4;
     }
 
     else if (temp == 'C')
     {
-        mvprintw(0, 25, "Wow! You reach Damage Spell!");
+        mvprintw(0, 25, "Wow! You reach Damage Spell! Score increases!");
         find_spell("Damage", spell);
         game_map[ep->y][ep->x] = '.';
+        explorer->score += 4;
     }
 }
 
