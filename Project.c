@@ -981,7 +981,8 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
             if (game_map[ep->y][ep->x] == '_') 
             {
                 game_map[ep->y][ep->x] = '+';
-                mvprintw(0, 25, "Wow! You found a Hidden Door!");
+                mvprintw(0, 25, "Wow! You found a Hidden Door! Score increases!");
+                explorer->score += 3;
                 getch();
             }
             else if (game_map[ep->y][ep->x] == '@') 
@@ -991,13 +992,14 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
-                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door");
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
                     else
                     {
                         ancient_key_value--;
-                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now!", ancient_key_value);
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now! Score increases!", ancient_key_value);
                     }
                     start_code -= 30;
+                    explorer->score += 3;
                 }
                 else
                 {
@@ -1029,7 +1031,8 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
             if (game_map[ep->y][ep->x] == '_')
             {
                 game_map[ep->y][ep->x] = '+';
-                mvprintw(0, 25, "Wow! You found a Hidden Door!");
+                mvprintw(0, 25, "Wow! You found a Hidden Door! Score increases!");
+                explorer->score += 3;
                 getch();
             }
             else if (game_map[ep->y][ep->x] == '@') 
@@ -1039,13 +1042,14 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
-                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door");
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
                     else
                     {
                         ancient_key_value--;
-                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now!", ancient_key_value);
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now! Score increases!", ancient_key_value);
                     }
                     start_code -= 30;
+                    explorer->score += 3;
                 }
                 else
                 {
@@ -1077,7 +1081,8 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
             if (game_map[ep->y][ep->x] == '/')
             {
                 game_map[ep->y][ep->x] = '+';
-                mvprintw(0, 25, "Wow! You found a Hidden Door!");
+                mvprintw(0, 25, "Wow! You found a Hidden Door! Score increases!");
+                explorer->score += 3;
                 getch();
             }
             else if (game_map[ep->y][ep->x] == '@') 
@@ -1087,13 +1092,14 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
-                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door");
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
                     else
                     {
                         ancient_key_value--;
-                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now!", ancient_key_value);
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now! Score increases!", ancient_key_value);
                     }
                     start_code -= 30;
+                    explorer->score += 3;
                 }
                 else
                 {
@@ -1125,7 +1131,8 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
             if (game_map[ep->y][ep->x] == '/')
             {
                 game_map[ep->y][ep->x] = '+';
-                mvprintw(0, 25, "Wow! You found a Hidden Door!");
+                mvprintw(0, 25, "Wow! You found a Hidden Door! Score increases!");
+                explorer->score += 3;
                 getch();
             }
             else if (game_map[ep->y][ep->x] == '@') 
@@ -1135,13 +1142,14 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
-                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door");
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
                     else
                     {
                         ancient_key_value--;
-                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now!", ancient_key_value);
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now! Score increases!", ancient_key_value);
                     }
                     start_code -= 30;
+                    explorer->score += 3;
                 }
                 else
                 {
