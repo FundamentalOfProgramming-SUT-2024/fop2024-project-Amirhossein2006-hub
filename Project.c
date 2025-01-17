@@ -112,7 +112,7 @@ void find_spell(char name[], Spell *spell);
 void spell_show(Spell spell);
 int end_game(Explorer_Position *ep, Explorer *explorer, Player *player);
 void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
-
+int exit_menu();
 
 int main()
 {
@@ -193,7 +193,19 @@ int main()
         else move = tolower(getch());
 
         if (move == 'i') weapon_show(weapon);
-        if (move == 'o') spell_show(spell);
+        else if (move == 'o') spell_show(spell);
+        else if (move == 't')
+        {
+            if (exit_menu() == 1)
+            {
+                clear();
+                mvprintw(15, 45, "Have a nice day!");
+                mvprintw(16, 45, "I hope to see you again :)");
+                mvprintw(17, 45, "Press any key to exit...");
+                getch();
+                break;
+            }
+        }
         else move_ivalue(move, &ep);
         clear();
 
@@ -218,7 +230,7 @@ int main()
 
 int menu()
 {
-    char menu_options[5][15] = {"Sign In", "Login"};
+    char menu_options[2][15] = {"Sign In", "Login"};
     int choice = 0;
 
     while (1)
@@ -1350,5 +1362,103 @@ void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms
     room6->s_y = 9;
     room6->e_x = 103;
     room6->e_y = 17;
+}
+
+int exit_menu()
+{
+    WINDOW *win;
+    win = newwin(12, 25, 10, 45);    
+
+    char menu_options[2][15] = {"Resume", "Save & Exit"};
+    int choice = 0;
+
+    while (1)
+    {
+        mvwprintw(win, 0, 0, "-------------------------");
+        mvwprintw(win, 11, 0, "-------------------------");
+        for (int i = 0; i < 12; i++)
+        {
+            mvwprintw(win, i, 0, "|");
+            mvwprintw(win, i, 24, "|");
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            mvwprintw(win, 5 + i, 8, "%s", menu_options[i]);
+        }
+        mvwprintw(win, 5 + choice, 5, "->");
+        wrefresh(win);
+        int c = getch();
+        if (c == KEY_UP)
+        {
+            if (choice != 0)
+                choice--;
+            else
+                choice = 1;
+        }
+        else if (c == KEY_DOWN)
+        {
+            if (choice != 1)
+                choice++;
+            else
+                choice = 0;
+        }
+        else if (c == 10)
+        {
+            break;
+        }
+        wclear(win);
+    }
+
+    wclear(win);
+    int choice2 = 0;
+    if (choice == 1)
+    {
+        char menu_options2[2][15] = {"No", "Yes"};
+
+        while (1)
+        {
+            mvwprintw(win, 0, 0, "-------------------------");
+            mvwprintw(win, 11, 0, "-------------------------");
+            for (int i = 0; i < 12; i++)
+            {
+                mvwprintw(win, i, 0, "|");
+                mvwprintw(win, i, 24, "|");
+            }
+
+            mvwprintw(win, 3, 6, "Are You Sure?!");
+
+            for (int i = 0; i < 2; i++)
+            {
+                mvwprintw(win, 5 + i, 8, "%s", menu_options2[i]);
+            }
+            mvwprintw(win, 5 + choice2, 5, "->");
+            wrefresh(win);
+            int c = getch();
+            if (c == KEY_UP)
+            {
+                if (choice2 != 0)
+                    choice2--;
+                else
+                    choice2 = 1;
+            }
+            else if (c == KEY_DOWN)
+            {
+                if (choice2 != 1)
+                    choice2++;
+                else
+                    choice2 = 0;
+            }
+            else if (c == 10)
+            {
+                break;
+            }
+            wclear(win);
+        }
+    }
+
+    wrefresh(win);
+    delwin(win);
+    return choice2;
 }
 
