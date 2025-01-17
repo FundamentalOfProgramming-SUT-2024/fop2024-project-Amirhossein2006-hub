@@ -46,6 +46,18 @@ typedef struct
 
 typedef struct
 {
+    char food[20];
+    int count;
+} Food_Count;
+
+typedef struct
+{
+    Food_Count foods[10];
+    int count;
+} Food;
+
+typedef struct
+{
     char weapon[20];
     int count;
 } Weapon_Count;
@@ -104,7 +116,9 @@ void trap(Explorer_Position *ep, Explorer *explorer);
 void stair(Explorer *explorer, Explorer_Position *ep);
 int stair_check(Explorer *explorer, Explorer_Position *ep);
 int move_ivalue_help(Explorer_Position *ep);
-void food(Explorer_Position *ep, Explorer *explorer);
+void foods(Explorer_Position *ep, Explorer *explorer, Food *food);
+void find_food(char name[], Food *food);
+int food_show(Food *food);
 void gold(Explorer_Position *ep, Explorer *explorer);
 void black_gold(Explorer_Position *ep, Explorer *explorer);
 void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon);
@@ -135,15 +149,18 @@ int main()
     Game game;
     Explorer_Position ep;
     Explorer explorer;
+    Food food;
     Weapon weapon;
     Spell spell;
     Rooms room1, room2, room3, room4, room5, room6;
 
     game.difficulty = 0;
     game.color = 0;
+    food.count = 0;
     weapon.count = 1;
     strcpy(weapon.weapons[0].weapon, "Mace");
     weapon.weapons[0].count = 1;
+    spell.count = 0;
     room_position(&room1, &room2, &room3, &room4, &room5, &room6);
     code = 1000;
     ancient_key_value = 0;
@@ -191,7 +208,7 @@ int main()
     {
         print_map(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
         trap(&ep, &explorer);
-        food(&ep, &explorer);
+        foods(&ep, &explorer, &food);
         gold(&ep, &explorer);
         black_gold(&ep, &explorer);
         weapons(&ep, &explorer, &weapon);
@@ -224,6 +241,19 @@ int main()
         else if (move == 'o')
         {
             spell_show(spell);
+            step_counter--;
+        }
+        else if (move == 'p')
+        {
+            if (food_show(&food))
+            {
+                clear();
+                print_map(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
+                mvprintw(0, 25, "Wow! You eat a food!");
+                if (explorer.health <= 90) explorer.health += 10;
+                else explorer.health = 100;
+                getch();
+            }
             step_counter--;
         }
         else if (move == 27)
@@ -1251,17 +1281,110 @@ int move_ivalue_help(Explorer_Position *ep)
     else return 0;
 }
 
-void food(Explorer_Position *ep, Explorer *explorer)
+void find_food(char name[], Food *food)
+{
+    int ivalue = 0;
+    for (int i = 0; i < food->count; i++)
+    {
+        if (strcmp(food->foods[i].food, name) == 0)
+        {
+            ivalue = 1;
+            food->foods[i].count++;
+        }
+    }
+    if (ivalue == 0)
+    {
+        strcpy(food->foods[food->count].food, name);
+        food->foods[food->count++].count = 1;
+    }
+}
+
+void foods(Explorer_Position *ep, Explorer *explorer, Food *food)
 {
     char temp = game_map[ep->y][ep->x];
 
     if (temp == 'F')
     {
-        mvprintw(0, 25, "Wow! You eat a food! Score increases!");
-        if (explorer->health <= 90) explorer->health += 10;
-        else explorer->health = 100;
-        explorer->score += 2;
+        mvprintw(0, 25, "Wow! You reach Food! Score increases!");
+        find_food("Food", food);
         game_map[ep->y][ep->x] = '.';
+        explorer->score += 1;
+    }
+}
+
+int food_show(Food *food)
+{
+    WINDOW *win;
+    win = newwin(12, 25, 10, 45); 
+
+    if (food->count > 0)
+    {   
+        int choice = 0;
+
+        while (1)
+        {
+            mvwprintw(win, 0, 0, "-------------------------");
+            mvwprintw(win, 11, 0, "-------------------------");
+            for (int i = 0; i < 12; i++)
+            {
+                mvwprintw(win, i, 0, "|");
+                mvwprintw(win, i, 24, "|");
+            }
+
+            for (int i = 0; i < food->count; i++)
+            {
+                mvwprintw(win, 1 + i, 5, "%s", food->foods[i].food);
+                mvwprintw(win, 1 + i, 20, "(%d)", food->foods[i].count);
+            }
+            mvwprintw(win, 1 + food->count, 5, "Back");
+            mvwprintw(win, 1 + choice, 2, "->");
+            wrefresh(win);
+            int c = getch();
+            if (c == KEY_UP)
+            {
+                if (choice != 0)
+                    choice--;
+                else
+                    choice = food->count;
+            }
+            else if (c == KEY_DOWN)
+            {
+                if (choice != food->count)
+                    choice++;
+                else
+                    choice = 0;
+            }
+            else if (c == 10)
+            {
+                break;
+            }
+            wclear(win);
+        }
+
+        if (choice == food->count)
+            return 0;
+        
+        food->foods[choice].count--;
+        if(food->foods[choice].count == 0)
+            food->count--;
+        wrefresh(win);
+        delwin(win);
+        return 1;
+    }
+    else
+    {
+        mvwprintw(win, 0, 0, "-------------------------");
+        mvwprintw(win, 11, 0, "-------------------------");
+        for (int i = 0; i < 12; i++)
+        {
+            mvwprintw(win, i, 0, "|");
+            mvwprintw(win, i, 24, "|");
+        }
+        mvwprintw(win, 5, 9, "NO FOOD!");
+        wrefresh(win);
+        getch();
+        delwin(win);
+        return 0;
     }
 }
 
