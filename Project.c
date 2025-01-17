@@ -186,6 +186,16 @@ int main()
         black_gold(&ep, &explorer);
         weapons(&ep, &explorer, &weapon);
         spells(&ep, &explorer, &spell);
+        
+        if (explorer.health <= 0)
+        {
+            clear();
+            mvprintw(15, 45, "Opps, You lose! Your health ended!");
+            mvprintw(16, 45, "I hope to see you again :)");
+            mvprintw(17, 45, "Press any key to exit...");
+            getch();
+            break;
+        }
 
         int move;
 
