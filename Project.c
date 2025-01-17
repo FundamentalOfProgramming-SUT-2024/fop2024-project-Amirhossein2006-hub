@@ -82,6 +82,7 @@ char game_map[30][120];
 clock_t start;
 clock_t start_code;
 int code, num_of_mistakes;
+int ancient_key_value;
 
 int menu();
 void sign_in(Player *player);
@@ -119,6 +120,7 @@ void room_them_x(int i, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Room
 void room_them_y(int i, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
 void password(Explorer_Position *ep, Explorer *explorer, int *code);
 int unlock_door();
+void ancient_key(Explorer_Position *ep, Explorer *explorer);
 
 int main()
 {
@@ -144,6 +146,7 @@ int main()
     weapon.weapons[0].count = 1;
     room_position(&room1, &room2, &room3, &room4, &room5, &room6);
     code = 1000;
+    ancient_key_value = 0;
 
     switch (menu())
     {
@@ -194,6 +197,7 @@ int main()
         weapons(&ep, &explorer, &weapon);
         spells(&ep, &explorer, &spell);
         password(&ep, &explorer, &code);
+        ancient_key(&ep, &explorer);
 
         if (time(NULL) - start_code < 30) mvprintw(0, 25, "Wow! Your code is %d", code);
         
@@ -913,6 +917,13 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
                 attroff(COLOR_PAIR(6));
             }
 
+            else if (game_map[i][j] == '*')
+            {
+                attron(COLOR_PAIR(1));
+                printw("*");
+                attroff(COLOR_PAIR(1));
+            }
+
             else printw("%c", game_map[i][j]);
         }
     }
@@ -950,7 +961,12 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
-                    mvprintw(0, 25, "Wow! Your opend the Door");
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door");
+                    else
+                    {
+                        ancient_key_value--;
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now!", ancient_key_value);
+                    }
                     start_code -= 30;
                 }
                 else
@@ -993,7 +1009,12 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
-                    mvprintw(0, 25, "Wow! Your opend the Door");
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door");
+                    else
+                    {
+                        ancient_key_value--;
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now!", ancient_key_value);
+                    }
                     start_code -= 30;
                 }
                 else
@@ -1036,7 +1057,12 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
-                    mvprintw(0, 25, "Wow! Your opend the Door");
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door");
+                    else
+                    {
+                        ancient_key_value--;
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now!", ancient_key_value);
+                    }
                     start_code -= 30;
                 }
                 else
@@ -1079,7 +1105,12 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
-                    mvprintw(0, 25, "Wow! Your opend the Door");
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door");
+                    else
+                    {
+                        ancient_key_value--;
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now!", ancient_key_value);
+                    }
                     start_code -= 30;
                 }
                 else
@@ -1671,29 +1702,46 @@ void password(Explorer_Position *ep, Explorer *explorer, int *code)
 
 int unlock_door()
 {
-    WINDOW *win;
-    win = newwin(12, 25, 10, 45);    
-
-    mvwprintw(win, 0, 0, "-------------------------");
-    mvwprintw(win, 11, 0, "-------------------------");
-    for (int i = 0; i < 12; i++)
+    if (ancient_key_value == 0)
     {
-        mvwprintw(win, i, 0, "|");
-        mvwprintw(win, i, 24, "|");
+        WINDOW *win;
+        win = newwin(12, 25, 10, 45);    
+
+        mvwprintw(win, 0, 0, "-------------------------");
+        mvwprintw(win, 11, 0, "-------------------------");
+        for (int i = 0; i < 12; i++)
+        {
+            mvwprintw(win, i, 0, "|");
+            mvwprintw(win, i, 24, "|");
+        }
+
+        mvwprintw(win, 4, 2, "Please enter the code");
+        wrefresh(win);
+
+        curs_set(TRUE);
+        echo();
+        int user_code;
+        mvwscanw(win, 6, 10, "%d", &user_code);
+        noecho();
+        curs_set(FALSE);
+        delwin(win);
+
+        if (user_code == code) return 1;
+        else return 0;
     }
 
-    mvwprintw(win, 4, 2, "Please enter the code");
-    wrefresh(win);
+    return 1;
+}
 
-    curs_set(TRUE);
-    echo();
-    int user_code;
-    mvwscanw(win, 6, 10, "%d", &user_code);
-    noecho();
-    curs_set(FALSE);
-    delwin(win);
+void ancient_key(Explorer_Position *ep, Explorer *explorer)
+{
+    char temp = game_map[ep->y][ep->x];
 
-    if (user_code == code) return 1;
-    else return 0;
+    if (temp == '*')
+    {
+        mvprintw(0, 25, "Wow! found an Ancient Key!");
+        game_map[ep->y][ep->x] = '.';
+        ancient_key_value++;
+    }
 }
 
