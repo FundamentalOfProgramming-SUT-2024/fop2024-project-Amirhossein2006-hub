@@ -80,6 +80,8 @@ typedef struct
 
 char game_map[30][120];
 clock_t start;
+clock_t start_code;
+int code;
 
 int menu();
 void sign_in(Player *player);
@@ -95,7 +97,7 @@ void profile(Player *player);
 int random_renge(int a, int b);
 void load_map(int i, Explorer_Position *ep);
 void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
-void move_ivalue(int move, Explorer_Position *ep);
+void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
 void new_game(Explorer_Position *ep, Explorer *explorer);
 void trap(Explorer_Position *ep, Explorer *explorer);
 void stair(Explorer *explorer, Explorer_Position *ep);
@@ -115,6 +117,8 @@ void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms
 int exit_menu();
 void room_them_x(int i, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
 void room_them_y(int i, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
+void password(Explorer_Position *ep, Explorer *explorer, int *code);
+int unlock_door();
 
 int main()
 {
@@ -139,6 +143,7 @@ int main()
     strcpy(weapon.weapons[0].weapon, "Mace");
     weapon.weapons[0].count = 1;
     room_position(&room1, &room2, &room3, &room4, &room5, &room6);
+    code = 1000;
 
     switch (menu())
     {
@@ -188,6 +193,9 @@ int main()
         black_gold(&ep, &explorer);
         weapons(&ep, &explorer, &weapon);
         spells(&ep, &explorer, &spell);
+        password(&ep, &explorer, &code);
+
+        if (time(NULL) - start_code < 30) mvprintw(0, 25, "Wow! Your code is %d", code);
         
         if (explorer.health <= 0)
         {
@@ -227,7 +235,7 @@ int main()
             }
             step_counter--;
         }
-        else move_ivalue(move, &ep);
+        else move_ivalue(move, &ep, &explorer, game, room1, room2, room3, room4, room5, room6);
         clear();
 
         explorer.experience = (time(NULL) - start) / 60;
@@ -840,6 +848,7 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
     init_pair(3, COLOR_GREEN, COLOR_BLACK);
     init_pair(4, COLOR_BLUE, COLOR_BLACK);
     init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(6, COLOR_CYAN, COLOR_BLACK);
 
     for (int i = 0; i < 30; i++)
     {
@@ -890,6 +899,20 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
 
             else if(game_map[i][j] == '|' || game_map[i][j] == '/') room_them_y(j, room1, room2, room3, room4, room5, room6);
 
+            else if (game_map[i][j] == '@')
+            {
+                attron(COLOR_PAIR(2));
+                printw("@");
+                attroff(COLOR_PAIR(2));
+            }
+
+            else if (game_map[i][j] == '&')
+            {
+                attron(COLOR_PAIR(6));
+                printw("&");
+                attroff(COLOR_PAIR(6));
+            }
+
             else printw("%c", game_map[i][j]);
         }
     }
@@ -904,7 +927,7 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
     mvprintw(29, 80, "Experience : %d", explorer->experience);
 }
 
-void move_ivalue(int move, Explorer_Position *ep)
+void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6)
 {
     if (move == 's')
     {
@@ -915,6 +938,25 @@ void move_ivalue(int move, Explorer_Position *ep)
             {
                 game_map[ep->y][ep->x] = '+';
                 mvprintw(0, 25, "Wow! You found a Hidden Door!");
+                getch();
+            }
+            else if (game_map[ep->y][ep->x] == '@') 
+            {
+                if (unlock_door())
+                {
+                    game_map[ep->y][ep->x] = '+';
+                    move(0, 0);
+                    print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    mvprintw(0, 25, "Wow! Your opend the Door");
+                    start_code -= 30;
+                }
+                else
+                {
+                    ep->y--;
+                    move(0, 0);
+                    print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    mvprintw(0, 25, "Opps! The code is false!");
+                }
                 getch();
             }
         }
@@ -933,6 +975,25 @@ void move_ivalue(int move, Explorer_Position *ep)
                 mvprintw(0, 25, "Wow! You found a Hidden Door!");
                 getch();
             }
+            else if (game_map[ep->y][ep->x] == '@') 
+            {
+                if (unlock_door())
+                {
+                    game_map[ep->y][ep->x] = '+';
+                    move(0, 0);
+                    print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    mvprintw(0, 25, "Wow! Your opend the Door");
+                    start_code -= 30;
+                }
+                else
+                {
+                    ep->y++;
+                    move(0, 0);
+                    print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    mvprintw(0, 25, "Opps! The code is false!");
+                }
+                getch();
+            }
         }
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '.')) ep->y--;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '+')) ep->y--;
@@ -949,6 +1010,25 @@ void move_ivalue(int move, Explorer_Position *ep)
                 mvprintw(0, 25, "Wow! You found a Hidden Door!");
                 getch();
             }
+            else if (game_map[ep->y][ep->x] == '@') 
+            {
+                if (unlock_door())
+                {
+                    game_map[ep->y][ep->x] = '+';
+                    move(0, 0);
+                    print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    mvprintw(0, 25, "Wow! Your opend the Door");
+                    start_code -= 30;
+                }
+                else
+                {
+                    ep->x--;
+                    move(0, 0);
+                    print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    mvprintw(0, 25, "Opps! The code is false!");
+                }
+                getch();
+            }
         }
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] == '.')) ep->x++;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] == '+')) ep->x++;
@@ -963,6 +1043,25 @@ void move_ivalue(int move, Explorer_Position *ep)
             {
                 game_map[ep->y][ep->x] = '+';
                 mvprintw(0, 25, "Wow! You found a Hidden Door!");
+                getch();
+            }
+            else if (game_map[ep->y][ep->x] == '@') 
+            {
+                if (unlock_door())
+                {
+                    game_map[ep->y][ep->x] = '+';
+                    move(0, 0);
+                    print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    mvprintw(0, 25, "Wow! Your opend the Door");
+                    start_code -= 30;
+                }
+                else
+                {
+                    ep->x++;
+                    move(0, 0);
+                    print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    mvprintw(0, 25, "Opps! The code is false!");
+                }
                 getch();
             }
         }
@@ -1079,7 +1178,8 @@ int move_ivalue_help(Explorer_Position *ep)
     if (game_map[ep->y][ep->x] == '.' || 
         game_map[ep->y][ep->x] == '^' ||
         game_map[ep->y][ep->x] == '>' || 
-        game_map[ep->y][ep->x] == '<')
+        game_map[ep->y][ep->x] == '<' ||
+        game_map[ep->y][ep->x] == '&')
         return 1;
 
     else return 0;
@@ -1521,5 +1621,44 @@ void room_them_y(int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Room
         attroff(COLOR_PAIR(room6.type));
     }
     else printw("|");
+}
+
+void password(Explorer_Position *ep, Explorer *explorer, int *code)
+{
+    char temp = game_map[ep->y][ep->x];
+
+    if (temp == '&')
+    {
+        *code = random_renge(1000, 9999);
+        start_code = time(NULL);
+    }
+}
+
+int unlock_door()
+{
+    WINDOW *win;
+    win = newwin(12, 25, 10, 45);    
+
+    mvwprintw(win, 0, 0, "-------------------------");
+    mvwprintw(win, 11, 0, "-------------------------");
+    for (int i = 0; i < 12; i++)
+    {
+        mvwprintw(win, i, 0, "|");
+        mvwprintw(win, i, 24, "|");
+    }
+
+    mvwprintw(win, 4, 2, "Please enter the code");
+    wrefresh(win);
+
+    curs_set(TRUE);
+    echo();
+    int user_code;
+    mvwscanw(win, 6, 10, "%d", &user_code);
+    noecho();
+    curs_set(FALSE);
+    delwin(win);
+
+    if (user_code == code) return 1;
+    else return 0;
 }
 
