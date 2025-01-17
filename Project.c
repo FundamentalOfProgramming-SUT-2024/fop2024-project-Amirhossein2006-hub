@@ -175,7 +175,7 @@ int main()
         if (choice < 1) break;
     }
 
-    int step_counter = 1;
+    int step_counter = 0;
 
     while (1)
     {
@@ -192,8 +192,16 @@ int main()
         if (game_map[ep.y][ep.x] == '>') move = stair_check(&explorer, &ep);
         else move = tolower(getch());
 
-        if (move == 'i') weapon_show(weapon);
-        else if (move == 'o') spell_show(spell);
+        if (move == 'i')
+        { 
+            weapon_show(weapon);
+            step_counter--;
+        }
+        else if (move == 'o')
+        {
+            spell_show(spell);
+            step_counter--;
+        }
         else if (move == 27)
         {
             if (exit_menu() == 1)
@@ -205,6 +213,7 @@ int main()
                 getch();
                 break;
             }
+            step_counter--;
         }
         else move_ivalue(move, &ep);
         clear();
