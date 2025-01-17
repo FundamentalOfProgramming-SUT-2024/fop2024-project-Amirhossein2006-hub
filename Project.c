@@ -194,7 +194,7 @@ int main()
 
         if (move == 'i') weapon_show(weapon);
         else if (move == 'o') spell_show(spell);
-        else if (move == 't')
+        else if (move == 27)
         {
             if (exit_menu() == 1)
             {
