@@ -113,6 +113,8 @@ void spell_show(Spell spell);
 int end_game(Explorer_Position *ep, Explorer *explorer, Player *player);
 void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 int exit_menu();
+void room_them_x(int i, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
+void room_them_y(int i, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
 
 int main()
 {
@@ -884,90 +886,9 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
                 attroff(COLOR_PAIR(3));
             }
 
-            else if (game_map[i][j] == '_') printw("=");
-            else if (game_map[i][j] == '/') printw("|");
+            else if(game_map[i][j] == '=' || game_map[i][j] == '_') room_them_x(i, room1, room2, room3, room4, room5, room6);
 
-            else if(game_map[i][j] == '=')
-            {
-                if ((i == room1.s_y || i == room1.e_y) && room1.type != 2)
-                {
-                    attron(COLOR_PAIR(room1.type));
-                    printw("=");
-                    attroff(COLOR_PAIR(room1.type));
-                }
-                else if ((i == room2.s_y || i == room2.e_y) && room2.type != 2)
-                {
-                    attron(COLOR_PAIR(room2.type));
-                    printw("=");
-                    attroff(COLOR_PAIR(room2.type));
-                }
-                else if ((i == room3.s_y || i == room3.e_y) && room3.type != 2)
-                {
-                    attron(COLOR_PAIR(room3.type));
-                    printw("=");
-                    attroff(COLOR_PAIR(room3.type));
-                }
-                else if ((i == room4.s_y || i == room4.e_y) && room4.type != 2)
-                {
-                    attron(COLOR_PAIR(room4.type));
-                    printw("=");
-                    attroff(COLOR_PAIR(room4.type));
-                }
-                else if ((i == room5.s_y || i == room5.e_y) && room5.type != 2)
-                {
-                    attron(COLOR_PAIR(room5.type));
-                    printw("=");
-                    attroff(COLOR_PAIR(room5.type));
-                }
-                else if ((i == room6.s_y || i == room6.e_y) && room6.type != 2)
-                {
-                    attron(COLOR_PAIR(room6.type));
-                    printw("=");
-                    attroff(COLOR_PAIR(room6.type));
-                }
-                else printw("=");
-            }
-
-            else if(game_map[i][j] == '|')
-            {
-                if ((j == room1.s_x || j == room1.e_x) && room1.type != 2)
-                {
-                    attron(COLOR_PAIR(room1.type));
-                    printw("|");
-                    attroff(COLOR_PAIR(room1.type));
-                }
-                else if ((j == room2.s_x || j == room2.e_x) && room2.type != 2)
-                {
-                    attron(COLOR_PAIR(room2.type));
-                    printw("|");
-                    attroff(COLOR_PAIR(room2.type));
-                }
-                else if ((j == room3.s_x || j == room3.e_x) && room3.type != 2)
-                {
-                    attron(COLOR_PAIR(room3.type));
-                    printw("|");
-                    attroff(COLOR_PAIR(room3.type));
-                }
-                else if ((j == room4.s_x || j == room4.e_x) && room4.type != 2)
-                {
-                    attron(COLOR_PAIR(room4.type));
-                    printw("|");
-                    attroff(COLOR_PAIR(room4.type));
-                }
-                else if ((j == room5.s_x || j == room5.e_x) && room5.type != 2)
-                {
-                    attron(COLOR_PAIR(room5.type));
-                    printw("|");
-                    attroff(COLOR_PAIR(room5.type));
-                }
-                else if ((j == room6.s_x || j == room6.e_x) && room6.type != 2)
-                {
-                    attron(COLOR_PAIR(room6.type));
-                    printw("|");
-                    attroff(COLOR_PAIR(room6.type));
-                }
-                else printw("|");
-            }
+            else if(game_map[i][j] == '|' || game_map[i][j] == '/') room_them_y(j, room1, room2, room3, room4, room5, room6);
 
             else printw("%c", game_map[i][j]);
         }
@@ -990,7 +911,12 @@ void move_ivalue(int move, Explorer_Position *ep)
         if (move_ivalue_help(ep) && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x] != 'O') 
         {
             ep->y++;
-            if (game_map[ep->y][ep->x] == '_') game_map[ep->y][ep->x] = '+';
+            if (game_map[ep->y][ep->x] == '_') 
+            {
+                game_map[ep->y][ep->x] = '+';
+                mvprintw(0, 25, "Wow! You found a Hidden Door!");
+                getch();
+            }
         }
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] == '.')) ep->y++;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] == '+')) ep->y++;
@@ -1001,7 +927,12 @@ void move_ivalue(int move, Explorer_Position *ep)
         if (move_ivalue_help(ep) && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x] != 'O')
         {
             ep->y--;
-            if (game_map[ep->y][ep->x] == '_') game_map[ep->y][ep->x] = '+';
+            if (game_map[ep->y][ep->x] == '_')
+            {
+                game_map[ep->y][ep->x] = '+';
+                mvprintw(0, 25, "Wow! You found a Hidden Door!");
+                getch();
+            }
         }
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '.')) ep->y--;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '+')) ep->y--;
@@ -1012,7 +943,12 @@ void move_ivalue(int move, Explorer_Position *ep)
         if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y][ep->x + 1] != 'O')
         {
             ep->x++;
-            if (game_map[ep->y][ep->x] == '/') game_map[ep->y][ep->x] = '+';
+            if (game_map[ep->y][ep->x] == '/')
+            {
+                game_map[ep->y][ep->x] = '+';
+                mvprintw(0, 25, "Wow! You found a Hidden Door!");
+                getch();
+            }
         }
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] == '.')) ep->x++;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] == '+')) ep->x++;
@@ -1023,7 +959,12 @@ void move_ivalue(int move, Explorer_Position *ep)
         if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y][ep->x - 1] != 'O')
         {
             ep->x--;
-            if (game_map[ep->y][ep->x] == '/') game_map[ep->y][ep->x] = '+';
+            if (game_map[ep->y][ep->x] == '/')
+            {
+                game_map[ep->y][ep->x] = '+';
+                mvprintw(0, 25, "Wow! You found a Hidden Door!");
+                getch();
+            }
         }
         else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x - 1] == '#' || game_map[ep->y][ep->x - 1] == '.')) ep->x--;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y][ep->x - 1] == '#' || game_map[ep->y][ep->x - 1] == '+')) ep->x--;
@@ -1498,5 +1439,87 @@ int exit_menu()
     wrefresh(win);
     delwin(win);
     return choice2;
+}
+
+void room_them_x(int i, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6)
+{
+    if ((i == room1.s_y || i == room1.e_y) && room1.type != 2)
+    {
+        attron(COLOR_PAIR(room1.type));
+        printw("=");
+        attroff(COLOR_PAIR(room1.type));
+    }
+    else if ((i == room2.s_y || i == room2.e_y) && room2.type != 2)
+    {
+        attron(COLOR_PAIR(room2.type));
+        printw("=");
+        attroff(COLOR_PAIR(room2.type));
+    }
+    else if ((i == room3.s_y || i == room3.e_y) && room3.type != 2)
+    {
+        attron(COLOR_PAIR(room3.type));
+        printw("=");
+        attroff(COLOR_PAIR(room3.type));
+    }
+    else if ((i == room4.s_y || i == room4.e_y) && room4.type != 2)
+    {
+        attron(COLOR_PAIR(room4.type));
+        printw("=");
+        attroff(COLOR_PAIR(room4.type));
+    }
+    else if ((i == room5.s_y || i == room5.e_y) && room5.type != 2)
+    {
+        attron(COLOR_PAIR(room5.type));
+        printw("=");
+        attroff(COLOR_PAIR(room5.type));
+    }
+    else if ((i == room6.s_y || i == room6.e_y) && room6.type != 2)
+    {
+        attron(COLOR_PAIR(room6.type));
+        printw("=");
+        attroff(COLOR_PAIR(room6.type));
+    }
+    else printw("=");
+}
+
+void room_them_y(int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6)
+{
+    if ((j == room1.s_x || j == room1.e_x) && room1.type != 2)
+    {
+        attron(COLOR_PAIR(room1.type));
+        printw("|");
+        attroff(COLOR_PAIR(room1.type));
+    }
+    else if ((j == room2.s_x || j == room2.e_x) && room2.type != 2)
+    {
+        attron(COLOR_PAIR(room2.type));
+        printw("|");
+        attroff(COLOR_PAIR(room2.type));
+    }
+    else if ((j == room3.s_x || j == room3.e_x) && room3.type != 2)
+    {
+        attron(COLOR_PAIR(room3.type));
+        printw("|");
+        attroff(COLOR_PAIR(room3.type));
+    }
+    else if ((j == room4.s_x || j == room4.e_x) && room4.type != 2)
+    {
+        attron(COLOR_PAIR(room4.type));
+        printw("|");
+        attroff(COLOR_PAIR(room4.type));
+    }
+    else if ((j == room5.s_x || j == room5.e_x) && room5.type != 2)
+    {
+        attron(COLOR_PAIR(room5.type));
+        printw("|");
+        attroff(COLOR_PAIR(room5.type));
+    }
+    else if ((j == room6.s_x || j == room6.e_x) && room6.type != 2)
+    {
+        attron(COLOR_PAIR(room6.type));
+        printw("|");
+        attroff(COLOR_PAIR(room6.type));
+    }
+    else printw("|");
 }
 
