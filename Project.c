@@ -81,7 +81,7 @@ typedef struct
 char game_map[30][120];
 clock_t start;
 clock_t start_code;
-int code;
+int code, num_of_mistakes;
 
 int menu();
 void sign_in(Player *player);
@@ -929,6 +929,9 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
 
 void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6)
 {
+    init_pair(11, COLOR_WHITE, COLOR_BLACK);
+    init_pair(12, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(13, COLOR_RED, COLOR_BLACK);
     if (move == 's')
     {
         if (move_ivalue_help(ep) && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x] != 'O') 
@@ -953,9 +956,17 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 else
                 {
                     ep->y--;
+                    num_of_mistakes++;
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    attron(COLOR_PAIR(num_of_mistakes + 10));
                     mvprintw(0, 25, "Opps! The code is false!");
+                    if (num_of_mistakes == 3)
+                    {
+                        mvprintw(0, 25, "Opps! The code is false! The door locks forever!!!");
+                        game_map[ep->y + 1][ep->x] = '=';
+                    }
+                    attroff(COLOR_PAIR(num_of_mistakes + 10));
                 }
                 getch();
             }
@@ -988,9 +999,17 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 else
                 {
                     ep->y++;
+                    num_of_mistakes++;
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    attron(COLOR_PAIR(num_of_mistakes + 10));
                     mvprintw(0, 25, "Opps! The code is false!");
+                    if (num_of_mistakes == 3)
+                    {
+                        mvprintw(0, 25, "Opps! The code is false! The door locks forever!!!");
+                        game_map[ep->y - 1][ep->x] = '=';
+                    }
+                    attroff(COLOR_PAIR(num_of_mistakes + 10));
                 }
                 getch();
             }
@@ -1023,9 +1042,17 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 else
                 {
                     ep->x--;
+                    num_of_mistakes++;
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    attron(COLOR_PAIR(num_of_mistakes + 10));
                     mvprintw(0, 25, "Opps! The code is false!");
+                    if (num_of_mistakes == 3)
+                    {
+                        mvprintw(0, 25, "Opps! The code is false! The door locks forever!!!");
+                        game_map[ep->y][ep->x + 1] = '=';
+                    }
+                    attroff(COLOR_PAIR(num_of_mistakes + 10));
                 }
                 getch();
             }
@@ -1058,9 +1085,17 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 else
                 {
                     ep->x++;
+                    num_of_mistakes++;
                     move(0, 0);
                     print_map(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    attron(COLOR_PAIR(num_of_mistakes + 10));
                     mvprintw(0, 25, "Opps! The code is false!");
+                    if (num_of_mistakes == 3)
+                    {
+                        mvprintw(0, 25, "Opps! The code is false! The door locks forever!!!");
+                        game_map[ep->y][ep->x - 1] = '=';
+                    }
+                    attroff(COLOR_PAIR(num_of_mistakes + 10));
                 }
                 getch();
             }
