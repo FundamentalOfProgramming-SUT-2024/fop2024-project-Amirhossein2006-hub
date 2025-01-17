@@ -68,6 +68,16 @@ typedef struct
     int count;
 } Spell;
 
+typedef struct
+{
+    // 1 -> Treasure Room, 2 -> Enchant Room, 3 -> Regular Room
+    int type;
+    int s_x;
+    int s_y;
+    int e_x;
+    int e_y;
+} Rooms;
+
 char game_map[30][120];
 clock_t start;
 
@@ -101,6 +111,7 @@ void spells(Explorer_Position *ep, Explorer *explorer, Spell *spell);
 void find_spell(char name[], Spell *spell);
 void spell_show(Spell spell);
 int end_game(Explorer_Position *ep, Explorer *explorer, Player *player);
+void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 
 
 int main()
@@ -118,12 +129,14 @@ int main()
     Explorer explorer;
     Weapon weapon;
     Spell spell;
+    Rooms room1, room2, room3, room4, room5, room6;
 
     game.difficulty = 0;
     game.color = 0;
     weapon.count = 1;
     strcpy(weapon.weapons[0].weapon, "Mace");
     weapon.weapons[0].count = 1;
+    room_position(&room1, &room2, &room3, &room4, &room5, &room6);
 
     switch (menu())
     {
@@ -1200,5 +1213,44 @@ int end_game(Explorer_Position *ep, Explorer *explorer, Player *player)
     }
 
     return 0;
+}
+
+void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6)
+{
+    room1->type = 3;
+    room1->s_x = 11;
+    room1->s_y = 1;
+    room1->e_x = 20;
+    room1->e_y = 6;
+
+    room2->type = 2;
+    room2->s_x = 17;
+    room2->s_y = 13;
+    room2->e_x = 27;
+    room2->e_y = 18;
+
+    room3->type = 3;
+    room3->s_x = 35;
+    room3->s_y = 23;
+    room3->e_x = 44;
+    room3->e_y = 28;
+
+    room4->type = 2;
+    room4->s_x = 67;
+    room4->s_y = 19;
+    room4->e_x = 76;
+    room4->e_y = 24;
+
+    room5->type = 3;
+    room5->s_x = 57;
+    room5->s_y = 7;
+    room5->e_x = 66;
+    room5->e_y = 12;
+
+    room6->type = 1;
+    room6->s_x = 94;
+    room6->s_y = 9;
+    room6->e_x = 103;
+    room6->e_y = 17;
 }
 
