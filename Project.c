@@ -175,7 +175,7 @@ int main()
         if (choice < 1) break;
     }
 
-    int step_counter = 0;
+    int step_counter = 1;
 
     while (1)
     {
@@ -186,6 +186,11 @@ int main()
         black_gold(&ep, &explorer);
         weapons(&ep, &explorer, &weapon);
         spells(&ep, &explorer, &spell);
+        if (step_counter % 10 == 0)
+        {
+            explorer.health -= 2;
+            mvprintw(0, 25, "Opps! You are tired! Your health reduced!");
+        }
 
         int move;
 
@@ -199,7 +204,6 @@ int main()
 
         explorer.experience = (time(NULL) - start) / 60;
         step_counter++;
-        if (step_counter % 10 == 0) explorer.health -= 2;
 
         if (end_game(&ep, &explorer, &player)) break;
     }
