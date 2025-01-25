@@ -91,6 +91,15 @@ typedef struct
     int is_in;
 } Rooms;
 
+typedef struct
+{
+    int s_x;
+    int s_y;
+    int e_x;
+    int e_y;
+    int is_in;
+} Corridors;
+
 char game_map[30][120];
 clock_t start;
 clock_t start_code;
@@ -110,10 +119,12 @@ void score_table(Player *player);
 void profile(Player *player);
 int random_renge(int a, int b);
 void load_map(int i, Explorer_Position *ep);
-int whitch_room(Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
+void whitch_room(Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
 void print_room(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
+void print_corridor(Explorer_Position *ep, Explorer *explorer, Game game, Corridors corridor1, Corridors corridor2, Corridors corridor3, Corridors corridor4, Corridors corridor5);
 void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6, Rooms room);
-void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
+void print_map2(Explorer_Position *ep, Explorer *explorer, Game game, Corridors corridor);
+void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6, Corridors corridor1, Corridors corridor2, Corridors corridor3, Corridors corridor4, Corridors corridor5);
 void new_game(Explorer_Position *ep, Explorer *explorer);
 void trap(Explorer_Position *ep, Explorer *explorer);
 void stair(Explorer *explorer, Explorer_Position *ep);
@@ -132,6 +143,7 @@ void find_spell(char name[], Spell *spell);
 void spell_show(Spell spell);
 int end_game(Explorer_Position *ep, Explorer *explorer, Player *player);
 void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
+void corridor_position(Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
 int exit_menu();
 void room_them_x(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
 void room_them_y(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
@@ -156,6 +168,7 @@ int main()
     Weapon weapon;
     Spell spell;
     Rooms room1, room2, room3, room4, room5, room6;
+    Corridors corridor1, corridor2, corridor3, corridor4, corridor5;
 
     game.difficulty = 0;
     game.color = 0;
@@ -165,6 +178,7 @@ int main()
     weapon.weapons[0].count = 1;
     spell.count = 0;
     room_position(&room1, &room2, &room3, &room4, &room5, &room6);
+    corridor_position(&corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
     code = 1000;
     ancient_key_value = 0;
     room1.is_in = 0;
@@ -173,6 +187,11 @@ int main()
     room4.is_in = 0;
     room5.is_in = 0;
     room6.is_in = 0;
+    corridor1.is_in = 0;
+    corridor2.is_in = 0;
+    corridor3.is_in = 0;
+    corridor4.is_in = 0;
+    corridor5.is_in = 0;
 
     switch (menu())
     {
@@ -215,8 +234,9 @@ int main()
 
     while (1)
     {
-        whitch_room(&ep, &room1, &room2, &room3, &room4, &room5, &room6);
+        whitch_room(&ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
         print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
+        print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
         trap(&ep, &explorer);
         foods(&ep, &explorer, &food);
         gold(&ep, &explorer);
@@ -259,6 +279,7 @@ int main()
             {
                 clear();
                 print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
+                print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                 mvprintw(0, 25, "Wow! You eat a food!");
                 if (explorer.health <= 90) explorer.health += 10;
                 else explorer.health = 100;
@@ -279,7 +300,7 @@ int main()
             }
             step_counter--;
         }
-        else move_ivalue(move, &ep, &explorer, game, room1, room2, room3, room4, room5, room6);
+        else move_ivalue(move, &ep, &explorer, game, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
         clear();
 
         explorer.experience = (time(NULL) - start) / 60;
@@ -287,10 +308,6 @@ int main()
         if (step_counter % 10 == 0)
         {
             explorer.health -= 2;
-            print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
-            mvprintw(0, 25, "Opps! You are tired! Your health reduced!");
-            move(0, 0);
-            getch();
         }
 
         if (end_game(&ep, &explorer, &player)) break;
@@ -885,49 +902,63 @@ void load_map(int k, Explorer_Position *ep)
     fclose(map);
 }
 
-int whitch_room(Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6)
+void whitch_room(Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
 {
     int x = ep->x, y = ep->y;
 
-    if (room1->s_x < x && x < room1->e_x && room1->s_y < y && y < room1->e_y)
+    if (room1->s_x <= x && x <= room1->e_x && room1->s_y <= y && y <= room1->e_y)
     {
         room1->is_in = 1;
-        return 1;
     }
     
-    else if (room2->s_x < x && x < room2->e_x && room2->s_y < y && y < room2->e_y)
+    else if (room2->s_x <= x && x <= room2->e_x && room2->s_y <= y && y <= room2->e_y)
     {
         room2->is_in = 1;
-        return 1;
     }
 
-    else if (room3->s_x < x && x < room3->e_x && room3->s_y < y && y < room3->e_y)
+    else if (room3->s_x <= x && x <= room3->e_x && room3->s_y <= y && y <= room3->e_y)
     {
         room3->is_in = 1;
-        return 1;
     }
 
-    else if (room4->s_x < x && x < room4->e_x && room4->s_y < y && y < room4->e_y)
+    else if (room4->s_x <= x && x <= room4->e_x && room4->s_y <= y && y <= room4->e_y)
     {
         room4->is_in = 1;
-        return 1;
     }
 
-    else if (room5->s_x < x && x < room5->e_x && room5->s_y < y && y < room5->e_y)
+    else if (room5->s_x <= x && x <= room5->e_x && room5->s_y <= y && y <= room5->e_y)
     {
         room5->is_in = 1;
-        return 1;
     }
 
-    else if (room6->s_x < x && x < room6->e_x && room6->s_y < y && y < room6->e_y)
+    else if (room6->s_x <= x && x <= room6->e_x && room6->s_y <= y && y <= room6->e_y)
     {
         room6->is_in = 1;
-        return 1;
     }
 
-    else 
+    else if (corridor1->s_x <= x && x <= corridor1->e_x && corridor1->s_y <= y && y <= corridor1->e_y)
     {
-        return 0;
+        corridor1->is_in = 1;
+    }
+
+    else if (corridor2->s_x <= x && x <= corridor2->e_x && corridor2->s_y <= y && y <= corridor2->e_y)
+    {
+        corridor2->is_in = 1;
+    }
+
+    else if (corridor3->s_x <= x && x <= corridor3->e_x && corridor3->s_y <= y && y <= corridor3->e_y)
+    {
+        corridor3->is_in = 1;
+    }
+
+    else if (corridor4->s_x <= x && x <= corridor4->e_x && corridor4->s_y <= y && y <= corridor4->e_y)
+    {
+        corridor4->is_in = 1;
+    }
+
+    else if (corridor5->s_x <= x && x <= corridor5->e_x && corridor5->s_y <= y && y <= corridor5->e_y)
+    {
+        corridor5->is_in = 1;
     }
 }
 
@@ -965,6 +996,34 @@ void print_room(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room
     
 }
 
+void print_corridor(Explorer_Position *ep, Explorer *explorer, Game game, Corridors corridor1, Corridors corridor2, Corridors corridor3, Corridors corridor4, Corridors corridor5)
+{
+    if (corridor1.is_in)
+    {
+       print_map2(ep, explorer, game, corridor1);
+    }
+
+    if (corridor2.is_in)
+    {
+       print_map2(ep, explorer, game, corridor2);
+    }
+
+    if (corridor3.is_in)
+    {
+       print_map2(ep, explorer, game, corridor3);
+    }
+
+    if (corridor4.is_in)
+    {
+       print_map2(ep, explorer, game, corridor4);
+    }
+
+    if (corridor5.is_in)
+    {
+       print_map2(ep, explorer, game, corridor5);
+    }
+}
+
 void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6, Rooms room)
 {
     init_pair(1, COLOR_YELLOW, COLOR_BLACK);
@@ -978,7 +1037,6 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
     {
         for (int j = room.s_x; j <= room.e_x; j++)
         {
-            //if (game_map[i][j] == '-') mvprintw(i, j, " ");
             if (game_map[i][j] == 'T') mvprintw(i, j, ".");
             else if (game_map[i][j] == 'F')
             {
@@ -1058,7 +1116,29 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
     mvprintw(29, 80, "Experience : %d", explorer->experience);
 }
 
-void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6)
+void print_map2(Explorer_Position *ep, Explorer *explorer, Game game, Corridors corridor)
+{
+    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(2, COLOR_RED, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+    init_pair(4, COLOR_BLUE, COLOR_BLACK);
+    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(6, COLOR_CYAN, COLOR_BLACK);
+
+    for (int i = corridor.s_y; i <= corridor.e_y; i++)
+    {
+        for (int j = corridor.s_x; j <= corridor.e_x; j++)
+        {
+            if (game_map[i][j] == '-') mvprintw(i, j, " ");
+            else mvprintw(i, j, "#");
+        }
+    }
+    attron(COLOR_PAIR(game.color + 1));
+    mvprintw(ep->y, ep->x, "X");
+    attroff(COLOR_PAIR(game.color + 1));
+}
+
+void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6, Corridors corridor1, Corridors corridor2, Corridors corridor3, Corridors corridor4, Corridors corridor5)
 {
     init_pair(11, COLOR_WHITE, COLOR_BLACK);
     init_pair(12, COLOR_YELLOW, COLOR_BLACK);
@@ -1082,6 +1162,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                     if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
                     else
                     {
@@ -1097,6 +1178,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     num_of_mistakes++;
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                     attron(COLOR_PAIR(num_of_mistakes + 10));
                     mvprintw(0, 25, "Opps! The code is false!");
                     if (num_of_mistakes == 3)
@@ -1132,6 +1214,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                     if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
                     else
                     {
@@ -1147,6 +1230,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     num_of_mistakes++;
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                     attron(COLOR_PAIR(num_of_mistakes + 10));
                     mvprintw(0, 25, "Opps! The code is false!");
                     if (num_of_mistakes == 3)
@@ -1182,6 +1266,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                     if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
                     else
                     {
@@ -1197,6 +1282,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     num_of_mistakes++;
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                     attron(COLOR_PAIR(num_of_mistakes + 10));
                     mvprintw(0, 25, "Opps! The code is false!");
                     if (num_of_mistakes == 3)
@@ -1232,6 +1318,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                     if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
                     else
                     {
@@ -1247,6 +1334,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                     num_of_mistakes++;
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                     attron(COLOR_PAIR(num_of_mistakes + 10));
                     mvprintw(0, 25, "Opps! The code is false!");
                     if (num_of_mistakes == 3)
@@ -1728,6 +1816,34 @@ void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms
     room6->s_y = 9;
     room6->e_x = 103;
     room6->e_y = 17;
+}
+
+void corridor_position(Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
+{
+    corridor1->s_x = 21;
+    corridor1->s_y = 3;
+    corridor1->e_x = 61;
+    corridor1->e_y = 6;
+
+    corridor2->s_x = 16;
+    corridor2->s_y = 7;
+    corridor2->e_x = 21;
+    corridor2->e_y = 12;
+
+    corridor3->s_x = 24;
+    corridor3->s_y = 19;
+    corridor3->e_x = 39;
+    corridor3->e_y = 22;
+
+    corridor4->s_x = 63;
+    corridor4->s_y = 13;
+    corridor4->e_x = 70;
+    corridor4->e_y = 18;
+
+    corridor5->s_x = 67;
+    corridor5->s_y = 10;
+    corridor5->e_x = 93;
+    corridor5->e_y = 11;
 }
 
 int exit_menu()
