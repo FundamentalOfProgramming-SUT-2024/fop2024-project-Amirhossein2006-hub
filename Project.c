@@ -25,12 +25,6 @@ typedef struct
 
 typedef struct
 {
-    char temp[1000];
-    int score;
-} Score;
-
-typedef struct
-{
     int x;
     int y;
 } Explorer_Position;
@@ -382,13 +376,7 @@ void sign_in(Player *player)
     if (ivalue(username, password, email) == 0) sign_in(player);
     else
     {
-        FILE *players_info = fopen("Players_Info.txt", "a");
-        fprintf(players_info, "username: (%s), password: (%s), email: (%s)\n", username, password, email);
-        fclose(players_info);
-
-        FILE *players_score = fopen("Players_Score.txt", "a");
-        fprintf(players_score, "Username: (%s), Score: (0), Gold Aquared: (0), Finished Games: (0), Time Played: (0)\n", username);
-        fclose(players_score);
+        FILE *players_info = fopen("Players_Info.dat", "ab");
 
         strcpy(player->username, username);
         strcpy(player->password, password);
@@ -397,6 +385,9 @@ void sign_in(Player *player)
         player->gold = 0;
         player->experience = 0;
         player->finished_games = 0;
+
+        fwrite(player, sizeof(Player), 1, players_info);
+        fclose(players_info);
     }
     clear();
 }
@@ -411,18 +402,13 @@ int ivalue(char username[], char password[], char email[])
 int username_check(char username[])
 {
     init_pair(1, COLOR_RED, COLOR_BLACK);
-    FILE *players_info = fopen("Players_Info.txt", "r");
+    FILE *players_info = fopen("Players_Info.dat", "rb");
 
-    char temp[1000];
-    while (fgets(temp, sizeof(temp), players_info))
+    while (!feof(players_info))
     {
-        char user[100];
-        int j = 0;
-        for (int i = 11; temp[i] != ')'; i++)
-            user[j++] = temp[i];
-        
-        user[j] = '\0';
-        if (strcmp(user, username) == 0)
+        Player player;
+        fread(&player, sizeof(Player), 1, players_info);
+        if (strcmp(player.username, username) == 0)
         {
             clear();
             attron(COLOR_PAIR(1));
@@ -553,45 +539,19 @@ void login(Player *player)
         mvgetstr(12, 60, password);
         noecho();
         curs_set(FALSE);
-        FILE *players_info = fopen("Players_Info.txt", "r");
+        FILE *players_info = fopen("Players_Info.dat", "rb");
 
-        char temp[1000];
-        while (fgets(temp, sizeof(temp), players_info))
+        while (!feof(players_info))
         {
-            char user[100], pass[100];
-            int j = 0, k = 0;
-            for (int i = 11; temp[i] != ')'; i++)
-                user[j++] = temp[i];
-            user[j] = '\0';
+            Player p;
+            fread(&p, sizeof(Player), 1, players_info);
 
-            if (strcmp(user, username) == 0)
+            if (strcmp(p.username, username) == 0)
             {
-                for (int i = 25 + j; temp[i] != ')'; i++)
-                    pass[k++] = temp[i];
-                pass[k] = '\0';
-
-                if (strcmp(pass, password) == 0)
+                if (strcmp(p.password, password) == 0)
                 {
-                    strcpy(player->username, user); 
-                    strcpy(player->password, pass); 
-                    strcpy(player->email, "NULL");
                     fclose(players_info);
-
-                    FILE *players_score = fopen("Players_Score.txt", "r");
-                    char a[100];
-                    int b, c, d, e;
-                    while (fscanf(players_score, "Username: (%99[^)]), Score: (%d), Gold Aquared: (%d), Finished Games: (%d), Time Played: (%d)", a, &b, &c, &d, &e))
-                    {
-                        if (strcmp(user, a) == 0)
-                        {
-                            player->score = b;
-                            player->gold = c;
-                            player->finished_games = d;
-                            player->experience = e;
-                        }
-                    }
-                    
-                    fclose(players_score);
+                    *player = p;
                     clear();
                     return;
                 }
@@ -628,14 +588,6 @@ void login(Player *player)
         player->gold = 0;
         player->finished_games = 0;
         player->experience = 0;
-
-        // FILE *players_info = fopen("Players_Info.txt", "a");
-        // fprintf(players_info, "username: (%s), password: (%s), email: (%s)\n", player->username, player->password, player->email);
-        // fclose(players_info);
-
-        // FILE *players_score = fopen("Players_Score.txt", "a");
-        // fprintf(players_score, "Username: (%s), Score: (0), Gold Aquared: (0), Finished Games: (0), Time Played: (0)\n", player->username);
-        // fclose(players_score);
 
         clear();
     }
@@ -772,57 +724,37 @@ void score_table(Player *player)
     init_pair(2, COLOR_CYAN, COLOR_BLACK);
     init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
     clear();
-    Score players[100];
+    Player players[100];
     int counter = 0;
-    FILE *players_score = fopen("Players_Score.txt", "r");
+    FILE *players_info = fopen("Players_Info.dat", "rb");
 
-    char temp[1000];
-    while (fgets(temp, sizeof(temp), players_score))
+    while (!feof(players_info))
     {
-        char score[100];
-        int j = 0, k = 0;
-        for (int i = 11; temp[i] != ')'; i++)
-            j++;
-
-        for (int i = 22 + j; temp[i] != ')'; i++)
-            score[k++] = temp[i];
-        score[k] = '\0';
-
-        Score s;
-        strcpy(s.temp, temp);
-        s.score = strtol(score, NULL, 10);
-        players[counter++] = s;
+        fread(&players[counter++], sizeof(Player), 1, players_info);
     }
-    fclose(players_score);
+    fclose(players_info);
     for (int i = 0; i < counter - 1; i++)
     {
         for (int j = 0; j < counter - i - 1; j++)
         {
             if (players[j].score < players[j + 1].score)
             {
-                Score t = players[j];
+                Player t = players[j];
                 players[j] = players[j + 1];
                 players[j + 1] = t;
             }
         }
     }
 
-    for (int i = 0; i < counter; i++)
+    for (int i = 0; i < counter - 1; i++)
     {
-        char user[100];
-        int k = 0;
-        for (int j = 11; players[i].temp[j] != ')'; j++)
-            user[k++] = players[i].temp[j];
-        
-        user[k] = '\0';
-
         if (i < 3)
             attron(COLOR_PAIR(i + 1));
 
-        if (strcmp(user, player->username) == 0)
+        if (strcmp(players[i].username, player->username) == 0)
             mvprintw(2 + 2 * i, 2, "->");
 
-        mvprintw(2 + 2 * i, 5, "(%d) %s", i + 1, players[i].temp);
+        mvprintw(2 + 2 * i, 5, "(%d) %s %s %d %d %d %d", i + 1, players[i].username, players[i].email, players[i].score, players[i].gold, players[i].experience, players[i].experience);
 
         if (i < 3)
             attroff(COLOR_PAIR(i + 1));
@@ -840,10 +772,11 @@ void profile(Player *player)
     clear();
 
     mvprintw(3, 5, "Username: %s", player->username);
-    mvprintw(5, 5, "Score: %d", player->score);
-    mvprintw(7, 5, "Gold Aquared: %d", player->gold);
-    mvprintw(9, 5, "Finished Games: %d", player->finished_games);
-    mvprintw(11, 5, "Experience: %d", player->experience);
+    mvprintw(5, 5, "E-Mail: %s", player->email);
+    mvprintw(7, 5, "Score: %d", player->score);
+    mvprintw(9, 5, "Gold Aquared: %d", player->gold);
+    mvprintw(11, 5, "Finished Games: %d", player->finished_games);
+    mvprintw(13, 5, "Experience: %d", player->experience);
 
     attron(A_REVERSE);
     mvprintw(0, 0, "Press Any Key To Back");
