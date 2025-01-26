@@ -16,6 +16,9 @@ typedef struct
     int gold;
     int finished_games;
     int experience;
+    int save_game;
+    int level;
+    int health;
 } Player;
 
 typedef struct
@@ -141,12 +144,13 @@ int end_game(Explorer_Position *ep, Explorer *explorer, Player *player);
 void room_position(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 void corridor_position(Explorer *explorer, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
 int exit_menu();
-void save(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
+void save(Player *player, Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
 void room_them_x(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
 void room_them_y(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
 void password(Explorer_Position *ep, Explorer *explorer, int *code);
 int unlock_door();
 void ancient_key(Explorer_Position *ep, Explorer *explorer);
+void load_game(int *ex, Explorer_Position *ep, Explorer *explorer, Player *player);
 
 int main()
 {
@@ -176,6 +180,7 @@ int main()
     spell.count = 0;
     code = 1000;
     ancient_key_value = 0;
+    int ex = 0;
 
     switch (menu())
     {
@@ -198,7 +203,14 @@ int main()
             break;
         }
         case 1:
-            //resume(player);
+            if(player.save_game) load_game(&ex, &ep, &explorer, &player);
+            else
+            {
+                clear();
+                mvprintw(15, 55, "No Saved Games!");
+                getch();
+                continue;
+            }
             break;
         case 2:
             settings(&game);
@@ -211,7 +223,7 @@ int main()
             break;
         }
 
-        if (choice < 1) break;
+        if (choice < 2) break;
     }
 
     int step_counter = 0;
@@ -281,6 +293,7 @@ int main()
                 mvprintw(15, 45, "Have a nice day!");
                 mvprintw(16, 45, "I hope to see you again :)");
                 mvprintw(17, 45, "Press any key to exit...");
+                if(player.id != 0) save(&player, &explorer, &ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
                 getch();
                 break;
             }
@@ -289,7 +302,7 @@ int main()
         else move_ivalue(move, &ep, &explorer, game, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
         clear();
 
-        explorer.experience = (time(NULL) - start) / 60;
+        explorer.experience = ((time(NULL) - start) / 60) + ex; 
         step_counter++;
         if (step_counter % 10 == 0)
         {
@@ -385,6 +398,9 @@ void sign_in(Player *player)
         player->experience = 0;
         player->finished_games = 0;
         player->id = last_id;
+        player->save_game = 0;
+        player->health = 100;
+        player->level = 1;
 
         fwrite(player, sizeof(Player), 1, players_info);
         fclose(players_info);
@@ -583,6 +599,8 @@ void login(Player *player)
         strcpy(player->username, "Guest"); 
         strcpy(player->password, "NULL"); 
         strcpy(player->email, "NULL");
+        player->id = 0;
+        player->save_game = 0;
 
         player->score = 0;
         player->gold = 0;
@@ -2024,9 +2042,49 @@ int exit_menu()
     return choice2;
 }
 
-void save(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
+void save(Player *player, Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
 {
+    FILE *player_info = fopen("Players_Info.dat", "rb+");
 
+    fseek(player_info, (player->id - 1) * sizeof(Rooms), SEEK_SET);
+    player->experience = explorer->experience;
+    player->gold = explorer->gold;
+    player->score = explorer->score;
+    player->save_game = 1;
+    player->health = explorer->health;
+    player->level = explorer->level;
+    fwrite(player, sizeof(Player), 1, player_info);
+    fclose(player_info);
+
+    FILE *map;
+    int floor = explorer->level;
+
+    switch (floor)
+    {
+    case 1:
+        map = fopen("Floor_1.txt", "w");
+        break;
+    case 2:
+        map = fopen("Floor_2.txt", "w");
+        break;
+    case 3:
+        map = fopen("Floor_3.txt", "w");
+        break;
+    case 4:
+        map = fopen("Floor_4.txt", "w");
+        break;
+    }
+
+    game_map[ep->y][ep->x] = 'X';
+    for (int i = 0; i < 30; i++) {
+        for (int j = 0; j < 120; j++) {
+            fprintf(map, "%c", game_map[i][j]);
+        }
+        fprintf(map, "\n");
+    }
+
+    fclose(map);
+    stair_save(explorer, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
 }
 
 void room_them_x(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6)
@@ -2165,5 +2223,18 @@ void ancient_key(Explorer_Position *ep, Explorer *explorer)
         game_map[ep->y][ep->x] = '.';
         ancient_key_value++;
     }
+}
+
+void load_game(int *ex, Explorer_Position *ep, Explorer *explorer, Player *player)
+{
+    start = time(NULL);
+    clear();
+    load_map(player->level, ep);
+    explorer->health = player->health;
+    explorer->score = player->score;
+    explorer->level = player->level;
+    explorer->gold = player->gold;
+    explorer->experience = player->experience;
+    *ex = player->experience;
 }
 
