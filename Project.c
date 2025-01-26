@@ -20,6 +20,7 @@ typedef struct
     int save_game;
     int level;
     int health;
+    char favorite_animal[100];
 } Player;
 
 typedef struct
@@ -387,6 +388,7 @@ void sign_in(Player *player)
     char username[100];
     char password[100];
     char email[100];
+    char f_a[100];
 
     char menu_options[2][15] = {"Yes", "No"};
     int choice = 0;
@@ -428,6 +430,7 @@ void sign_in(Player *player)
     mvprintw(11, 50, "Username: ");
     mvprintw(12, 50, "Password: ");
     mvprintw(13, 50, "Email: ");
+    mvprintw(14, 50, "Favorite Animal (Password recovery): ");
     mvgetstr(11, 60, username);
 
     if (choice == 0)
@@ -439,6 +442,7 @@ void sign_in(Player *player)
 
     else mvgetstr(12, 60, password);
     mvgetstr(13, 57, email);
+    mvgetstr(14, 87, f_a);
     
     noecho();
     curs_set(FALSE);
@@ -458,6 +462,7 @@ void sign_in(Player *player)
         strcpy(player->username, username);
         strcpy(player->password, password);
         strcpy(player->email, email);
+        strcpy(player->favorite_animal, f_a);
         player->score = 0;
         player->gold = 0;
         player->experience = 0;
@@ -607,57 +612,123 @@ void login(Player *player)
     attron(A_REVERSE);
     mvprintw(9, 35, "Login as guest (if you don't want just press down key)");
     attroff(A_REVERSE);
-    mvprintw(11, 50, "Username: ");
-    mvprintw(12, 50, "Password: ");
+    mvprintw(10, 35, "Forget your password?!");
+    mvprintw(12, 50, "Username: ");
+    mvprintw(13, 50, "Password: ");
 
     int c = getch();
     if (c == KEY_DOWN)
     {
-        mvprintw(9, 35, "Login as guest (if you don't want just press down key)");
-        echo();
-        curs_set(TRUE);
-        mvgetstr(11, 60, username);
-        mvgetstr(12, 60, password);
-        noecho();
-        curs_set(FALSE);
-        FILE *players_info = fopen("Players_Info.dat", "rb");
+        mvprintw(9, 35, "                                                                ");
+        mvprintw(9, 50, "Login as guest");
+        attron(A_REVERSE);
+        mvprintw(10, 35, "Forget your password?! (if you don't want just press down key)");
+        attroff(A_REVERSE);
+        int c = getch();
 
-        while (!feof(players_info))
+        if (c == KEY_DOWN)
         {
-            Player p;
-            fread(&p, sizeof(Player), 1, players_info);
+            mvprintw(10, 35, "                                                                            ");
+            mvprintw(10, 50, "Forget your password?!");
+            echo();
+            curs_set(TRUE);
+            mvgetstr(12, 60, username);
+            mvgetstr(13, 60, password);
+            noecho();
+            curs_set(FALSE);
+            FILE *players_info = fopen("Players_Info.dat", "rb");
 
-            if (strcmp(p.username, username) == 0)
+            while (!feof(players_info))
             {
-                if (strcmp(p.password, password) == 0)
+                Player p;
+                fread(&p, sizeof(Player), 1, players_info);
+
+                if (strcmp(p.username, username) == 0)
                 {
-                    fclose(players_info);
-                    *player = p;
-                    clear();
-                    return;
-                }
-                else
-                {
-                    clear();
-                    attron(COLOR_PAIR(1));
-                    mvprintw(15, 48, "Invalid password");
-                    attroff(COLOR_PAIR(1));
-                    mvprintw(16, 46, "Press any key to reset");
-                    getch();
-                    login(player);
-                    return;
+                    if (strcmp(p.password, password) == 0)
+                    {
+                        fclose(players_info);
+                        *player = p;
+                        clear();
+                        return;
+                    }
+                    else
+                    {
+                        clear();
+                        attron(COLOR_PAIR(1));
+                        mvprintw(15, 48, "Invalid password");
+                        attroff(COLOR_PAIR(1));
+                        mvprintw(16, 46, "Press any key to reset");
+                        getch();
+                        login(player);
+                        return;
+                    }
                 }
             }
+            fclose(players_info);
+            clear();
+            attron(COLOR_PAIR(1));
+            mvprintw(15, 48, "Invalid username");
+            attroff(COLOR_PAIR(1));
+            mvprintw(16, 46, "Press any key to reset");
+            getch();
+            login(player);
+            return;
         }
-        fclose(players_info);
-        clear();
-        attron(COLOR_PAIR(1));
-        mvprintw(15, 48, "Invalid username");
-        attroff(COLOR_PAIR(1));
-        mvprintw(16, 46, "Press any key to reset");
-        getch();
-        login(player);
-        return;
+
+        else if (c == 10)
+        {
+            clear();
+            mvprintw(12, 50, "Username: ");
+            mvprintw(13, 50, "Favorite Animal: ");
+            echo();
+            curs_set(TRUE);
+            mvgetstr(12, 60, username);
+            mvgetstr(13, 67, password);
+            noecho();
+            curs_set(FALSE);
+
+            FILE *players_info = fopen("Players_Info.dat", "rb");
+
+            while (!feof(players_info))
+            {
+                Player p;
+                fread(&p, sizeof(Player), 1, players_info);
+
+                if (strcmp(p.username, username) == 0)
+                {
+                    if (strcmp(p.favorite_animal, password) == 0)
+                    {
+                        fclose(players_info);
+                        *player = p;
+                        clear();
+                        mvprintw(13, 50, "Your Password: %s", p.password);
+                        getch();
+                        return;
+                    }
+                    else
+                    {
+                        clear();
+                        attron(COLOR_PAIR(1));
+                        mvprintw(15, 48, "Invalid!");
+                        attroff(COLOR_PAIR(1));
+                        mvprintw(16, 46, "Press any key to reset");
+                        getch();
+                        login(player);
+                        return;
+                    }
+                }
+            }
+            fclose(players_info);
+            clear();
+            attron(COLOR_PAIR(1));
+            mvprintw(15, 48, "Invalid username");
+            attroff(COLOR_PAIR(1));
+            mvprintw(16, 46, "Press any key to reset");
+            getch();
+            login(player);
+            return;
+        }
     }
     else if (c == 10)
     {
