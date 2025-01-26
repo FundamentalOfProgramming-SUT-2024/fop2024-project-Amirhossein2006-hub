@@ -764,16 +764,25 @@ void score_table(Player *player)
         }
     }
 
+    mvprintw(2, 9, "username");
+    mvprintw(2, 25, "email");
+    mvprintw(2, 50, "score");
+    mvprintw(2, 61, "gold");
+    mvprintw(2, 72, "experience");
+
     for (int i = 0; i < counter - 1; i++)
     {
         if (i < 3)
             attron(COLOR_PAIR(i + 1));
 
         if (strcmp(players[i].username, player->username) == 0)
-            mvprintw(2 + 2 * i, 2, "->");
+            mvprintw(4 + 2 * i, 2, "->");
 
-        mvprintw(2 + 2 * i, 5, "(%d) %s %s %d %d %d %d", i + 1, players[i].username, players[i].email, players[i].score, players[i].gold, players[i].experience, players[i].experience);
+        mvprintw(4 + 2 * i, 5, "(%1d) %-15s %-15s %10d %10d %10d", i + 1, players[i].username, players[i].email, players[i].score, players[i].gold, players[i].experience);
 
+        if (i == 0) mvprintw(4 + 2 * i, 87, "(((LEGEND)))");
+        if (i == 1) mvprintw(4 + 2 * i, 87, "(((GOAT)))");
+        if (i == 2) mvprintw(4 + 2 * i, 87, "(((CHAMPION)))");
         if (i < 3)
             attroff(COLOR_PAIR(i + 1));
     }
