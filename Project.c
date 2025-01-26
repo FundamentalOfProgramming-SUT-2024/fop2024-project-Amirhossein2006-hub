@@ -8,6 +8,7 @@
 
 typedef struct
 {
+    int id;
     char username[100];
     char password[100];
     char email[100];
@@ -140,6 +141,7 @@ int end_game(Explorer_Position *ep, Explorer *explorer, Player *player);
 void room_position(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 void corridor_position(Explorer *explorer, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
 int exit_menu();
+void save(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
 void room_them_x(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
 void room_them_y(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
 void password(Explorer_Position *ep, Explorer *explorer, int *code);
@@ -367,7 +369,14 @@ void sign_in(Player *player)
     else
     {
         FILE *players_info = fopen("Players_Info.dat", "ab");
-
+        FILE *id = fopen("id.txt", "r");
+        int last_id;
+        fscanf(id, "%d", &last_id);
+        last_id++;
+        fclose(id);
+        id = fopen("id.txt", "w");
+        fprintf(id, "%d", last_id);
+        fclose(id);
         strcpy(player->username, username);
         strcpy(player->password, password);
         strcpy(player->email, email);
@@ -375,6 +384,7 @@ void sign_in(Player *player)
         player->gold = 0;
         player->experience = 0;
         player->finished_games = 0;
+        player->id = last_id;
 
         fwrite(player, sizeof(Player), 1, players_info);
         fclose(players_info);
@@ -2012,6 +2022,11 @@ int exit_menu()
     wrefresh(win);
     delwin(win);
     return choice2;
+}
+
+void save(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
+{
+
 }
 
 void room_them_x(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6)
