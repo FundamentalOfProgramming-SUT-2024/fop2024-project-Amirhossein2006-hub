@@ -260,7 +260,7 @@ int main()
 
         int move;
 
-        if (game_map[ep.y][ep.x] == '>') move = stair_check(&explorer, &ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
+        if (game_map[ep.y][ep.x] == '>' || game_map[ep.y][ep.x] == '<') move = stair_check(&explorer, &ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
         else move = tolower(getch());
 
         if (move == 'i')
@@ -1416,8 +1416,9 @@ void stair(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2
 
     fclose(map);
     stair_save(explorer, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
-    explorer->level++;
-    load_map(floor + 1, ep);
+    if (game_map[ep->y][ep->x] == '>') explorer->level++;
+    else explorer->level--;
+    load_map(explorer->level, ep);
     room_position(explorer, room1, room2, room3, room4, room5, room6);
     corridor_position(explorer, corridor1, corridor2, corridor3, corridor4, corridor5);
 }
@@ -1515,7 +1516,8 @@ void stair_save(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Ro
 
 int stair_check(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
 {
-    mvprintw(0, 25, "Wow! You reached the stair, press 'U' to go up!");
+    if (game_map[ep->y][ep->x] == '>') mvprintw(0, 25, "Wow! You reached the stair, press 'U' to go up!");
+    else mvprintw(0, 25, "Wow! You reached the stair, press 'U' to go down!");
     int move = tolower(getch());
 
     if (move == 'u') stair(explorer, ep, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
