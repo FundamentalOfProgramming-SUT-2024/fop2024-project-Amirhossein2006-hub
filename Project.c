@@ -124,6 +124,7 @@ void print_corridor(Explorer_Position *ep, Explorer *explorer, Game game, Corrid
 void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6, Rooms room);
 void print_map2(Explorer_Position *ep, Explorer *explorer, Game game, Corridors corridor);
 void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6, Corridors corridor1, Corridors corridor2, Corridors corridor3, Corridors corridor4, Corridors corridor5);
+void move_ivalue2(int move, Explorer_Position *ep);
 void new_game(Explorer_Position *ep, Explorer *explorer);
 void trap(Explorer_Position *ep, Explorer *explorer);
 void stair(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
@@ -286,6 +287,25 @@ int main()
                 getch();
             }
             step_counter--;
+        }
+        else if (move == 'm')
+        {
+            room1.is_in = 1;
+            room2.is_in = 1;
+            room3.is_in = 1;
+            room4.is_in = 1;
+            room5.is_in = 1;
+            room6.is_in = 1;
+            corridor1.is_in = 1;
+            corridor2.is_in = 1;
+            corridor3.is_in = 1;
+            corridor4.is_in = 1;
+            corridor5.is_in = 1;
+        }
+        else if (move == 'f' && move_ivalue_help(&ep))
+        {
+            move = tolower(getch());
+            move_ivalue2(move, &ep);
         }
         else if (move == 27)
         {
@@ -1359,6 +1379,29 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
             ep->y--;
             ep->x--;
         }
+    }
+}
+
+void move_ivalue2(int move, Explorer_Position *ep)
+{
+    if (move == 's')
+    {
+        while (move_ivalue_help(ep) && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x] != 'O' && game_map[ep->y + 1][ep->x] != '+' && game_map[ep->y + 1][ep->x] != '@') ep->y++;
+    }
+
+    else if (move == 'w')
+    {
+        while (move_ivalue_help(ep) && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x] != 'O' && game_map[ep->y - 1][ep->x] != '+' && game_map[ep->y - 1][ep->x] != '@') ep->y--;
+    }
+
+    else if (move == 'd')
+    {
+        while (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y][ep->x + 1] != 'O' && game_map[ep->y][ep->x + 1] != '+' && game_map[ep->y][ep->x + 1] != '@') ep->x++;
+    }
+
+    else if (move == 'a')
+    {
+        while (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y][ep->x - 1] != 'O' && game_map[ep->y][ep->x - 1] != '+' && game_map[ep->y][ep->x - 1] != '@') ep->x--;
     }
 }
 
