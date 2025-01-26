@@ -153,6 +153,7 @@ void password(Explorer_Position *ep, Explorer *explorer, int *code);
 int unlock_door();
 void ancient_key(Explorer_Position *ep, Explorer *explorer);
 void load_game(int *ex, Explorer_Position *ep, Explorer *explorer, Player *player);
+void random_password(int length, char password[]);
 
 int main()
 {
@@ -387,6 +388,40 @@ void sign_in(Player *player)
     char password[100];
     char email[100];
 
+    char menu_options[2][15] = {"Yes", "No"};
+    int choice = 0;
+
+    while (1)
+    {
+        mvprintw(14, 50, "Do you want a random password?");
+        for (int i = 0; i < 2; i++)
+        {
+            mvprintw(16 + i, 55, "%s", menu_options[i]);
+        }
+        mvprintw(16 + choice, 52, "->");
+        int c = getch();
+        if (c == KEY_UP)
+        {
+            if (choice != 0)
+                choice--;
+            else
+                choice = 1;
+        }
+        else if (c == KEY_DOWN)
+        {
+            if (choice != 1)
+                choice++;
+            else
+                choice = 0;
+        }
+        else if (c == 10)
+        {
+            clear();
+            break;
+        }
+        clear();
+    }
+
     echo();
     curs_set(TRUE);
 
@@ -394,7 +429,15 @@ void sign_in(Player *player)
     mvprintw(12, 50, "Password: ");
     mvprintw(13, 50, "Email: ");
     mvgetstr(11, 60, username);
-    mvgetstr(12, 60, password);
+
+    if (choice == 0)
+    {
+        int length = random_renge(7, 12);
+        random_password(length, player->password);
+        mvprintw(12, 60, "%s", player->password);
+    }
+
+    else mvgetstr(12, 60, password);
     mvgetstr(13, 57, email);
     
     noecho();
@@ -2292,5 +2335,20 @@ void load_game(int *ex, Explorer_Position *ep, Explorer *explorer, Player *playe
     explorer->gold = player->gold;
     explorer->experience = player->experience;
     *ex = player->experience;
+}
+
+void random_password(int length, char password[])
+{
+    char chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (int i = 0; i < length; i++) 
+    {
+        int temp = random_renge(0, 62);
+        password[i] = chars[temp];
+    }
+    password[length] = '\0';
+
+    if (password_check(password) == 0)
+        random_password(length, password);
 }
 
