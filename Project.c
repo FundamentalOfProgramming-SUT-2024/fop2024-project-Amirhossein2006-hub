@@ -121,8 +121,9 @@ void print_map2(Explorer_Position *ep, Explorer *explorer, Game game, Corridors 
 void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6, Corridors corridor1, Corridors corridor2, Corridors corridor3, Corridors corridor4, Corridors corridor5);
 void new_game(Explorer_Position *ep, Explorer *explorer);
 void trap(Explorer_Position *ep, Explorer *explorer);
-void stair(Explorer *explorer, Explorer_Position *ep);
-int stair_check(Explorer *explorer, Explorer_Position *ep);
+void stair(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
+void stair_save(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
+int stair_check(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
 int move_ivalue_help(Explorer_Position *ep);
 void foods(Explorer_Position *ep, Explorer *explorer, Food *food);
 void find_food(char name[], Food *food);
@@ -136,8 +137,8 @@ void spells(Explorer_Position *ep, Explorer *explorer, Spell *spell);
 void find_spell(char name[], Spell *spell);
 void spell_show(Spell spell);
 int end_game(Explorer_Position *ep, Explorer *explorer, Player *player);
-void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
-void corridor_position(Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
+void room_position(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
+void corridor_position(Explorer *explorer, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
 int exit_menu();
 void room_them_x(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
 void room_them_y(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
@@ -171,21 +172,8 @@ int main()
     strcpy(weapon.weapons[0].weapon, "Mace");
     weapon.weapons[0].count = 1;
     spell.count = 0;
-    room_position(&room1, &room2, &room3, &room4, &room5, &room6);
-    corridor_position(&corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
     code = 1000;
     ancient_key_value = 0;
-    room1.is_in = 0;
-    room2.is_in = 0;
-    room3.is_in = 0;
-    room4.is_in = 0;
-    room5.is_in = 0;
-    room6.is_in = 0;
-    corridor1.is_in = 0;
-    corridor2.is_in = 0;
-    corridor3.is_in = 0;
-    corridor4.is_in = 0;
-    corridor5.is_in = 0;
 
     switch (menu())
     {
@@ -225,6 +213,8 @@ int main()
     }
 
     int step_counter = 0;
+    room_position(&explorer, &room1, &room2, &room3, &room4, &room5, &room6);
+    corridor_position(&explorer, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
 
     while (1)
     {
@@ -254,7 +244,7 @@ int main()
 
         int move;
 
-        if (game_map[ep.y][ep.x] == '>') move = stair_check(&explorer, &ep);
+        if (game_map[ep.y][ep.x] == '>') move = stair_check(&explorer, &ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
         else move = tolower(getch());
 
         if (move == 'i')
@@ -812,18 +802,30 @@ void load_map(int k, Explorer_Position *ep)
 
     char temp[121];
     int counter = 0;
+    int ivalue = 0;
     while (fgets(temp, sizeof(temp), map))
     {
         if (counter % 2 == 0)
         {
             for (int i = 0; i < 120; i++)
             {   
-                if (temp[i] == '<')
+                if (k == 1 && temp[i] == 'X')
                 {
                     ep->x = i;
                     ep->y = counter / 2;
-                    if (k > 1) temp[i] = '<';
-                    else temp[i] = '<';
+                    temp[i] = '.';
+                    ivalue = 1;
+                }
+                else if (k > 1 && temp[i] == '<')
+                {
+                    ep->x = i;
+                    ep->y = counter / 2;
+                    ivalue = 1;
+                }
+                else if (ivalue == 0 && temp[i] == '>')
+                {
+                    ep->x = i;
+                    ep->y = counter / 2;
                 }
 
                 game_map[counter / 2][i] = temp[i];
@@ -1345,11 +1347,10 @@ void trap(Explorer_Position *ep, Explorer *explorer)
     }
 }
 
-void stair(Explorer *explorer, Explorer_Position *ep)
+void stair(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
 {
     FILE *map;
     int floor = explorer->level;
-    explorer->level++;
 
     switch (floor)
     {
@@ -1367,7 +1368,6 @@ void stair(Explorer *explorer, Explorer_Position *ep)
         break;
     }
 
-    //game_map[ep->y][ep->x] = 'X';
     for (int i = 0; i < 30; i++) {
         for (int j = 0; j < 120; j++) {
             fprintf(map, "%c", game_map[i][j]);
@@ -1376,15 +1376,110 @@ void stair(Explorer *explorer, Explorer_Position *ep)
     }
 
     fclose(map);
+    stair_save(explorer, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
+    explorer->level++;
     load_map(floor + 1, ep);
+    room_position(explorer, room1, room2, room3, room4, room5, room6);
+    corridor_position(explorer, corridor1, corridor2, corridor3, corridor4, corridor5);
 }
 
-int stair_check(Explorer *explorer, Explorer_Position *ep)
+void stair_save(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
+{
+    FILE *rooms;
+    FILE *corridors;
+
+    switch (explorer->level)
+    {
+        case 1:
+        {
+            rooms = fopen("rooms1.dat", "rb+");
+            corridors = fopen("corridors1.dat", "rb+");
+            break;
+        }
+        case 2:
+        {
+            rooms = fopen("rooms2.dat", "rb+");
+            corridors = fopen("corridors2.dat", "rb+");
+            break;
+        }
+        case 3:
+        {
+            rooms = fopen("rooms3.dat", "rb+");
+            corridors = fopen("corridors3.dat", "rb+");
+            break;
+        }
+        case 4:
+        {
+            rooms = fopen("rooms4.dat", "rb+");
+            corridors = fopen("corridors4.dat", "rb+");
+            break;
+        }
+    }
+
+    for (int i = 0; i < 6; i++)
+    {
+        Rooms room;
+        switch (i)
+        {
+            case 0:
+                room = *room1;
+                break;
+            case 1:
+                room = *room2;
+                break;
+            case 2:
+                room = *room3;
+                break;
+            case 3:
+                room = *room4;
+                break;
+            case 4:
+                room = *room5;
+                break;
+            case 5:
+                room = *room6;
+                break;
+        }
+
+        fseek(rooms, i * sizeof(Rooms), SEEK_SET);
+        fwrite(&room, sizeof(Rooms), 1, rooms);
+    }
+    fclose(rooms);
+
+    for (int i = 0; i < 5; i++)
+    {
+        Corridors corridor;
+        switch (i)
+        {
+            case 0:
+                corridor = *corridor1;
+                break;
+            case 1:
+                corridor = *corridor2;
+                break;
+            case 2:
+                corridor = *corridor3;
+                break;
+            case 3:
+                corridor = *corridor4;
+                break;
+            case 4:
+                corridor = *corridor5;
+                break;
+        }
+
+        fseek(corridors, i * sizeof(Corridors), SEEK_SET);
+        fwrite(&corridor, sizeof(Corridors), 1, corridors);
+    }
+    fclose(corridors);
+}
+
+int stair_check(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
 {
     mvprintw(0, 25, "Wow! You reached the stair, press 'U' to go up!");
     int move = tolower(getch());
 
-    if (move == 'u') stair(explorer, ep);
+    if (move == 'u') stair(explorer, ep, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
     else return move;
 }
 
@@ -1712,71 +1807,113 @@ int end_game(Explorer_Position *ep, Explorer *explorer, Player *player)
     return 0;
 }
 
-void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6)
+void room_position(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6)
 {
-    room1->type = 2;
-    room1->s_x = 11;
-    room1->s_y = 1;
-    room1->e_x = 20;
-    room1->e_y = 6;
+    FILE *rooms;
 
-    room2->type = 3;
-    room2->s_x = 17;
-    room2->s_y = 13;
-    room2->e_x = 26;
-    room2->e_y = 18;
-
-    room3->type = 2;
-    room3->s_x = 35;
-    room3->s_y = 23;
-    room3->e_x = 44;
-    room3->e_y = 28;
-
-    room4->type = 3;
-    room4->s_x = 67;
-    room4->s_y = 19;
-    room4->e_x = 76;
-    room4->e_y = 24;
-
-    room5->type = 2;
-    room5->s_x = 57;
-    room5->s_y = 7;
-    room5->e_x = 66;
-    room5->e_y = 12;
-
-    room6->type = 1;
-    room6->s_x = 94;
-    room6->s_y = 9;
-    room6->e_x = 103;
-    room6->e_y = 17;
+    switch (explorer->level)
+    {
+        case 1:
+        {
+            rooms = fopen("rooms1.dat", "rb");
+            break;
+        }
+        case 2:
+        {
+            rooms = fopen("rooms2.dat", "rb");
+            break;
+        }
+        case 3:
+        {
+            rooms = fopen("rooms3.dat", "rb");
+            break;
+        }
+        case 4:
+        {
+            rooms = fopen("rooms4.dat", "rb");
+            break;
+        }
+    }
+    for (int i = 0; i < 6; i++)
+    {
+        Rooms room;
+        fseek(rooms, i * sizeof(Rooms), SEEK_SET);
+        fread(&room, sizeof(Rooms), 1, rooms);
+        switch (i)
+        {
+        case 0:
+            *room1 = room;
+            break;
+        case 1:
+            *room2 = room;
+            break;
+        case 2:
+            *room3 = room;
+            break;
+        case 3:
+            *room4 = room;
+            break;
+        case 4:
+            *room5 = room;
+            break;
+        case 5:
+            *room6 = room;
+            break;
+        }
+    }
 }
 
-void corridor_position(Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
+void corridor_position(Explorer *explorer, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
 {
-    corridor1->s_x = 21;
-    corridor1->s_y = 3;
-    corridor1->e_x = 61;
-    corridor1->e_y = 6;
+    FILE *corridors;
 
-    corridor2->s_x = 16;
-    corridor2->s_y = 7;
-    corridor2->e_x = 21;
-    corridor2->e_y = 12;
-
-    corridor3->s_x = 24;
-    corridor3->s_y = 19;
-    corridor3->e_x = 39;
-    corridor3->e_y = 22;
-
-    corridor4->s_x = 63;
-    corridor4->s_y = 13;
-    corridor4->e_x = 70;
-    corridor4->e_y = 18;
-
-    corridor5->s_x = 67;
-    corridor5->s_y = 10;
-    corridor5->e_x = 93;
-    corridor5->e_y = 11;
+    switch (explorer->level)
+    {
+        case 1:
+        {
+            corridors = fopen("corridors1.dat", "rb");
+            break;
+        }
+        case 2:
+        {
+            corridors = fopen("corridors2.dat", "rb");
+            break;
+        }
+        case 3:
+        {
+            corridors = fopen("corridors3.dat", "rb");
+            break;
+        }
+        case 4:
+        {
+            corridors = fopen("corridors4.dat", "rb");
+            break;
+        }
+    }
+    for (int i = 0; i < 5; i++)
+    {
+        Corridors corridor;
+        fseek(corridors, i * sizeof(Corridors), SEEK_SET);
+        fread(&corridor, sizeof(Corridors), 1, corridors);
+        switch (i)
+        {
+        case 0:
+            *corridor1 = corridor;
+            break;
+        case 1:
+            *corridor2 = corridor;
+            break;
+        case 2:
+            *corridor3 = corridor;
+            break;
+        case 3:
+            *corridor4 = corridor;
+            break;
+        case 4:
+            *corridor5 = corridor;
+            break;
+        }
+    }
 }
 
 int exit_menu()
