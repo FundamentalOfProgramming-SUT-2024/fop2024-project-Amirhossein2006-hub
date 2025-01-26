@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <time.h>
@@ -181,6 +182,7 @@ int main()
     code = 1000;
     ancient_key_value = 0;
     int ex = 0;
+    srand(time(NULL));
 
     switch (menu())
     {
