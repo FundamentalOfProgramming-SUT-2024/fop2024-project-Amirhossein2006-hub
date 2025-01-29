@@ -210,7 +210,8 @@ int main()
         {
         case 0:
         {
-            while (system("./Map.out") != 0);
+            while (system("./Map.out") != 0)
+                clear();
             new_game(&ep, &explorer);
             break;
         }
