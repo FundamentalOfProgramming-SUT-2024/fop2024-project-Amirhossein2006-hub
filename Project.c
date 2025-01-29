@@ -263,6 +263,7 @@ int main()
             mvprintw(15, 45, "Opps, You lose! Your health ended!");
             mvprintw(16, 45, "I hope to see you again :)");
             mvprintw(17, 45, "Press any key to exit...");
+            save(&player, &explorer, &ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
             getch();
             break;
         }
@@ -339,7 +340,11 @@ int main()
             explorer.health -= 2;
         }
 
-        if (end_game(&ep, &explorer, &player)) break;
+        if (end_game(&ep, &explorer, &player))
+        {
+            save(&player, &explorer, &ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
+            break;
+        }
     }
 
     refresh();
