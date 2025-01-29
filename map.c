@@ -315,14 +315,7 @@ void print_map(int i, Corridors *corridor1, Corridors *corridor2, Corridors *cor
                 {
                     if (j == room2->door1_x && i == room2->door1_y)
                     {
-                        int a = random_renge(1, 5);
-                        if (a > 1)
-                            map[i][j] = '+';
-                        else
-                        {
-                            map[i][j] = '@';
-                            map[room1->s_y + 1][room1->s_x + 1] = '&';
-                        }
+                        map[i][j] = '+';
                     }
                     else if (j == room2->door2_x && i == room2->door2_y)
                     {
