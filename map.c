@@ -150,17 +150,6 @@ int main()
             fprintf(floors, "\n");
         }
         fclose(floors);
-        printf("room1: %d %d %d %d\n", room1.s_x, room1.s_y, room1.e_x, room1.e_y);
-        printf("room2: %d %d %d %d\n", room2.s_x, room2.s_y, room2.e_x, room2.e_y);
-        printf("room3: %d %d %d %d\n", room3.s_x, room3.s_y, room3.e_x, room3.e_y);
-        printf("room4: %d %d %d %d\n", room4.s_x, room4.s_y, room4.e_x, room4.e_y);
-        printf("room5: %d %d %d %d\n", room5.s_x, room5.s_y, room5.e_x, room5.e_y);
-        printf("room6: %d %d %d %d\n", room6.s_x, room6.s_y, room6.e_x, room6.e_y);
-        printf("corridor1: %d %d %d %d\n", corridor1.s_x, corridor1.s_y, corridor1.e_x, corridor1.e_y);
-        printf("corridor2: %d %d %d %d\n", corridor2.s_x, corridor2.s_y, corridor2.e_x, corridor2.e_y);
-        printf("corridor3: %d %d %d %d\n", corridor3.s_x, corridor3.s_y, corridor3.e_x, corridor3.e_y);
-        printf("corridor4: %d %d %d %d\n", corridor4.s_x, corridor4.s_y, corridor4.e_x, corridor4.e_y);
-        printf("corridor5: %d %d %d %d\n", corridor5.s_x, corridor5.s_y, corridor5.e_x, corridor5.e_y);
     }
     return 0;
 }
@@ -191,9 +180,9 @@ void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms
 
     room3->type = 2;
     room3->s_x = random_renge(27, 33);
-    room3->s_y = 22;
+    room3->s_y = 21;
     room3->e_x = room3->s_x + random_renge(6, 10);
-    room3->e_y = room3->s_y + 5;
+    room3->e_y = room3->s_y + 4;
     room3->is_in = 0;
     room3->door1_x = room3->s_x;
     room3->door1_y = random_renge(room3->s_y + 2, room3->e_y - 2);
@@ -213,7 +202,7 @@ void room_position(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms
 
     room5->type = 3;
     room5->s_x = random_renge(55, 65);
-    room5->s_y = random_renge(21, 23);
+    room5->s_y = random_renge(20, 22);
     room5->e_x = room5->s_x + random_renge(5, 10);
     room5->e_y = room5->s_y + random_renge(4, 6);
     room5->door1_x = room5->s_x;
