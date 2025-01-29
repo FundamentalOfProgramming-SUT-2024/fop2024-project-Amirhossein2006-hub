@@ -89,6 +89,12 @@ typedef struct
     int e_x;
     int e_y;
     int is_in;
+    int door1_x;
+    int door2_x;
+    int door3_x;
+    int door1_y;
+    int door2_y;
+    int door3_y;
 } Rooms;
 
 typedef struct
