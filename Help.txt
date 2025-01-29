@@ -1,0 +1,56 @@
+Signs:
+	Weapons:
+		'M' -> Mace
+		'D' -> Dagger
+		'W' -> Magic Wand
+		'A' -> Normal Arrow
+		'S' -> Sword
+
+	Spells:
+		'H' -> Health Spell
+		'Z' -> Speed Spell
+		'C' -> Damage Spell
+
+	Golds:
+		'G' -> Gold
+		'B' -> Black Gold
+
+	Other:
+		'F' -> Food
+		'^' -> Trap
+		'@' -> Locked Door
+		'&' -> Password Maker
+		'*' -> Ancient Key
+		'>' -> Upstairs
+		'<' -> Downstairs
+		'| =' -> Walls
+		'+' -> Door
+		'#' -> Corridor
+		'.' -> Floor
+		'X' -> Player
+
+Keys:
+	Move:
+		's' -> Down
+		'w' -> Up
+		'd' -> Right
+		'a' -> Left
+		'c' -> Down Right
+		'z' -> Down Left
+		'e' -> Up Right
+		'q' -> Up Left
+		'f' -> Fast Move
+
+	Menus:
+		'i' -> Weapons Menu
+		'o' -> Spells Menu
+		'p' -> Foods Menu
+		'esc' -> Exit Menu
+
+	Cheat Codes:
+		'm' -> Show Map
+
+Room Colors:
+	'White' -> Normal Room
+	'Green' -> Spell Room
+	'Yellow' -> Treasure Room
