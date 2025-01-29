@@ -256,7 +256,7 @@ int main()
         password(&ep, &explorer, &code);
         ancient_key(&ep, &explorer);
 
-        if (time(NULL) - start_code < 30) mvprintw(0, 25, "Wow! Your code is %d", code);
+        if (time(NULL) - start_code < 30) mvprintw(0, 75, "Wow! Your code is %d", code);
         
         if (explorer.health <= 0)
         {
@@ -1279,6 +1279,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
             {
                 if (unlock_door())
                 {
+                    clear();
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
@@ -1294,6 +1295,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 }
                 else
                 {
+                    clear();
                     ep->y--;
                     num_of_mistakes++;
                     move(0, 0);
@@ -1331,6 +1333,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
             {
                 if (unlock_door())
                 {
+                    clear();
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
@@ -1346,6 +1349,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 }
                 else
                 {
+                    clear();
                     ep->y++;
                     num_of_mistakes++;
                     move(0, 0);
@@ -1383,6 +1387,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
             {
                 if (unlock_door())
                 {
+                    clear();
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
@@ -1398,6 +1403,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 }
                 else
                 {
+                    clear();
                     ep->x--;
                     num_of_mistakes++;
                     move(0, 0);
@@ -1435,6 +1441,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
             {
                 if (unlock_door())
                 {
+                    clear();
                     game_map[ep->y][ep->x] = '+';
                     move(0, 0);
                     print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
@@ -1450,6 +1457,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 }
                 else
                 {
+                    clear();
                     ep->x++;
                     num_of_mistakes++;
                     move(0, 0);
