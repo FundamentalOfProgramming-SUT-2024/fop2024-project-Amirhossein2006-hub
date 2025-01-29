@@ -2259,37 +2259,37 @@ void save(Player *player, Explorer *explorer, Explorer_Position *ep, Rooms *room
 
 void room_them_x(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6)
 {
-    if ((i == room1.s_y || i == room1.e_y) && room1.type != 2)
+    if ((i == room1.s_y || i == room1.e_y) && (room1.s_x <= j && j <= room1.e_x) && room1.type != 2)
     {
         attron(COLOR_PAIR(room1.type));
         mvprintw(i, j, "=");
         attroff(COLOR_PAIR(room1.type));
     }
-    else if ((i == room2.s_y || i == room2.e_y) && room2.type != 2)
+    else if ((i == room2.s_y || i == room2.e_y) && (room2.s_x <= j && j <= room2.e_x) && room2.type != 2)
     {
         attron(COLOR_PAIR(room2.type));
         mvprintw(i, j, "=");
         attroff(COLOR_PAIR(room2.type));
     }
-    else if ((i == room3.s_y || i == room3.e_y) && room3.type != 2)
+    else if ((i == room3.s_y || i == room3.e_y) && (room3.s_x <= j && j <= room3.e_x) && room3.type != 2)
     {
         attron(COLOR_PAIR(room3.type));
         mvprintw(i, j, "=");
         attroff(COLOR_PAIR(room3.type));
     }
-    else if ((i == room4.s_y || i == room4.e_y) && room4.type != 2)
+    else if ((i == room4.s_y || i == room4.e_y) && (room4.s_x <= j && j <= room4.e_x) && room4.type != 2)
     {
         attron(COLOR_PAIR(room4.type));
         mvprintw(i, j, "=");
         attroff(COLOR_PAIR(room4.type));
     }
-    else if ((i == room5.s_y || i == room5.e_y) && room5.type != 2)
+    else if ((i == room5.s_y || i == room5.e_y) && (room5.s_x <= j && j <= room5.e_x) && room5.type != 2)
     {
         attron(COLOR_PAIR(room5.type));
         mvprintw(i, j, "=");
         attroff(COLOR_PAIR(room5.type));
     }
-    else if ((i == room6.s_y || i == room6.e_y) && room6.type != 2)
+    else if ((i == room6.s_y || i == room6.e_y) && (room6.s_x <= j && j <= room6.e_x) && room6.type != 2)
     {
         attron(COLOR_PAIR(room6.type));
         mvprintw(i, j, "=");
@@ -2300,37 +2300,37 @@ void room_them_x(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room
 
 void room_them_y(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6)
 {
-    if ((j == room1.s_x || j == room1.e_x) && room1.type != 2)
+    if ((j == room1.s_x || j == room1.e_x) && (room1.s_y <= i && i <= room1.e_y) && room1.type != 2)
     {
         attron(COLOR_PAIR(room1.type));
         mvprintw(i, j, "|");
         attroff(COLOR_PAIR(room1.type));
     }
-    else if ((j == room2.s_x || j == room2.e_x) && room2.type != 2)
+    else if ((j == room2.s_x || j == room2.e_x) && (room2.s_y <= i && i <= room2.e_y) && room2.type != 2)
     {
         attron(COLOR_PAIR(room2.type));
         mvprintw(i, j, "|");
         attroff(COLOR_PAIR(room2.type));
     }
-    else if ((j == room3.s_x || j == room3.e_x) && room3.type != 2)
+    else if ((j == room3.s_x || j == room3.e_x) && (room3.s_y <= i && i <= room3.e_y) && room3.type != 2)
     {
         attron(COLOR_PAIR(room3.type));
         mvprintw(i, j, "|");
         attroff(COLOR_PAIR(room3.type));
     }
-    else if ((j == room4.s_x || j == room4.e_x) && room4.type != 2)
+    else if ((j == room4.s_x || j == room4.e_x) && (room4.s_y <= i && i <= room4.e_y) && room4.type != 2)
     {
         attron(COLOR_PAIR(room4.type));
         mvprintw(i, j, "|");
         attroff(COLOR_PAIR(room4.type));
     }
-    else if ((j == room5.s_x || j == room5.e_x) && room5.type != 2)
+    else if ((j == room5.s_x || j == room5.e_x) && (room5.s_y <= i && i <= room5.e_y) && room5.type != 2)
     {
         attron(COLOR_PAIR(room5.type));
         mvprintw(i, j, "|");
         attroff(COLOR_PAIR(room5.type));
     }
-    else if ((j == room6.s_x || j == room6.e_x) && room6.type != 2)
+    else if ((j == room6.s_x || j == room6.e_x) && (room6.s_y <= i && i <= room6.e_y) && room6.type != 2)
     {
         attron(COLOR_PAIR(room6.type));
         mvprintw(i, j, "|");
