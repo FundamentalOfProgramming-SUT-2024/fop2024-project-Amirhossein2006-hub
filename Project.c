@@ -448,9 +448,10 @@ void sign_in(Player *player)
 
     if (choice == 0)
     {
-        int length = random_renge(7, 12);
+        int length = random_renge(8, 15);
         random_password(length, player->password);
         mvprintw(12, 60, "%s", player->password);
+        strcpy(password, player->password);
     }
 
     else mvgetstr(12, 60, password);
