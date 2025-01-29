@@ -210,7 +210,7 @@ int main()
         {
         case 0:
         {
-            while (system("./map.out") != 0);
+            while (system("./Map.out") != 0);
             new_game(&ep, &explorer);
             break;
         }
@@ -463,12 +463,12 @@ void sign_in(Player *player)
     else
     {
         FILE *players_info = fopen("Players_Info.dat", "ab");
-        FILE *id = fopen("id.txt", "r");
+        FILE *id = fopen("Id.txt", "r");
         int last_id;
         fscanf(id, "%d", &last_id);
         last_id++;
         fclose(id);
-        id = fopen("id.txt", "w");
+        id = fopen("Id.txt", "w");
         fprintf(id, "%d", last_id);
         fclose(id);
         strcpy(player->username, username);
@@ -1609,26 +1609,26 @@ void stair_save(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Ro
     {
         case 1:
         {
-            rooms = fopen("rooms1.dat", "rb+");
-            corridors = fopen("corridors1.dat", "rb+");
+            rooms = fopen("Rooms1.dat", "rb+");
+            corridors = fopen("Corridors1.dat", "rb+");
             break;
         }
         case 2:
         {
-            rooms = fopen("rooms2.dat", "rb+");
-            corridors = fopen("corridors2.dat", "rb+");
+            rooms = fopen("Rooms2.dat", "rb+");
+            corridors = fopen("Corridors2.dat", "rb+");
             break;
         }
         case 3:
         {
-            rooms = fopen("rooms3.dat", "rb+");
-            corridors = fopen("corridors3.dat", "rb+");
+            rooms = fopen("Rooms3.dat", "rb+");
+            corridors = fopen("Corridors3.dat", "rb+");
             break;
         }
         case 4:
         {
-            rooms = fopen("rooms4.dat", "rb+");
-            corridors = fopen("corridors4.dat", "rb+");
+            rooms = fopen("Rooms4.dat", "rb+");
+            corridors = fopen("Corridors4.dat", "rb+");
             break;
         }
     }
@@ -2033,22 +2033,22 @@ void room_position(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3,
     {
         case 1:
         {
-            rooms = fopen("rooms1.dat", "rb");
+            rooms = fopen("Rooms1.dat", "rb");
             break;
         }
         case 2:
         {
-            rooms = fopen("rooms2.dat", "rb");
+            rooms = fopen("Rooms2.dat", "rb");
             break;
         }
         case 3:
         {
-            rooms = fopen("rooms3.dat", "rb");
+            rooms = fopen("Rooms3.dat", "rb");
             break;
         }
         case 4:
         {
-            rooms = fopen("rooms4.dat", "rb");
+            rooms = fopen("Rooms4.dat", "rb");
             break;
         }
     }
@@ -2089,22 +2089,22 @@ void corridor_position(Explorer *explorer, Corridors *corridor1, Corridors *corr
     {
         case 1:
         {
-            corridors = fopen("corridors1.dat", "rb");
+            corridors = fopen("Corridors1.dat", "rb");
             break;
         }
         case 2:
         {
-            corridors = fopen("corridors2.dat", "rb");
+            corridors = fopen("Corridors2.dat", "rb");
             break;
         }
         case 3:
         {
-            corridors = fopen("corridors3.dat", "rb");
+            corridors = fopen("Corridors3.dat", "rb");
             break;
         }
         case 4:
         {
-            corridors = fopen("corridors4.dat", "rb");
+            corridors = fopen("Corridors4.dat", "rb");
             break;
         }
     }

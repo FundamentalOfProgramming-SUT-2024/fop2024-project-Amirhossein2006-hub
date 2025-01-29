@@ -58,29 +58,29 @@ int main()
         {
             case 1:
             {
-                rooms = fopen("rooms1.dat", "rb+");
-                corridors = fopen("corridors1.dat", "rb+");
+                rooms = fopen("Rooms1.dat", "rb+");
+                corridors = fopen("Corridors1.dat", "rb+");
                 floors = fopen("Floor_1.txt", "w");
                 break;
             }
             case 2:
             {
-                rooms = fopen("rooms2.dat", "rb+");
-                corridors = fopen("corridors2.dat", "rb+");
+                rooms = fopen("Rooms2.dat", "rb+");
+                corridors = fopen("Corridors2.dat", "rb+");
                 floors = fopen("Floor_2.txt", "w");
                 break;
             }
             case 3:
             {
-                rooms = fopen("rooms3.dat", "rb+");
-                corridors = fopen("corridors3.dat", "rb+");
+                rooms = fopen("Rooms3.dat", "rb+");
+                corridors = fopen("Corridors3.dat", "rb+");
                 floors = fopen("Floor_3.txt", "w");
                 break;
             }
             case 4:
             {
-                rooms = fopen("rooms4.dat", "rb+");
-                corridors = fopen("corridors4.dat", "rb+");
+                rooms = fopen("Rooms4.dat", "rb+");
+                corridors = fopen("Corridors4.dat", "rb+");
                 floors = fopen("Floor_4.txt", "w");
                 break;
             }
