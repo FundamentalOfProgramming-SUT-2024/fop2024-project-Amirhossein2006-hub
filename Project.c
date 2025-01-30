@@ -62,6 +62,7 @@ typedef struct
     char weapon[20];
     int count;
     int damage;
+    int num_in_each;
 } Weapon_Count;
 
 typedef struct
@@ -1958,27 +1959,46 @@ void find_weapon(char name[], Weapon *weapon)
         if (strcmp(weapon->weapons[i].weapon, name) == 0)
         {
             ivalue = 1;
-            if (strcmp(name, "Mace") != 0 && strcmp(name, "Sword") != 0) weapon->weapons[i].count++;
+            weapon->weapons[i].count += weapon->weapons[i].num_in_each;
         }
     }
     if (ivalue == 0)
     {
         strcpy(weapon->weapons[weapon->count].weapon, name);
-        weapon->weapons[weapon->count].count = 1;
         if (strcmp(name, "Mace") == 0)
+        {
             weapon->weapons[weapon->count].damage = 5;
+            weapon->weapons[weapon->count].count = 1;
+            weapon->weapons[weapon->count].num_in_each = 0;
+        }
 
         else if (strcmp(name, "Dagger") == 0)
+        {
             weapon->weapons[weapon->count].damage = 12;
+            weapon->weapons[weapon->count].count = 10;
+            weapon->weapons[weapon->count].num_in_each = 10;
+        }
 
         else if (strcmp(name, "Magic Wand") == 0)
+        {
             weapon->weapons[weapon->count].damage = 15;
+            weapon->weapons[weapon->count].count = 8;
+            weapon->weapons[weapon->count].num_in_each = 8;
+        }
 
         else if (strcmp(name, "Normal Arrow") == 0)
+        {
             weapon->weapons[weapon->count].damage = 5;
+            weapon->weapons[weapon->count].count = 20;
+            weapon->weapons[weapon->count].num_in_each = 20;
+        }
 
         else if (strcmp(name, "Sword") == 0)
+        {
             weapon->weapons[weapon->count].damage = 10;
+            weapon->weapons[weapon->count].count = 1;
+            weapon->weapons[weapon->count].num_in_each = 0;
+        }
 
         weapon->count++;
     }
@@ -2037,7 +2057,7 @@ void weapon_show(Weapon weapon)
     for (int i = 0; i < weapon.count; i++)
     {
         mvwprintw(win, 1 + i, 2, "%s", weapon.weapons[i].weapon);
-        mvwprintw(win, 1 + i, 20, "(%d)", weapon.weapons[i].count);
+        mvwprintw(win, 1 + i, 19, "(%d)", weapon.weapons[i].count);
     }
 
     mvwprintw(win, 0, 0, "-------------------------");
