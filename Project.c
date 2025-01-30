@@ -120,6 +120,7 @@ clock_t start_code;
 int code, num_of_mistakes;
 int ancient_key_value;
 int monster_count;
+int hunger = 20;
 
 int menu();
 void sign_in(Player *player);
@@ -348,10 +349,15 @@ int main()
 
         explorer.experience = ((time(NULL) - start) / 60) + ex; 
         step_counter++;
-        if (step_counter % 10 == 0)
+        if (step_counter % 20 == 0)
+            hunger--;
+        if (hunger != 20 && hunger != 0 && hunger % 5 == 0)
         {
-            explorer.health -= 2;
+            explorer.health -= 5;
+            hunger--;
         }
+        if (hunger == 0)
+            explorer.health -= 20;
 
         if (end_game(&ep, &explorer, &player))
         {
@@ -1816,7 +1822,7 @@ void foods(Explorer_Position *ep, Explorer *explorer, Food *food)
 int food_show(Food *food)
 {
     WINDOW *win;
-    win = newwin(12, 25, 10, 45); 
+    win = newwin(12, 32, 10, 45); 
 
     if (food->count > 0)
     {   
@@ -1824,21 +1830,26 @@ int food_show(Food *food)
 
         while (1)
         {
-            mvwprintw(win, 0, 0, "-------------------------");
-            mvwprintw(win, 11, 0, "-------------------------");
+            mvwprintw(win, 0, 0, "--------------------------------");
+            mvwprintw(win, 11, 0, "--------------------------------");
             for (int i = 0; i < 12; i++)
             {
                 mvwprintw(win, i, 0, "|");
-                mvwprintw(win, i, 24, "|");
+                mvwprintw(win, i, 31, "|");
             }
 
             for (int i = 0; i < food->count; i++)
             {
                 mvwprintw(win, 1 + i, 5, "%s", food->foods[i].food);
-                mvwprintw(win, 1 + i, 20, "(%d)", food->foods[i].count);
+                mvwprintw(win, 1 + i, 27, "(%d)", food->foods[i].count);
             }
             mvwprintw(win, 1 + food->count, 5, "Back");
             mvwprintw(win, 1 + choice, 2, "->");
+            mvwprintw(win, 10, 2, "Hunger: ");
+            for (int i = 0; i < hunger; i++)
+            {
+                mvwprintw(win, 10, 10 + i, "#");
+            }
             wrefresh(win);
             int c = getch();
             if (c == KEY_UP)
@@ -1858,7 +1869,7 @@ int food_show(Food *food)
             else if (c == 10)
             {
                 break;
-            }
+            }            
             wclear(win);
         }
 
@@ -1874,14 +1885,19 @@ int food_show(Food *food)
     }
     else
     {
-        mvwprintw(win, 0, 0, "-------------------------");
-        mvwprintw(win, 11, 0, "-------------------------");
+        mvwprintw(win, 0, 0, "--------------------------------");
+        mvwprintw(win, 11, 0, "--------------------------------");
         for (int i = 0; i < 12; i++)
         {
             mvwprintw(win, i, 0, "|");
-            mvwprintw(win, i, 24, "|");
+            mvwprintw(win, i, 31, "|");
         }
-        mvwprintw(win, 5, 9, "NO FOOD!");
+        mvwprintw(win, 5, 12, "NO FOOD!");
+        mvwprintw(win, 10, 2, "Hunger: ");
+        for (int i = 0; i < hunger; i++)
+        {
+            mvwprintw(win, 10, 10 + i, "#");
+        }
         wrefresh(win);
         getch();
         delwin(win);
