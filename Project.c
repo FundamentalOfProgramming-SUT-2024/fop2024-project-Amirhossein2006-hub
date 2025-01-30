@@ -110,6 +110,8 @@ typedef struct
 typedef struct
 {
     char name[30];
+    int x;
+    int y;
     int health;
     int movement;
     int room;
@@ -1037,6 +1039,8 @@ void load_map(int k, Explorer_Position *ep, Monster *monster, Rooms *room1, Room
                 if (temp[i] == 'V')
                 {
                     strcpy(monster[monster_count].name, "Deamon");
+                    monster[monster_count].x = i;
+                    monster[monster_count].y = counter / 2;
                     monster[monster_count].health = 5;
                     monster[monster_count].movement = 0;
                     monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
@@ -1046,6 +1050,8 @@ void load_map(int k, Explorer_Position *ep, Monster *monster, Rooms *room1, Room
                 else if (temp[i] == 'B')
                 {
                     strcpy(monster[monster_count].name, "Fire Breathing Monster");
+                    monster[monster_count].x = i;
+                    monster[monster_count].y = counter / 2;
                     monster[monster_count].health = 10;
                     monster[monster_count].movement = 0;
                     monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
@@ -1055,6 +1061,8 @@ void load_map(int k, Explorer_Position *ep, Monster *monster, Rooms *room1, Room
                 else if (temp[i] == 'N')
                 {
                     strcpy(monster[monster_count].name, "Gient");
+                    monster[monster_count].x = i;
+                    monster[monster_count].y = counter / 2;
                     monster[monster_count].health = 15;
                     monster[monster_count].movement = 5;
                     monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
@@ -1064,6 +1072,8 @@ void load_map(int k, Explorer_Position *ep, Monster *monster, Rooms *room1, Room
                 else if (temp[i] == 'K')
                 {
                     strcpy(monster[monster_count].name, "Snake");
+                    monster[monster_count].x = i;
+                    monster[monster_count].y = counter / 2;
                     monster[monster_count].health = 20;
                     monster[monster_count].movement = -1;
                     monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
@@ -1073,6 +1083,8 @@ void load_map(int k, Explorer_Position *ep, Monster *monster, Rooms *room1, Room
                 else if (temp[i] == 'U')
                 {
                     strcpy(monster[monster_count].name, "Undeed");
+                    monster[monster_count].x = i;
+                    monster[monster_count].y = counter / 2;
                     monster[monster_count].health = 30;
                     monster[monster_count].movement = 5;
                     monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
