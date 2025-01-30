@@ -63,6 +63,7 @@ typedef struct
     int count;
     int damage;
     int num_in_each;
+    int board;
 } Weapon_Count;
 
 typedef struct
@@ -1980,6 +1981,7 @@ void find_weapon(char name[], Weapon *weapon)
             weapon->weapons[weapon->count].damage = 5;
             weapon->weapons[weapon->count].count = 1;
             weapon->weapons[weapon->count].num_in_each = 0;
+            weapon->weapons[weapon->count].board = 0;
         }
 
         else if (strcmp(name, "Dagger") == 0)
@@ -1987,6 +1989,7 @@ void find_weapon(char name[], Weapon *weapon)
             weapon->weapons[weapon->count].damage = 12;
             weapon->weapons[weapon->count].count = 10;
             weapon->weapons[weapon->count].num_in_each = 10;
+            weapon->weapons[weapon->count].board = 5;
         }
 
         else if (strcmp(name, "Magic Wand") == 0)
@@ -1994,6 +1997,7 @@ void find_weapon(char name[], Weapon *weapon)
             weapon->weapons[weapon->count].damage = 15;
             weapon->weapons[weapon->count].count = 8;
             weapon->weapons[weapon->count].num_in_each = 8;
+            weapon->weapons[weapon->count].board = 10;
         }
 
         else if (strcmp(name, "Normal Arrow") == 0)
@@ -2001,6 +2005,7 @@ void find_weapon(char name[], Weapon *weapon)
             weapon->weapons[weapon->count].damage = 5;
             weapon->weapons[weapon->count].count = 20;
             weapon->weapons[weapon->count].num_in_each = 20;
+            weapon->weapons[weapon->count].board = 5;
         }
 
         else if (strcmp(name, "Sword") == 0)
@@ -2008,6 +2013,7 @@ void find_weapon(char name[], Weapon *weapon)
             weapon->weapons[weapon->count].damage = 10;
             weapon->weapons[weapon->count].count = 1;
             weapon->weapons[weapon->count].num_in_each = 0;
+            weapon->weapons[weapon->count].board = 0;
         }
 
         weapon->count++;
