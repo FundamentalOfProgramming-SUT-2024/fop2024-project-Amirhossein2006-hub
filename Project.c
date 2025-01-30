@@ -108,15 +108,10 @@ typedef struct
 
 typedef struct
 {
-    char name[10];
+    char name[30];
     int health;
     int movement;
-} Monster_Count;
-
-typedef struct
-{
-    Monster_Count monsters[100];
-    int count;
+    int room;
 } Monster;
 
 char game_map[30][120];
@@ -124,6 +119,7 @@ clock_t start;
 clock_t start_code;
 int code, num_of_mistakes;
 int ancient_key_value;
+int monster_count;
 
 int menu();
 void sign_in(Player *player);
@@ -137,7 +133,7 @@ void settings(Game *game);
 void score_table(Player *player);
 void profile(Player *player);
 int random_renge(int a, int b);
-void load_map(int i, Explorer_Position *ep, Monster *monster);
+void load_map(int i, Explorer_Position *ep, Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 void whitch_room(Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
 void print_room(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6);
 void print_corridor(Explorer_Position *ep, Explorer *explorer, Game game, Corridors corridor1, Corridors corridor2, Corridors corridor3, Corridors corridor4, Corridors corridor5);
@@ -145,7 +141,7 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
 void print_map2(Explorer_Position *ep, Explorer *explorer, Game game, Corridors corridor);
 void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6, Corridors corridor1, Corridors corridor2, Corridors corridor3, Corridors corridor4, Corridors corridor5);
 void move_ivalue2(int move, Explorer_Position *ep);
-void new_game(Explorer_Position *ep, Explorer *explorer, Monster *monster);
+void new_game(Explorer_Position *ep, Explorer *explorer, Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 void trap(Explorer_Position *ep, Explorer *explorer);
 void stair(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5, Monster *monster);
 void stair_save(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
@@ -172,8 +168,9 @@ void room_them_y(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room
 void password(Explorer_Position *ep, Explorer *explorer, int *code);
 int unlock_door();
 void ancient_key(Explorer_Position *ep, Explorer *explorer);
-void load_game(int *ex, Explorer_Position *ep, Explorer *explorer, Player *player, Monster *monster);
+void load_game(int *ex, Explorer_Position *ep, Explorer *explorer, Player *player, Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 void random_password(int length, char password[]);
+int room(int x, int y, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 
 int main()
 {
@@ -193,7 +190,7 @@ int main()
     Spell spell;
     Rooms room1, room2, room3, room4, room5, room6;
     Corridors corridor1, corridor2, corridor3, corridor4, corridor5;
-    Monster monster;
+    Monster monster[20];
 
     game.difficulty = 0;
     game.color = 0;
@@ -226,11 +223,11 @@ int main()
         {
             // while (system("./Map.out") != 0)
             //     clear();
-            new_game(&ep, &explorer, &monster);
+            new_game(&ep, &explorer, monster, &room1, &room2, &room3, &room4, &room5, &room6);
             break;
         }
         case 1:
-            if(player.save_game) load_game(&ex, &ep, &explorer, &player, &monster);
+            if(player.save_game) load_game(&ex, &ep, &explorer, &player, monster, &room1, &room2, &room3, &room4, &room5, &room6);
             else
             {
                 clear();
@@ -286,7 +283,7 @@ int main()
 
         int move;
 
-        if (game_map[ep.y][ep.x] == '>' || game_map[ep.y][ep.x] == '<') move = stair_check(&explorer, &ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5, &monster);
+        if (game_map[ep.y][ep.x] == '>' || game_map[ep.y][ep.x] == '<') move = stair_check(&explorer, &ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5, monster);
         else move = tolower(getch());
 
         if (move == 'i')
@@ -981,7 +978,7 @@ int random_renge(int a, int b)
     return rand() % (b - a + 1) + a;
 }
 
-void load_map(int k, Explorer_Position *ep, Monster *monster)
+void load_map(int k, Explorer_Position *ep, Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6)
 {
     FILE *map;
 
@@ -1027,6 +1024,51 @@ void load_map(int k, Explorer_Position *ep, Monster *monster)
                 {
                     ep->x = i;
                     ep->y = counter / 2;
+                }
+
+                if (temp[i] == 'V')
+                {
+                    strcpy(monster[monster_count].name, "Deamon");
+                    monster[monster_count].health = 5;
+                    monster[monster_count].movement = 0;
+                    monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
+                    monster_count++;
+                }
+
+                else if (temp[i] == 'B')
+                {
+                    strcpy(monster[monster_count].name, "Fire Breathing Monster");
+                    monster[monster_count].health = 10;
+                    monster[monster_count].movement = 0;
+                    monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
+                    monster_count++;
+                }
+
+                else if (temp[i] == 'N')
+                {
+                    strcpy(monster[monster_count].name, "Gient");
+                    monster[monster_count].health = 15;
+                    monster[monster_count].movement = 5;
+                    monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
+                    monster_count++;
+                }
+
+                else if (temp[i] == 'K')
+                {
+                    strcpy(monster[monster_count].name, "Snake");
+                    monster[monster_count].health = 20;
+                    monster[monster_count].movement = -1;
+                    monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
+                    monster_count++;
+                }
+
+                else if (temp[i] == 'U')
+                {
+                    strcpy(monster[monster_count].name, "Undeed");
+                    monster[monster_count].health = 30;
+                    monster[monster_count].movement = 5;
+                    monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
+                    monster_count++;
                 }
 
                 game_map[counter / 2][i] = temp[i];
@@ -1566,11 +1608,11 @@ void move_ivalue2(int move, Explorer_Position *ep)
     }
 }
 
-void new_game(Explorer_Position *ep, Explorer *explorer, Monster *monster)
+void new_game(Explorer_Position *ep, Explorer *explorer, Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6)
 {
     start = time(NULL);
     clear();
-    load_map(1, ep, monster);
+    load_map(1, ep, monster, room1, room2, room3, room4, room5, room6);
     explorer->health = 100;
     explorer->score = 0;
     explorer->level = 1;
@@ -1622,7 +1664,7 @@ void stair(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2
     stair_save(explorer, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
     if (game_map[ep->y][ep->x] == '>') explorer->level++;
     else explorer->level--;
-    load_map(explorer->level, ep, monster);
+    load_map(explorer->level, ep, monster, room1, room2, room3, room4, room5, room6);
     room_position(explorer, room1, room2, room3, room4, room5, room6);
     corridor_position(explorer, corridor1, corridor2, corridor3, corridor4, corridor5);
 }
@@ -2442,11 +2484,11 @@ void ancient_key(Explorer_Position *ep, Explorer *explorer)
     }
 }
 
-void load_game(int *ex, Explorer_Position *ep, Explorer *explorer, Player *player, Monster *monster)
+void load_game(int *ex, Explorer_Position *ep, Explorer *explorer, Player *player, Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6)
 {
     start = time(NULL);
     clear();
-    load_map(player->level, ep, monster);
+    load_map(player->level, ep, monster, room1, room2, room3, room4, room5, room6);
     explorer->health = player->health;
     explorer->score = player->score;
     explorer->level = player->level;
@@ -2468,5 +2510,40 @@ void random_password(int length, char password[])
 
     if (password_check(password) == 0)
         random_password(length, password);
+}
+
+int room(int x, int y, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6)
+{
+    if (room1->s_x <= x && x <= room1->e_x && room1->s_y <= y && y <= room1->e_y)
+    {
+        return 1;
+    }
+    
+    else if (room2->s_x <= x && x <= room2->e_x && room2->s_y <= y && y <= room2->e_y)
+    {
+        return 2;
+    }
+
+    else if (room3->s_x <= x && x <= room3->e_x && room3->s_y <= y && y <= room3->e_y)
+    {
+        return 3;
+    }
+
+    else if (room4->s_x <= x && x <= room4->e_x && room4->s_y <= y && y <= room4->e_y)
+    {
+        return 4;
+    }
+
+    else if (room5->s_x <= x && x <= room5->e_x && room5->s_y <= y && y <= room5->e_y)
+    {
+        return 5;
+    }
+
+    else if (room6->s_x <= x && x <= room6->e_x && room6->s_y <= y && y <= room6->e_y)
+    {
+        return 6;
+    }
+
+    return 0;
 }
 
