@@ -160,7 +160,7 @@ void gold(Explorer_Position *ep, Explorer *explorer);
 void black_gold(Explorer_Position *ep, Explorer *explorer);
 void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon);
 void find_weapon(char name[], Weapon *weapon);
-void weapon_show(Weapon weapon);
+void weapon_show(Weapon *weapon, Explorer *explorer);
 void spells(Explorer_Position *ep, Explorer *explorer, Spell *spell);
 void find_spell(char name[], Spell *spell);
 void spell_show(Spell spell);
@@ -296,7 +296,7 @@ int main()
 
         if (move == 'i')
         { 
-            weapon_show(weapon);
+            weapon_show(&weapon, &explorer);
             step_counter--;
         }
         else if (move == 'o')
@@ -2049,27 +2049,57 @@ void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon)
     }
 }
 
-void weapon_show(Weapon weapon)
+void weapon_show(Weapon *weapon, Explorer *explorer)
 {
     WINDOW *win;
-    win = newwin(12, 25, 10, 45);    
+    win = newwin(12, 25, 10, 45); 
 
-    for (int i = 0; i < weapon.count; i++)
+    int choice = 0;
+
+    while (1)
     {
-        mvwprintw(win, 1 + i, 2, "%s", weapon.weapons[i].weapon);
-        mvwprintw(win, 1 + i, 19, "(%d)", weapon.weapons[i].count);
+        mvwprintw(win, 0, 0, "-------------------------");
+        mvwprintw(win, 11, 0, "-------------------------");
+        for (int i = 0; i < 12; i++)
+        {
+            mvwprintw(win, i, 0, "|");
+            mvwprintw(win, i, 24, "|");
+        }
+
+        for (int i = 0; i < weapon->count; i++)
+        {
+            mvwprintw(win, 1 + i, 5, "%s", weapon->weapons[i].weapon);
+            mvwprintw(win, 1 + i, 19, "(%d)", weapon->weapons[i].count);
+        }
+        mvwprintw(win, 1 + weapon->count, 5, "Back");
+        mvwprintw(win, 1 + choice, 2, "->");
+        wrefresh(win);
+        int c = getch();
+        if (c == KEY_UP)
+        {
+            if (choice != 0)
+                choice--;
+            else
+                choice = weapon->count;
+        }
+        else if (c == KEY_DOWN)
+        {
+            if (choice != weapon->count)
+                choice++;
+            else
+                choice = 0;
+        }
+        else if (c == 10)
+        {
+            break;
+        }            
+        wclear(win);
     }
 
-    mvwprintw(win, 0, 0, "-------------------------");
-    mvwprintw(win, 11, 0, "-------------------------");
-    for (int i = 0; i < 12; i++)
-    {
-        mvwprintw(win, i, 0, "|");
-        mvwprintw(win, i, 24, "|");
-    }
+    if (choice != weapon->count)
+        strcpy(explorer->weapon, weapon->weapons[choice].weapon);
 
     wrefresh(win);
-    getch();
     delwin(win);
 }
 
