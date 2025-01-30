@@ -111,6 +111,12 @@ typedef struct
     char name[10];
     int health;
     int movement;
+} Monster_Count;
+
+typedef struct
+{
+    Monster_Count monsters[100];
+    int count;
 } Monster;
 
 char game_map[30][120];
@@ -187,6 +193,7 @@ int main()
     Spell spell;
     Rooms room1, room2, room3, room4, room5, room6;
     Corridors corridor1, corridor2, corridor3, corridor4, corridor5;
+    Monster monster;
 
     game.difficulty = 0;
     game.color = 0;
@@ -1169,9 +1176,9 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
             if (game_map[i][j] == 'T') mvprintw(i, j, ".");
             else if (game_map[i][j] == 'F')
             {
-                attron(COLOR_PAIR(2));
+                attron(COLOR_PAIR(5));
                 mvprintw(i, j, "F");
-                attroff(COLOR_PAIR(2));
+                attroff(COLOR_PAIR(5));
             }
             else if (game_map[i][j] == 'G')
             {
@@ -1204,6 +1211,17 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
                 attron(COLOR_PAIR(3));
                 mvprintw(i, j, "%c", game_map[i][j]);
                 attroff(COLOR_PAIR(3));
+            }
+
+            else if (game_map[i][j] == 'V' ||
+                     game_map[i][j] == 'B' ||
+                     game_map[i][j] == 'N' ||
+                     game_map[i][j] == 'K' ||
+                     game_map[i][j] == 'U')
+            {
+                attron(COLOR_PAIR(2));
+                mvprintw(i, j, "%c", game_map[i][j]);
+                attroff(COLOR_PAIR(2));
             }
 
             else if(game_map[i][j] == '=' || game_map[i][j] == '_') room_them_x(i, j, room1, room2, room3, room4, room5, room6);
