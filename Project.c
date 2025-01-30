@@ -106,6 +106,13 @@ typedef struct
     int is_in;
 } Corridors;
 
+typedef struct
+{
+    char name[10];
+    int health;
+    int movement;
+} Monster;
+
 char game_map[30][120];
 clock_t start;
 clock_t start_code;
@@ -210,8 +217,8 @@ int main()
         {
         case 0:
         {
-            while (system("./Map.out") != 0)
-                clear();
+            // while (system("./Map.out") != 0)
+            //     clear();
             new_game(&ep, &explorer);
             break;
         }

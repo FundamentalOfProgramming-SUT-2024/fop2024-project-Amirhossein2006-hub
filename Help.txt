@@ -15,6 +15,13 @@ Signs:
 		'G' -> Gold
 		'B' -> Black Gold
 
+	Monsters:
+		'V' -> Deamon
+		'B' -> Fire Breathing Monster
+		'N' -> Gient
+		'K' -> Snake
+		'U' -> Undeed
+
 	Other:
 		'F' -> Food
 		'^' -> Trap
