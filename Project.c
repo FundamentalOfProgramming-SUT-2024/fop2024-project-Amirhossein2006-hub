@@ -61,6 +61,7 @@ typedef struct
 {
     char weapon[20];
     int count;
+    int damage;
 } Weapon_Count;
 
 typedef struct
@@ -202,6 +203,7 @@ int main()
     weapon.count = 1;
     strcpy(weapon.weapons[0].weapon, "Mace");
     weapon.weapons[0].count = 1;
+    weapon.weapons[0].damage = 5;
     spell.count = 0;
     code = 1000;
     ancient_key_value = 0;
@@ -1956,13 +1958,29 @@ void find_weapon(char name[], Weapon *weapon)
         if (strcmp(weapon->weapons[i].weapon, name) == 0)
         {
             ivalue = 1;
-            weapon->weapons[i].count++;
+            if (strcmp(name, "Mace") != 0 && strcmp(name, "Sword") != 0) weapon->weapons[i].count++;
         }
     }
     if (ivalue == 0)
     {
         strcpy(weapon->weapons[weapon->count].weapon, name);
-        weapon->weapons[weapon->count++].count = 1;
+        weapon->weapons[weapon->count].count = 1;
+        if (strcmp(name, "Mace") == 0)
+            weapon->weapons[weapon->count].damage = 5;
+
+        else if (strcmp(name, "Dagger") == 0)
+            weapon->weapons[weapon->count].damage = 12;
+
+        else if (strcmp(name, "Magic Wand") == 0)
+            weapon->weapons[weapon->count].damage = 15;
+
+        else if (strcmp(name, "Normal Arrow") == 0)
+            weapon->weapons[weapon->count].damage = 5;
+
+        else if (strcmp(name, "Sword") == 0)
+            weapon->weapons[weapon->count].damage = 10;
+
+        weapon->count++;
     }
 }
 
