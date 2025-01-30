@@ -160,7 +160,7 @@ void gold(Explorer_Position *ep, Explorer *explorer);
 void black_gold(Explorer_Position *ep, Explorer *explorer);
 void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon);
 void find_weapon(char name[], Weapon *weapon);
-void weapon_show(Weapon *weapon, Explorer *explorer);
+int weapon_show(Weapon *weapon, Explorer *explorer);
 void spells(Explorer_Position *ep, Explorer *explorer, Spell *spell);
 void find_spell(char name[], Spell *spell);
 void spell_show(Spell spell);
@@ -295,8 +295,18 @@ int main()
         else move = tolower(getch());
 
         if (move == 'i')
-        { 
-            weapon_show(&weapon, &explorer);
+        {
+            char current_weapon[40];
+            strcpy(current_weapon, explorer.weapon);
+            if (weapon_show(&weapon, &explorer))
+            {
+                clear();
+                print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
+                print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+                if (strcmp(current_weapon, explorer.weapon) != 0) mvprintw(0, 25, "Your selected weapon changed to %s!", explorer.weapon);
+                else mvprintw(0, 25, "Your selected weapon doesn't change!");
+                getch();
+            }
             step_counter--;
         }
         else if (move == 'o')
@@ -2049,7 +2059,7 @@ void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon)
     }
 }
 
-void weapon_show(Weapon *weapon, Explorer *explorer)
+int weapon_show(Weapon *weapon, Explorer *explorer)
 {
     WINDOW *win;
     win = newwin(12, 25, 10, 45); 
@@ -2096,11 +2106,13 @@ void weapon_show(Weapon *weapon, Explorer *explorer)
         wclear(win);
     }
 
-    if (choice != weapon->count)
-        strcpy(explorer->weapon, weapon->weapons[choice].weapon);
+    if (choice == weapon->count)
+        return 0;
 
+    strcpy(explorer->weapon, weapon->weapons[choice].weapon);
     wrefresh(win);
     delwin(win);
+    return 1;
 }
 
 void find_spell(char name[], Spell *spell)
