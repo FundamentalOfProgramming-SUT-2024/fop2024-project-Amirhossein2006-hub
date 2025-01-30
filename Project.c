@@ -42,6 +42,7 @@ typedef struct
     int experience;
     int gold;
     int level;
+    char weapon[20];
 } Explorer;
 
 typedef struct
@@ -204,6 +205,7 @@ int main()
     ancient_key_value = 0;
     int ex = 0;
     srand(time(NULL));
+    strcpy(explorer.weapon, "Mace");
 
     switch (menu())
     {
@@ -1304,11 +1306,12 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
     mvprintw(ep->y, ep->x, "X");
     attroff(COLOR_PAIR(game.color + 1));
     
-    mvprintw(29, 15, "Health : %d", explorer->health);
-    mvprintw(29, 35, "Score : %d", explorer->score);
-    mvprintw(29, 50, "Level : %d", explorer->level);
-    mvprintw(29, 65, "Gold : %d", explorer->gold);
-    mvprintw(29, 80, "Experience : %d", explorer->experience);
+    mvprintw(29, 10, "Health : %d", explorer->health);
+    mvprintw(29, 27, "Score : %d", explorer->score);
+    mvprintw(29, 40, "Level : %d", explorer->level);
+    mvprintw(29, 55, "Gold : %d", explorer->gold);
+    mvprintw(29, 70, "Experience : %d", explorer->experience);
+    mvprintw(29, 90, "Weapon : %s", explorer->weapon);
 }
 
 void print_map2(Explorer_Position *ep, Explorer *explorer, Game game, Corridors corridor)
