@@ -71,6 +71,8 @@ typedef struct
 {
     Weapon_Count weapons[10];
     int count;
+    int sh_r;
+    int l_r;
 } Weapon;
 
 typedef struct
@@ -204,6 +206,7 @@ int main()
     game.color = 0;
     food.count = 0;
     weapon.count = 1;
+    weapon.sh_r = 1;
     strcpy(weapon.weapons[0].weapon, "Mace");
     weapon.weapons[0].count = 1;
     weapon.weapons[0].damage = 5;
@@ -1984,6 +1987,7 @@ void find_weapon(char name[], Weapon *weapon)
             weapon->weapons[weapon->count].count = 1;
             weapon->weapons[weapon->count].num_in_each = 0;
             weapon->weapons[weapon->count].board = 0;
+            weapon->sh_r++;
         }
 
         else if (strcmp(name, "Dagger") == 0)
@@ -1993,6 +1997,7 @@ void find_weapon(char name[], Weapon *weapon)
             weapon->weapons[weapon->count].count = 10;
             weapon->weapons[weapon->count].num_in_each = 10;
             weapon->weapons[weapon->count].board = 5;
+            weapon->l_r++;
         }
 
         else if (strcmp(name, "Magic Wand") == 0)
@@ -2002,6 +2007,7 @@ void find_weapon(char name[], Weapon *weapon)
             weapon->weapons[weapon->count].count = 8;
             weapon->weapons[weapon->count].num_in_each = 8;
             weapon->weapons[weapon->count].board = 10;
+            weapon->l_r++;
         }
 
         else if (strcmp(name, "Normal Arrow") == 0)
@@ -2011,6 +2017,7 @@ void find_weapon(char name[], Weapon *weapon)
             weapon->weapons[weapon->count].count = 20;
             weapon->weapons[weapon->count].num_in_each = 20;
             weapon->weapons[weapon->count].board = 5;
+            weapon->l_r++;
         }
 
         else if (strcmp(name, "Sword") == 0)
@@ -2020,6 +2027,7 @@ void find_weapon(char name[], Weapon *weapon)
             weapon->weapons[weapon->count].count = 1;
             weapon->weapons[weapon->count].num_in_each = 0;
             weapon->weapons[weapon->count].board = 0;
+            weapon->sh_r++;
         }
 
         weapon->count++;
@@ -2074,27 +2082,50 @@ void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon)
 int weapon_show(Weapon *weapon, Explorer *explorer)
 {
     WINDOW *win;
-    win = newwin(12, 25, 10, 45); 
+    win = newwin(20, 50, 5, 30);
+    char temp[10][40];
+    int counter = 0;
 
     int choice = 0;
 
     while (1)
     {
-        mvwprintw(win, 0, 0, "-------------------------");
-        mvwprintw(win, 11, 0, "-------------------------");
-        for (int i = 0; i < 12; i++)
+        mvwprintw(win, 0, 0, "--------------------------------------------------");
+        mvwprintw(win, 19, 0, "--------------------------------------------------");
+        for (int i = 0; i < 20; i++)
         {
             mvwprintw(win, i, 0, "|");
-            mvwprintw(win, i, 24, "|");
+            mvwprintw(win, i, 49, "|");
         }
 
+        mvwprintw(win, 1, 2, "Short Renge Weapons:");
         for (int i = 0; i < weapon->count; i++)
         {
-            mvwprintw(win, 1 + i, 5, "%s", weapon->weapons[i].weapon);
-            mvwprintw(win, 1 + i, 19, "(%d)", weapon->weapons[i].count);
+            if (weapon->weapons[i].board == 0)
+            {
+                mvwprintw(win, 2 + i, 5, "%s", weapon->weapons[i].weapon);
+                mvwprintw(win, 2 + i, 15, "Damage: %d", weapon->weapons[i].damage);
+                mvwprintw(win, 2 + i, 43, "(%d)", weapon->weapons[i].count);
+                strcpy(temp[counter++], weapon->weapons[i].weapon);
+            }
         }
-        mvwprintw(win, 1 + weapon->count, 5, "Back");
-        mvwprintw(win, 1 + choice, 2, "->");
+
+        mvwprintw(win, weapon->sh_r + 3, 2, "Long Renge Weapons:");
+        for (int i = 0; i < weapon->count; i++)
+        {
+            if (weapon->weapons[i].board > 0)
+            {
+                mvwprintw(win, weapon->sh_r + 3 + i, 5, "%s", weapon->weapons[i].weapon);
+                mvwprintw(win, weapon->sh_r + 3 + i, 15, "Damage: %d", weapon->weapons[i].damage);
+                mvwprintw(win, weapon->sh_r + 3 + i, 30, "Board: %d", weapon->weapons[i].board);
+                mvwprintw(win, weapon->sh_r + 3 + i, 43, "(%d)", weapon->weapons[i].count);
+                strcpy(temp[counter++], weapon->weapons[i].weapon);
+            }
+        }
+        mvwprintw(win, 18, 5, "Back");
+        if (choice < weapon->sh_r) mvwprintw(win, 2 + choice, 2, "->");
+        else if(choice != weapon->count) mvwprintw(win, weapon->sh_r + 3 + choice, 2, "->");
+        else if (choice == weapon->count) mvwprintw(win, 18, 2, "->");
         wrefresh(win);
         int c = getch();
         if (c == KEY_UP)
@@ -2121,7 +2152,7 @@ int weapon_show(Weapon *weapon, Explorer *explorer)
     if (choice == weapon->count)
         return 0;
 
-    strcpy(explorer->weapon, weapon->weapons[choice].weapon);
+    strcpy(explorer->weapon, temp[choice]);
     wrefresh(win);
     delwin(win);
     return 1;
