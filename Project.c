@@ -333,10 +333,15 @@ int main()
             if (weapon_show(&weapon, &explorer))
             {
                 clear();
+                if (explorer.current_weapon.count == 0)
+                {
+                    mvprintw(0, 25, "The number of %s Weapon is 0! You can't pick it any more!", explorer.current_weapon.weapon);
+                    explorer.current_weapon = weapon.weapons[0];
+                }
+                else if (strcmp(current_weapon, explorer.current_weapon.weapon) != 0) mvprintw(0, 25, "Your selected weapon changed to %s!", explorer.current_weapon.weapon);
+                else mvprintw(0, 25, "Your selected weapon doesn't change!");
                 print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
                 print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
-                if (strcmp(current_weapon, explorer.current_weapon.weapon) != 0) mvprintw(0, 25, "Your selected weapon changed to %s!", explorer.current_weapon.weapon);
-                else mvprintw(0, 25, "Your selected weapon doesn't change!");
                 getch();
             }
             step_counter--;
@@ -430,6 +435,22 @@ int main()
             if (strcmp(explorer.current_weapon.weapon, "Mace") == 0)
             {
                 mvprintw(0, 25, "Wow! You hit 8 near blocks with Mace!");
+            }
+            else if (strcmp(explorer.current_weapon.weapon, "Sword") == 0)
+            {
+                mvprintw(0, 25, "Wow! You hit 8 near blocks with Sword!");
+            }
+            else if (strcmp(explorer.current_weapon.weapon, "Dagger") == 0)
+            {
+                mvprintw(0, 25, "Wow! You throwed a Dagger!");
+            }
+            else if (strcmp(explorer.current_weapon.weapon, "Normal Arrow") == 0)
+            {
+                mvprintw(0, 25, "Wow! You throwed a Normal Arrow!");
+            }
+            else if (strcmp(explorer.current_weapon.weapon, "Magic Wand") == 0)
+            {
+                mvprintw(0, 25, "Wow! You throwed a Magic!");
             }
             getch();
         }
@@ -2393,17 +2414,17 @@ int weapon_show(Weapon *weapon, Explorer *explorer)
         for (int i = 0; i < 2; i++)
         {
             mvwprintw(win, 2 + i, 5, "%s", weapon->weapons[i].weapon);
-            mvwprintw(win, 2 + i, 15, "Damage: %d", weapon->weapons[i].damage);
-            mvwprintw(win, 2 + i, 43, "(%d)", weapon->weapons[i].count);
+            mvwprintw(win, 2 + i, 20, "Damage: %d", weapon->weapons[i].damage);
+            mvwprintw(win, 2 + i, 44, "(%d)", weapon->weapons[i].count);
         }
 
         mvwprintw(win, 5, 2, "Long Renge Weapons:");
         for (int i = 2; i < 5; i++)
         {
             mvwprintw(win, 4 + i, 5, "%s", weapon->weapons[i].weapon);
-            mvwprintw(win, 4 + i, 15, "Damage: %d", weapon->weapons[i].damage);
-            mvwprintw(win, 4 + i, 30, "Board: %d", weapon->weapons[i].board);
-            mvwprintw(win, 4 + i, 43, "(%d)", weapon->weapons[i].count);
+            mvwprintw(win, 4 + i, 20, "Damage: %d", weapon->weapons[i].damage);
+            mvwprintw(win, 4 + i, 33, "Board: %d", weapon->weapons[i].board);
+            mvwprintw(win, 4 + i, 44, "(%d)", weapon->weapons[i].count);
         }
         mvwprintw(win, 18, 5, "Back");
         if (choice < 2) mvwprintw(win, 2 + choice, 2, "->");
