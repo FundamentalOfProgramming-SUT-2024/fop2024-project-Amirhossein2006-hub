@@ -327,8 +327,8 @@ int main()
                 print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
                 print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                 mvprintw(0, 25, "Wow! You eat a food!");
-                if (explorer.health <= 90) explorer.health += 10;
-                else explorer.health = 100;
+                if (hunger < 17) hunger += 3;
+                else hunger = 20;
                 getch();
             }
             step_counter--;
