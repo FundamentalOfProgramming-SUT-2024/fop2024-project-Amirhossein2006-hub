@@ -182,7 +182,8 @@ void ancient_key(Explorer_Position *ep, Explorer *explorer);
 void load_game(int *ex, Explorer_Position *ep, Explorer *explorer, Player *player, Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 void random_password(int length, char password[]);
 int room(int x, int y, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
-int mace(int x, int y, Monster *monster, Explorer *explorer);
+void mace(int x, int y, Monster *monster, Explorer *explorer);
+void sword(int x, int y, Monster *monster, Explorer *explorer);
 
 int main()
 {
@@ -215,7 +216,7 @@ int main()
     weapon.weapons[0].num_in_each = 0;
     weapon.weapons[0].board = 0;
     strcpy(weapon.weapons[1].weapon, "Sword");
-    weapon.weapons[1].count = 0;
+    weapon.weapons[1].count = 1;
     weapon.weapons[1].damage = 10;
     weapon.weapons[1].num_in_each = 0;
     weapon.weapons[1].board = 0;
@@ -442,6 +443,7 @@ int main()
             else if (strcmp(explorer.current_weapon.weapon, "Sword") == 0)
             {
                 mvprintw(0, 25, "Wow! You hit 8 near blocks with Sword!");
+                sword(x, y, monster, &explorer);
             }
             else if (strcmp(explorer.current_weapon.weapon, "Dagger") == 0)
             {
@@ -2801,7 +2803,7 @@ int room(int x, int y, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, R
     return 0;
 }
 
-int mace(int x, int y, Monster *monster, Explorer *explorer)
+void mace(int x, int y, Monster *monster, Explorer *explorer)
 {
     for (int i = 0; i < monster_count; i++)
     {
@@ -2827,6 +2829,33 @@ int mace(int x, int y, Monster *monster, Explorer *explorer)
             }
         }
     }
-    
+}
+
+void sword(int x, int y, Monster *monster, Explorer *explorer)
+{
+    for (int i = 0; i < monster_count; i++)
+    {
+        int m_x = monster[i].x;
+        int m_y = monster[i].y;
+
+        if ((m_x == x + 1 && (m_y == y + 1 || m_y == y - 1 || m_y == y)) || 
+            (m_x == x - 1 && (m_y == y + 1 || m_y == y - 1 || m_y == y)) || 
+            (m_y == y + 1 && (m_x == x + 1 || m_x == x - 1 || m_x == x)) || 
+            (m_y == y - 1 && (m_x == x + 1 || m_x == x - 1 || m_x == x)))
+        {
+            if (monster[i].health > 0)
+            {
+                monster[i].health -= 5;
+                mvprintw(0, 25, "Wow! You hit a monster with Sword!    ");
+                explorer->score += 1;
+                if (monster[i].health <= 0)
+                {
+                    game_map[m_y][m_x] = '.';
+                    mvprintw(0, 65, "Wow! You killed a %s! Score increases!", monster[i].name);
+                    explorer->score += 5;
+                }
+            }
+        }
+    }
 }
 
