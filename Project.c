@@ -43,6 +43,8 @@ typedef struct
     int gold;
     int level;
     char weapon[20];
+    int power;
+    int speed;
 } Explorer;
 
 typedef struct
@@ -78,7 +80,9 @@ typedef struct
 typedef struct
 {
     char spell[20];
+    int id;
     int count;
+    int time;
 } Spell_Count;
 
 typedef struct
@@ -167,7 +171,7 @@ void find_weapon(char name[], Weapon *weapon);
 int weapon_show(Weapon *weapon, Explorer *explorer);
 void spells(Explorer_Position *ep, Explorer *explorer, Spell *spell);
 void find_spell(char name[], Spell *spell);
-void spell_show(Spell spell);
+int spell_show(Spell *spell, Explorer *explorer);
 int end_game(Explorer_Position *ep, Explorer *explorer, Player *player);
 void room_position(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 void corridor_position(Explorer *explorer, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
@@ -216,6 +220,8 @@ int main()
     int ex = 0;
     srand(time(NULL));
     strcpy(explorer.weapon, "Mace");
+    explorer.power = 1;
+    explorer.speed = 1;
 
     switch (menu())
     {
@@ -316,7 +322,30 @@ int main()
         }
         else if (move == 'o')
         {
-            spell_show(spell);
+            int choice = spell_show(&spell, &explorer);
+            if (choice >= 0)
+            {
+                clear();
+                print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
+                print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+                mvprintw(0, 25, "Wow! Your drinked %s Spell!", spell.spells[choice].spell);
+
+                if (strcmp(spell.spells[choice].spell, "Health") == 0)
+                    explorer.health = 100;
+                else if (strcmp(spell.spells[choice].spell, "Speed") == 0)
+                    explorer.speed = 2;
+                else if (strcmp(spell.spells[choice].spell, "Damage") == 0)
+                    explorer.power = 2;
+                
+                if (strcmp(spell.spells[choice].spell, "Health") != 0) spell.spells[choice].time = 20;
+                getch();
+            }
+            else if (choice < -1)
+            {
+                choice += 4;
+                mvprintw(0, 25, "The number of %s Spell is 0! You can't drink it any more!", spell.spells[choice].spell);
+                getch();
+            }
             step_counter--;
         }
         else if (move == 'p')
@@ -389,6 +418,27 @@ int main()
         }
         if (hunger == 0)
             explorer.health -= 20;
+
+        for (int i = 0; i < spell.count; i++)
+        {
+            if (spell.spells[i].time != -1)
+            {
+                spell.spells[i].time--;
+                if (spell.spells[i].time == 0 && strcmp(spell.spells[i].spell, "Speed") == 0)
+                {
+                    mvprintw(0, 25, "Opps! The effect of Speed Spell have ended!");
+                    explorer.speed = 1;
+                    spell.spells[i].time = -1;
+                }
+                if (spell.spells[i].time == 0 && strcmp(spell.spells[i].spell, "Speed") == 0)
+                {
+                    mvprintw(0, 25, "Opps! The effect of Damage Spell have ended!");
+                    explorer.power = 1;
+                    spell.spells[i].time = -1;
+                }
+            }
+        }
+        
 
         if (end_game(&ep, &explorer, &player))
         {
@@ -2181,7 +2231,10 @@ void find_spell(char name[], Spell *spell)
     if (ivalue == 0)
     {
         strcpy(spell->spells[spell->count].spell, name);
-        spell->spells[spell->count++].count = 1;
+        spell->spells[spell->count].count = 1;
+        spell->spells[spell->count].id = spell->count;
+        spell->spells[spell->count].time = -1;
+        spell->count++;
     }
 }
 
@@ -2214,28 +2267,62 @@ void spells(Explorer_Position *ep, Explorer *explorer, Spell *spell)
     }
 }
 
-void spell_show(Spell spell)
+int spell_show(Spell *spell, Explorer *explorer)
 {
     WINDOW *win;
-    win = newwin(12, 25, 10, 45);    
+    win = newwin(12, 25, 10, 45); 
 
-    for (int i = 0; i < spell.count; i++)
+    int choice = 0;
+
+    while (1)
     {
-        mvwprintw(win, 1 + i, 2, "%s", spell.spells[i].spell);
-        mvwprintw(win, 1 + i, 20, "(%d)", spell.spells[i].count);
+        mvwprintw(win, 0, 0, "-------------------------");
+        mvwprintw(win, 11, 0, "-------------------------");
+        for (int i = 0; i < 12; i++)
+        {
+            mvwprintw(win, i, 0, "|");
+            mvwprintw(win, i, 24, "|");
+        }
+
+        for (int i = 0; i < spell->count; i++)
+        {
+            mvwprintw(win, 1 + i, 5, "%s", spell->spells[i].spell);
+            mvwprintw(win, 1 + i, 20, "(%d)", spell->spells[i].count);
+        }
+
+        mvwprintw(win, 1 + spell->count, 5, "Back");
+        mvwprintw(win, 1 + choice, 2, "->");
+        wrefresh(win);
+        int c = getch();
+        if (c == KEY_UP)
+        {
+            if (choice != 0)
+                choice--;
+            else
+                choice = spell->count;
+        }
+        else if (c == KEY_DOWN)
+        {
+            if (choice != spell->count)
+                choice++;
+            else
+                choice = 0;
+        }
+        else if (c == 10)
+        {
+            break;
+        }            
+        wclear(win);
     }
 
-    mvwprintw(win, 0, 0, "-------------------------");
-    mvwprintw(win, 11, 0, "-------------------------");
-    for (int i = 0; i < 12; i++)
-    {
-        mvwprintw(win, i, 0, "|");
-        mvwprintw(win, i, 24, "|");
-    }
-
+    if (choice == spell->count)
+        return -1;
+    else if (spell->spells[choice].count == 0)
+        return (spell->spells[choice].id - 4);
+    spell->spells[choice].count--;  
     wrefresh(win);
-    getch();
     delwin(win);
+    return spell->spells[choice].id;
 }
 
 int end_game(Explorer_Position *ep, Explorer *explorer, Player *player)
