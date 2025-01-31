@@ -37,18 +37,6 @@ typedef struct
 
 typedef struct
 {
-    int health;
-    int score;
-    int experience;
-    int gold;
-    int level;
-    char weapon[20];
-    int power;
-    int speed;
-} Explorer;
-
-typedef struct
-{
     char food[20];
     int count;
 } Food_Count;
@@ -61,7 +49,6 @@ typedef struct
 
 typedef struct
 {
-    int id;
     char weapon[20];
     int count;
     int damage;
@@ -73,9 +60,19 @@ typedef struct
 {
     Weapon_Count weapons[10];
     int count;
-    int sh_r;
-    int l_r;
 } Weapon;
+
+typedef struct
+{
+    int health;
+    int score;
+    int experience;
+    int gold;
+    int level;
+    int power;
+    int speed;
+    Weapon_Count current_weapon;
+} Explorer;
 
 typedef struct
 {
@@ -210,17 +207,40 @@ int main()
     game.difficulty = 0;
     game.color = 0;
     food.count = 0;
-    weapon.count = 1;
-    weapon.sh_r = 1;
+
+    weapon.count = 5;
     strcpy(weapon.weapons[0].weapon, "Mace");
     weapon.weapons[0].count = 1;
     weapon.weapons[0].damage = 5;
+    weapon.weapons[0].num_in_each = 0;
+    weapon.weapons[0].board = 0;
+    strcpy(weapon.weapons[1].weapon, "Sword");
+    weapon.weapons[1].count = 0;
+    weapon.weapons[1].damage = 10;
+    weapon.weapons[1].num_in_each = 0;
+    weapon.weapons[1].board = 0;
+    strcpy(weapon.weapons[2].weapon, "Dagger");
+    weapon.weapons[2].count = 0;
+    weapon.weapons[2].damage = 12;
+    weapon.weapons[2].num_in_each = 10;
+    weapon.weapons[2].board = 5;
+    strcpy(weapon.weapons[3].weapon, "Magic Wand");
+    weapon.weapons[3].count = 0;
+    weapon.weapons[3].damage = 15;
+    weapon.weapons[3].num_in_each = 8;
+    weapon.weapons[3].board = 10;
+    strcpy(weapon.weapons[4].weapon, "Normal Arrow");
+    weapon.weapons[4].count = 0;
+    weapon.weapons[4].damage = 5;
+    weapon.weapons[4].num_in_each = 20;
+    weapon.weapons[4].board = 5;
+
     spell.count = 0;
     code = 1000;
     ancient_key_value = 0;
     int ex = 0;
     srand(time(NULL));
-    strcpy(explorer.weapon, "Mace");
+    explorer.current_weapon = weapon.weapons[0];
     explorer.power = 1;
     explorer.speed = 1;
 
@@ -309,13 +329,13 @@ int main()
         if (move == 'i')
         {
             char current_weapon[40];
-            strcpy(current_weapon, explorer.weapon);
+            strcpy(current_weapon, explorer.current_weapon.weapon);
             if (weapon_show(&weapon, &explorer))
             {
                 clear();
                 print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
                 print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
-                if (strcmp(current_weapon, explorer.weapon) != 0) mvprintw(0, 25, "Your selected weapon changed to %s!", explorer.weapon);
+                if (strcmp(current_weapon, explorer.current_weapon.weapon) != 0) mvprintw(0, 25, "Your selected weapon changed to %s!", explorer.current_weapon.weapon);
                 else mvprintw(0, 25, "Your selected weapon doesn't change!");
                 getch();
             }
@@ -404,6 +424,14 @@ int main()
                 break;
             }
             step_counter--;
+        }
+        else if (move == 32)
+        {
+            if (strcmp(explorer.current_weapon.weapon, "Mace") == 0)
+            {
+                mvprintw(0, 25, "Wow! You hit 8 near blocks with Mace!");
+            }
+            getch();
         }
         else 
         {
@@ -1405,7 +1433,7 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
     mvprintw(29, 40, "Level : %d", explorer->level);
     mvprintw(29, 55, "Gold : %d", explorer->gold);
     mvprintw(29, 70, "Experience : %d", explorer->experience);
-    mvprintw(29, 90, "Weapon : %s", explorer->weapon);
+    mvprintw(29, 90, "Weapon : %s", explorer->current_weapon.weapon);
 }
 
 void print_map2(Explorer_Position *ep, Explorer *explorer, Game game, Corridors corridor)
@@ -2290,69 +2318,12 @@ void black_gold(Explorer_Position *ep, Explorer *explorer)
 
 void find_weapon(char name[], Weapon *weapon)
 {
-    int ivalue = 0;
     for (int i = 0; i < weapon->count; i++)
     {
         if (strcmp(weapon->weapons[i].weapon, name) == 0)
         {
-            ivalue = 1;
             weapon->weapons[i].count += weapon->weapons[i].num_in_each;
         }
-    }
-    if (ivalue == 0)
-    {
-        strcpy(weapon->weapons[weapon->count].weapon, name);
-        if (strcmp(name, "Mace") == 0)
-        {
-            weapon->weapons[weapon->count].id = weapon->count;
-            weapon->weapons[weapon->count].damage = 5;
-            weapon->weapons[weapon->count].count = 1;
-            weapon->weapons[weapon->count].num_in_each = 0;
-            weapon->weapons[weapon->count].board = 0;
-            weapon->sh_r++;
-        }
-
-        else if (strcmp(name, "Dagger") == 0)
-        {
-            weapon->weapons[weapon->count].id = weapon->count;
-            weapon->weapons[weapon->count].damage = 12;
-            weapon->weapons[weapon->count].count = 10;
-            weapon->weapons[weapon->count].num_in_each = 10;
-            weapon->weapons[weapon->count].board = 5;
-            weapon->l_r++;
-        }
-
-        else if (strcmp(name, "Magic Wand") == 0)
-        {
-            weapon->weapons[weapon->count].id = weapon->count;
-            weapon->weapons[weapon->count].damage = 15;
-            weapon->weapons[weapon->count].count = 8;
-            weapon->weapons[weapon->count].num_in_each = 8;
-            weapon->weapons[weapon->count].board = 10;
-            weapon->l_r++;
-        }
-
-        else if (strcmp(name, "Normal Arrow") == 0)
-        {
-            weapon->weapons[weapon->count].id = weapon->count;
-            weapon->weapons[weapon->count].damage = 5;
-            weapon->weapons[weapon->count].count = 20;
-            weapon->weapons[weapon->count].num_in_each = 20;
-            weapon->weapons[weapon->count].board = 5;
-            weapon->l_r++;
-        }
-
-        else if (strcmp(name, "Sword") == 0)
-        {
-            weapon->weapons[weapon->count].id = weapon->count;
-            weapon->weapons[weapon->count].damage = 10;
-            weapon->weapons[weapon->count].count = 1;
-            weapon->weapons[weapon->count].num_in_each = 0;
-            weapon->weapons[weapon->count].board = 0;
-            weapon->sh_r++;
-        }
-
-        weapon->count++;
     }
 }
 
@@ -2405,8 +2376,6 @@ int weapon_show(Weapon *weapon, Explorer *explorer)
 {
     WINDOW *win;
     win = newwin(20, 50, 5, 30);
-    char temp[10][40];
-    int counter = 0;
 
     int choice = 0;
 
@@ -2421,32 +2390,24 @@ int weapon_show(Weapon *weapon, Explorer *explorer)
         }
 
         mvwprintw(win, 1, 2, "Short Renge Weapons:");
-        for (int i = 0; i < weapon->count; i++)
+        for (int i = 0; i < 2; i++)
         {
-            if (weapon->weapons[i].board == 0)
-            {
-                mvwprintw(win, 2 + i, 5, "%s", weapon->weapons[i].weapon);
-                mvwprintw(win, 2 + i, 15, "Damage: %d", weapon->weapons[i].damage);
-                mvwprintw(win, 2 + i, 43, "(%d)", weapon->weapons[i].count);
-                strcpy(temp[counter++], weapon->weapons[i].weapon);
-            }
+            mvwprintw(win, 2 + i, 5, "%s", weapon->weapons[i].weapon);
+            mvwprintw(win, 2 + i, 15, "Damage: %d", weapon->weapons[i].damage);
+            mvwprintw(win, 2 + i, 43, "(%d)", weapon->weapons[i].count);
         }
 
-        mvwprintw(win, weapon->sh_r + 3, 2, "Long Renge Weapons:");
-        for (int i = 0; i < weapon->count; i++)
+        mvwprintw(win, 5, 2, "Long Renge Weapons:");
+        for (int i = 2; i < 5; i++)
         {
-            if (weapon->weapons[i].board > 0)
-            {
-                mvwprintw(win, weapon->sh_r + 3 + i, 5, "%s", weapon->weapons[i].weapon);
-                mvwprintw(win, weapon->sh_r + 3 + i, 15, "Damage: %d", weapon->weapons[i].damage);
-                mvwprintw(win, weapon->sh_r + 3 + i, 30, "Board: %d", weapon->weapons[i].board);
-                mvwprintw(win, weapon->sh_r + 3 + i, 43, "(%d)", weapon->weapons[i].count);
-                strcpy(temp[counter++], weapon->weapons[i].weapon);
-            }
+            mvwprintw(win, 4 + i, 5, "%s", weapon->weapons[i].weapon);
+            mvwprintw(win, 4 + i, 15, "Damage: %d", weapon->weapons[i].damage);
+            mvwprintw(win, 4 + i, 30, "Board: %d", weapon->weapons[i].board);
+            mvwprintw(win, 4 + i, 43, "(%d)", weapon->weapons[i].count);
         }
         mvwprintw(win, 18, 5, "Back");
-        if (choice < weapon->sh_r) mvwprintw(win, 2 + choice, 2, "->");
-        else if(choice != weapon->count) mvwprintw(win, weapon->sh_r + 3 + choice, 2, "->");
+        if (choice < 2) mvwprintw(win, 2 + choice, 2, "->");
+        else if(choice != weapon->count) mvwprintw(win, 4 + choice, 2, "->");
         else if (choice == weapon->count) mvwprintw(win, 18, 2, "->");
         wrefresh(win);
         int c = getch();
@@ -2474,7 +2435,7 @@ int weapon_show(Weapon *weapon, Explorer *explorer)
     if (choice == weapon->count)
         return 0;
 
-    strcpy(explorer->weapon, temp[choice]);
+    explorer->current_weapon = weapon->weapons[choice];
     wrefresh(win);
     delwin(win);
     return 1;
