@@ -1,6 +1,6 @@
 Signs:
 	Weapons:
-		'M' -> Mace
+		//'M' -> Mace
 		'D' -> Dagger
 		'W' -> Magic Wand
 		'A' -> Normal Arrow
@@ -15,7 +15,7 @@ Signs:
 		'G' -> Gold
 		'B' -> Black Gold
 
-	Monsters:
+	//Monsters:
 		'V' -> Deamon
 		'B' -> Fire Breathing Monster
 		'N' -> Gient

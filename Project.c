@@ -326,9 +326,18 @@ int main()
                 clear();
                 print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
                 print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
-                mvprintw(0, 25, "Wow! You eat a food!");
-                if (hunger < 17) hunger += 3;
-                else hunger = 20;
+                int a = random_renge(1, 4);
+                if (a != 4)
+                {
+                    mvprintw(0, 25, "Wow! You eat a Food!");
+                    if (hunger < 17) hunger += 3;
+                    else hunger = 20;
+                }
+                else
+                {
+                    mvprintw(0, 25, "Opps! You eat a Rancid Food!");
+                    explorer.health -= 2;
+                }
                 getch();
             }
             step_counter--;
