@@ -155,6 +155,7 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
 void print_map2(Explorer_Position *ep, Explorer *explorer, Game game, Corridors corridor);
 void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6, Corridors corridor1, Corridors corridor2, Corridors corridor3, Corridors corridor4, Corridors corridor5);
 void move_ivalue2(int move, Explorer_Position *ep);
+void move_ivalue3(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6, Corridors corridor1, Corridors corridor2, Corridors corridor3, Corridors corridor4, Corridors corridor5);
 void new_game(Explorer_Position *ep, Explorer *explorer, Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 void trap(Explorer_Position *ep, Explorer *explorer);
 void stair(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5, Monster *monster);
@@ -404,7 +405,11 @@ int main()
             }
             step_counter--;
         }
-        else move_ivalue(move, &ep, &explorer, game, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
+        else 
+        {
+            if (explorer.speed == 1) move_ivalue(move, &ep, &explorer, game, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
+            else move_ivalue(move, &ep, &explorer, game, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
+        }
         clear();
 
         explorer.experience = ((time(NULL) - start) / 60) + ex; 
@@ -1703,6 +1708,264 @@ void move_ivalue2(int move, Explorer_Position *ep)
     else if (move == 'a')
     {
         while (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y][ep->x - 1] != 'O' && game_map[ep->y][ep->x - 1] != '+' && game_map[ep->y][ep->x - 1] != '@') ep->x--;
+    }
+}
+
+void move_ivalue3(int move, Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6, Corridors corridor1, Corridors corridor2, Corridors corridor3, Corridors corridor4, Corridors corridor5)
+{
+    init_pair(11, COLOR_WHITE, COLOR_BLACK);
+    init_pair(12, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(13, COLOR_RED, COLOR_BLACK);
+    if (move == 's')
+    {
+        if (move_ivalue_help(ep) && game_map[ep->y + 2][ep->x] != '=' && game_map[ep->y + 2][ep->x] != 'O') 
+        {
+            ep->y++;
+            if (game_map[ep->y][ep->x] == '_') 
+            {
+                game_map[ep->y][ep->x] = '+';
+                mvprintw(0, 25, "Wow! You found a Hidden Door! Score increases!");
+                explorer->score += 3;
+                getch();
+            }
+            else if (game_map[ep->y][ep->x] == '@') 
+            {
+                if (unlock_door())
+                {
+                    clear();
+                    game_map[ep->y][ep->x] = '+';
+                    move(0, 0);
+                    print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
+                    else
+                    {
+                        ancient_key_value--;
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now! Score increases!", ancient_key_value);
+                    }
+                    start_code -= 30;
+                    explorer->score += 3;
+                }
+                else
+                {
+                    clear();
+                    ep->y--;
+                    num_of_mistakes++;
+                    move(0, 0);
+                    print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+                    attron(COLOR_PAIR(num_of_mistakes + 10));
+                    mvprintw(0, 25, "Opps! The code is false!");
+                    if (num_of_mistakes == 3)
+                    {
+                        mvprintw(0, 25, "Opps! The code is false! The door locks forever!!!");
+                        game_map[ep->y + 1][ep->x] = '=';
+                    }
+                    attroff(COLOR_PAIR(num_of_mistakes + 10));
+                }
+                getch();
+            }
+        }
+        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] != '|')) ep->y++;
+        else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] == '+')) ep->y++;
+    }
+
+    else if (move == 'w')
+    {
+        if (move_ivalue_help(ep) && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x] != 'O')
+        {
+            ep->y--;
+            if (game_map[ep->y][ep->x] == '_')
+            {
+                game_map[ep->y][ep->x] = '+';
+                mvprintw(0, 25, "Wow! You found a Hidden Door! Score increases!");
+                explorer->score += 3;
+                getch();
+            }
+            else if (game_map[ep->y][ep->x] == '@') 
+            {
+                if (unlock_door())
+                {
+                    clear();
+                    game_map[ep->y][ep->x] = '+';
+                    move(0, 0);
+                    print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
+                    else
+                    {
+                        ancient_key_value--;
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now! Score increases!", ancient_key_value);
+                    }
+                    start_code -= 30;
+                    explorer->score += 3;
+                }
+                else
+                {
+                    clear();
+                    ep->y++;
+                    num_of_mistakes++;
+                    move(0, 0);
+                    print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+                    attron(COLOR_PAIR(num_of_mistakes + 10));
+                    mvprintw(0, 25, "Opps! The code is false!");
+                    if (num_of_mistakes == 3)
+                    {
+                        mvprintw(0, 25, "Opps! The code is false! The door locks forever!!!");
+                        game_map[ep->y - 1][ep->x] = '=';
+                    }
+                    attroff(COLOR_PAIR(num_of_mistakes + 10));
+                }
+                getch();
+            }
+        }
+        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] != '|')) ep->y--;
+        else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '+')) ep->y--;
+    }
+
+    else if (move == 'd')
+    {
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y][ep->x + 1] != 'O')
+        {
+            ep->x++;
+            if (game_map[ep->y][ep->x] == '/')
+            {
+                game_map[ep->y][ep->x] = '+';
+                mvprintw(0, 25, "Wow! You found a Hidden Door! Score increases!");
+                explorer->score += 3;
+                getch();
+            }
+            else if (game_map[ep->y][ep->x] == '@') 
+            {
+                if (unlock_door())
+                {
+                    clear();
+                    game_map[ep->y][ep->x] = '+';
+                    move(0, 0);
+                    print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
+                    else
+                    {
+                        ancient_key_value--;
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now! Score increases!", ancient_key_value);
+                    }
+                    start_code -= 30;
+                    explorer->score += 3;
+                }
+                else
+                {
+                    clear();
+                    ep->x--;
+                    num_of_mistakes++;
+                    move(0, 0);
+                    print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+                    attron(COLOR_PAIR(num_of_mistakes + 10));
+                    mvprintw(0, 25, "Opps! The code is false!");
+                    if (num_of_mistakes == 3)
+                    {
+                        mvprintw(0, 25, "Opps! The code is false! The door locks forever!!!");
+                        game_map[ep->y][ep->x + 1] = '=';
+                    }
+                    attroff(COLOR_PAIR(num_of_mistakes + 10));
+                }
+                getch();
+            }
+        }
+        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] != '=')) ep->x++;
+        else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] == '+')) ep->x++;
+    }
+
+    else if (move == 'a')
+    {
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y][ep->x - 1] != 'O')
+        {
+            ep->x--;
+            if (game_map[ep->y][ep->x] == '/')
+            {
+                game_map[ep->y][ep->x] = '+';
+                mvprintw(0, 25, "Wow! You found a Hidden Door! Score increases!");
+                explorer->score += 3;
+                getch();
+            }
+            else if (game_map[ep->y][ep->x] == '@') 
+            {
+                if (unlock_door())
+                {
+                    clear();
+                    game_map[ep->y][ep->x] = '+';
+                    move(0, 0);
+                    print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+                    if(ancient_key_value == 0) mvprintw(0, 25, "Wow! Your opend the Door! Score increases!");
+                    else
+                    {
+                        ancient_key_value--;
+                        mvprintw(0, 25, "Wow! Your opend the Door By Ancient Key! You have %d number of keys now! Score increases!", ancient_key_value);
+                    }
+                    start_code -= 30;
+                    explorer->score += 3;
+                }
+                else
+                {
+                    clear();
+                    ep->x++;
+                    num_of_mistakes++;
+                    move(0, 0);
+                    print_room(ep, explorer, game, room1, room2, room3, room4, room5, room6);
+                    print_corridor(ep, explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+                    attron(COLOR_PAIR(num_of_mistakes + 10));
+                    mvprintw(0, 25, "Opps! The code is false!");
+                    if (num_of_mistakes == 3)
+                    {
+                        mvprintw(0, 25, "Opps! The code is false! The door locks forever!!!");
+                        game_map[ep->y][ep->x - 1] = '=';
+                    }
+                    attroff(COLOR_PAIR(num_of_mistakes + 10));
+                }
+                getch();
+            }
+        }
+        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x - 1] == '#' || game_map[ep->y][ep->x - 1] != '=')) ep->x--;
+        else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y][ep->x - 1] == '#' || game_map[ep->y][ep->x - 1] == '+')) ep->x--;
+    }
+
+    else if (move == 'c')
+    {
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x + 1] != 'O')
+        {
+            ep->x++;
+            ep->y++;
+        }
+    }
+
+    else if (move == 'z')
+    {
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x - 1] != 'O')
+        {
+            ep->y++;
+            ep->x--;
+        }
+    }
+
+    else if (move == 'e')
+    {
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x + 1] != 'O')
+        {
+            ep->x++;
+            ep->y--;
+        }
+    }
+
+    else if (move == 'q')
+    {
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x - 1] != 'O')
+        {
+            ep->y--;
+            ep->x--;
+        }
     }
 }
 
