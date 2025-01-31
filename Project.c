@@ -1256,9 +1256,9 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
             if (game_map[i][j] == 'T') mvprintw(i, j, ".");
             else if (game_map[i][j] == 'F')
             {
-                attron(COLOR_PAIR(5));
+                attron(COLOR_PAIR(2));
                 mvprintw(i, j, "F");
-                attroff(COLOR_PAIR(5));
+                attroff(COLOR_PAIR(2));
             }
             else if (game_map[i][j] == 'G')
             {
@@ -1268,9 +1268,9 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
             }
             else if (game_map[i][j] == 'B')
             {
-                attron(COLOR_PAIR(5));
+                attron(COLOR_PAIR(1));
                 mvprintw(i, j, "B");
-                attroff(COLOR_PAIR(5));
+                attroff(COLOR_PAIR(1));
             }
 
             else if (game_map[i][j] == 'M' ||
@@ -1299,9 +1299,9 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
                      game_map[i][j] == 'K' ||
                      game_map[i][j] == 'U')
             {
-                attron(COLOR_PAIR(2));
+                attron(COLOR_PAIR(5));
                 mvprintw(i, j, "%c", game_map[i][j]);
-                attroff(COLOR_PAIR(2));
+                attroff(COLOR_PAIR(5));
             }
 
             else if(game_map[i][j] == '=' || game_map[i][j] == '_') room_them_x(i, j, room1, room2, room3, room4, room5, room6);
