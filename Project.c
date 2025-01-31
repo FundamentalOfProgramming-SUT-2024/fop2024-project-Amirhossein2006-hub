@@ -184,6 +184,7 @@ void random_password(int length, char password[]);
 int room(int x, int y, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 void mace(int x, int y, Monster *monster, Explorer *explorer);
 void sword(int x, int y, Monster *monster, Explorer *explorer);
+void dagger(int x, int y, Monster *monster, Explorer *explorer);
 
 int main()
 {
@@ -221,17 +222,17 @@ int main()
     weapon.weapons[1].num_in_each = 0;
     weapon.weapons[1].board = 0;
     strcpy(weapon.weapons[2].weapon, "Dagger");
-    weapon.weapons[2].count = 0;
+    weapon.weapons[2].count = 5;
     weapon.weapons[2].damage = 12;
     weapon.weapons[2].num_in_each = 10;
     weapon.weapons[2].board = 5;
     strcpy(weapon.weapons[3].weapon, "Magic Wand");
-    weapon.weapons[3].count = 0;
+    weapon.weapons[3].count = 1;
     weapon.weapons[3].damage = 15;
     weapon.weapons[3].num_in_each = 8;
     weapon.weapons[3].board = 10;
     strcpy(weapon.weapons[4].weapon, "Normal Arrow");
-    weapon.weapons[4].count = 0;
+    weapon.weapons[4].count = 1;
     weapon.weapons[4].damage = 5;
     weapon.weapons[4].num_in_each = 20;
     weapon.weapons[4].board = 5;
@@ -439,15 +440,25 @@ int main()
             {
                 mvprintw(0, 25, "Wow! You hit 8 near blocks with Mace!");
                 mace(x, y, monster, &explorer);
+                getch();
             }
             else if (strcmp(explorer.current_weapon.weapon, "Sword") == 0)
             {
                 mvprintw(0, 25, "Wow! You hit 8 near blocks with Sword!");
                 sword(x, y, monster, &explorer);
+                getch();
             }
             else if (strcmp(explorer.current_weapon.weapon, "Dagger") == 0)
             {
-                mvprintw(0, 25, "Wow! You throwed a Dagger!");
+                if (weapon.weapons[2].count == 0)
+                    mvprintw(0, 25, "You don't have any more Daggers!");
+                else
+                {
+                    mvprintw(0, 25, "Please select the way!");
+                    dagger(x, y, monster, &explorer);
+                    weapon.weapons[2].count--;
+                }
+                getch();
             }
             else if (strcmp(explorer.current_weapon.weapon, "Normal Arrow") == 0)
             {
@@ -457,7 +468,6 @@ int main()
             {
                 mvprintw(0, 25, "Wow! You throwed a Magic!");
             }
-            getch();
         }
         else 
         {
@@ -1416,6 +1426,15 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
                 attroff(COLOR_PAIR(4));
             }
 
+            else if (game_map[i][j] == 'd' ||
+                     game_map[i][j] == 'w' ||
+                     game_map[i][j] == 'a')
+            {
+                attron(COLOR_PAIR(4));
+                mvprintw(i, j, "%c", game_map[i][j]);
+                attroff(COLOR_PAIR(4));
+            }
+
             else if (game_map[i][j] == 'H' ||
                      game_map[i][j] == 'Z' ||
                      game_map[i][j] == 'C')
@@ -2152,6 +2171,27 @@ void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon)
         game_map[ep->y][ep->x] = '.';
         explorer->score += 3;
     }
+
+    else if (temp == 'd')
+    {
+        mvprintw(0, 25, "Wow! You reach Dagger!");
+        weapon->weapons[2].count++;
+        game_map[ep->y][ep->x] = '.';
+    }
+
+    else if (temp == 'w')
+    {
+        mvprintw(0, 25, "Wow! You reach Magic Wand!");
+        weapon->weapons[3].count++;
+        game_map[ep->y][ep->x] = '.';
+    }
+
+    else if (temp == 'a')
+    {
+        mvprintw(0, 25, "Wow! You reach Normal Arrow!");
+        weapon->weapons[4].count++;
+        game_map[ep->y][ep->x] = '.';
+    }
 }
 
 int weapon_show(Weapon *weapon, Explorer *explorer)
@@ -2818,7 +2858,7 @@ void mace(int x, int y, Monster *monster, Explorer *explorer)
             if (monster[i].health > 0)
             {
                 monster[i].health -= 5;
-                mvprintw(0, 25, "Wow! You hit a monster with Mace!    ");
+                mvprintw(0, 25, "Wow! You hit a %s with Mace!        ", monster[i].name);
                 explorer->score += 1;
                 if (monster[i].health <= 0)
                 {
@@ -2846,7 +2886,7 @@ void sword(int x, int y, Monster *monster, Explorer *explorer)
             if (monster[i].health > 0)
             {
                 monster[i].health -= 5;
-                mvprintw(0, 25, "Wow! You hit a monster with Sword!    ");
+                mvprintw(0, 25, "Wow! You hit a %s with Sword!        ", monster[i].name);
                 explorer->score += 1;
                 if (monster[i].health <= 0)
                 {
@@ -2856,6 +2896,152 @@ void sword(int x, int y, Monster *monster, Explorer *explorer)
                 }
             }
         }
+    }
+}
+
+void dagger(int x, int y, Monster *monster, Explorer *explorer)
+{
+    int way = getch();
+    mvprintw(0, 25, "Wow! You throwed a Dagger!");
+
+    if (way == 'w')
+    {
+        int ivalue = 1;
+        for (int i = 0; i <= 5; i++)
+        {
+            if (game_map[y - i][x] == '=' || game_map[y - i][x] == '+' || game_map[y - i][x] == '@' || game_map[y - i][x] == '_')
+            {
+                game_map[y - i + 1][x] = 'd';
+                ivalue = 0;
+            }
+
+            else if (game_map[y - i][x] == 'V' || game_map[y - i][x] == 'L' || game_map[y - i][x] == 'N' || game_map[y - i][x] == 'K' || game_map[y - i][x] == 'U')
+            {
+                for (int j = 0; j < monster_count; j++)
+                {
+                    if (monster[j].y == y - i && monster[j].x == x)
+                    {
+                        mvprintw(0, 25, "Wow! You hit a %s with Dagger!", monster[j].name);
+                        monster[j].health -= 12;
+                        explorer->score += 1;
+                        if (monster[j].health <= 0)
+                        {
+                            game_map[y - i][x] = '.';
+                            mvprintw(0, 65, "Wow! You killed a %s! Score increases!", monster[j].name);
+                            explorer->score += 5;
+                        }
+                        ivalue = 0;
+                        break;
+                    }
+                }
+            }
+        }
+        if (ivalue) game_map[y - 5][x] = 'd';
+    }
+
+    else if (way == 's')
+    {
+        int ivalue = 1;
+        for (int i = 0; i <= 5; i++)
+        {
+            if (game_map[y + i][x] == '=' || game_map[y + i][x] == '+' || game_map[y + i][x] == '@' || game_map[y + i][x] == '_')
+            {
+                game_map[y + i - 1][x] = 'd';
+                ivalue = 0;
+            }
+
+            else if (game_map[y + i][x] == 'V' || game_map[y + i][x] == 'L' || game_map[y + i][x] == 'N' || game_map[y + i][x] == 'K' || game_map[y + i][x] == 'U')
+            {
+                for (int j = 0; j < monster_count; j++)
+                {
+                    if (monster[j].y == y + i && monster[j].x == x)
+                    {
+                        mvprintw(0, 25, "Wow! You hit a %s with Dagger!", monster[j].name);
+                        monster[j].health -= 12;
+                        explorer->score += 1;
+                        if (monster[j].health <= 0)
+                        {
+                            game_map[y + i][x] = '.';
+                            mvprintw(0, 65, "Wow! You killed a %s! Score increases!", monster[j].name);
+                            explorer->score += 5;
+                        }
+                        ivalue = 0;
+                        break;
+                    }
+                }
+            }
+        }
+        if (ivalue) game_map[y + 5][x] = 'd';
+    }
+
+    else if (way == 'd')
+    {
+        int ivalue = 1;
+        for (int i = 0; i <= 5; i++)
+        {
+            if (game_map[y][x + i] == '|' || game_map[y][x + i] == '+' || game_map[y][x + i] == '@' || game_map[y][x + i] == '/')
+            {
+                game_map[y][x + i - 1] = 'd';
+                ivalue = 0;
+            }
+
+            else if (game_map[y][x + i] == 'V' || game_map[y][x + i] == 'L' || game_map[y][x + i] == 'N' || game_map[y][x + i] == 'K' || game_map[y][x + i] == 'U')
+            {
+                for (int j = 0; j < monster_count; j++)
+                {
+                    if (monster[j].y == y && monster[j].x == x + i)
+                    {
+                        mvprintw(0, 25, "Wow! You hit a %s with Dagger!", monster[j].name);
+                        monster[j].health -= 12;
+                        explorer->score += 1;
+                        if (monster[j].health <= 0)
+                        {
+                            game_map[y][x + i] = '.';
+                            mvprintw(0, 65, "Wow! You killed a %s! Score increases!", monster[j].name);
+                            explorer->score += 5;
+                        }
+                        ivalue = 0;
+                        break;
+                    }
+                }
+            }
+        }
+        if (ivalue) game_map[y][x + 5] = 'd';
+    }
+
+    else if (way == 'a')
+    {
+        int ivalue = 1;
+        for (int i = 0; i <= 5; i++)
+        {
+            if (game_map[y][x - i] == '|' || game_map[y][x - i] == '+' || game_map[y][x - i] == '@' || game_map[y][x - i] == '/')
+            {
+                game_map[y][x - i + 1] = 'd';
+                ivalue = 0;
+            }
+
+            else if (game_map[y][x - i] == 'V' || game_map[y][x - i] == 'L' || game_map[y][x - i] == 'N' || game_map[y][x - i] == 'K' || game_map[y][x - i] == 'U')
+            {
+                for (int j = 0; j < monster_count; j++)
+                {
+                    if (monster[j].y == y && monster[j].x == x - i)
+                    {
+                        mvprintw(0, 25, "Wow! You hit a %s with Dagger!", monster[j].name);
+                        monster[j].health -= 12;
+                        explorer->score += 1;
+                        if (monster[j].health <= 0)
+                        {
+                            game_map[y][x - i] = '.';
+                            mvprintw(0, 65, "Wow! You killed a %s! Score increases!", monster[j].name);
+                            explorer->score += 5;
+                        }
+                        ivalue = 0;
+                        break;
+                    }
+                }
+            }
+        }
+        if (ivalue) game_map[y][x - 5] = 'd';
     }
 }
 
