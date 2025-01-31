@@ -17,7 +17,7 @@ Signs:
 
 	//Monsters:
 		'V' -> Deamon
-		'B' -> Fire Breathing Monster
+		'L' -> Fire Breathing Monster
 		'N' -> Gient
 		'K' -> Snake
 		'U' -> Undeed
