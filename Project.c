@@ -122,6 +122,7 @@ typedef struct
     int health;
     int movement;
     int room;
+    int power;
 } Monster;
 
 char game_map[30][120];
@@ -1229,6 +1230,7 @@ void load_map(int k, Explorer_Position *ep, Monster *monster, Rooms *room1, Room
                     monster[monster_count].health = 5;
                     monster[monster_count].movement = 0;
                     monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
+                    monster[monster_count].power = 2;
                     monster_count++;
                 }
 
@@ -1240,6 +1242,7 @@ void load_map(int k, Explorer_Position *ep, Monster *monster, Rooms *room1, Room
                     monster[monster_count].health = 10;
                     monster[monster_count].movement = 0;
                     monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
+                    monster[monster_count].power = 4;
                     monster_count++;
                 }
 
@@ -1251,6 +1254,7 @@ void load_map(int k, Explorer_Position *ep, Monster *monster, Rooms *room1, Room
                     monster[monster_count].health = 15;
                     monster[monster_count].movement = 5;
                     monster[monster_count].room = room(9, 6, room1, room2, room3, room4, room5, room6);
+                    monster[monster_count].power = 6;
                     monster_count++;
                 }
 
@@ -1262,6 +1266,7 @@ void load_map(int k, Explorer_Position *ep, Monster *monster, Rooms *room1, Room
                     monster[monster_count].health = 20;
                     monster[monster_count].movement = -1;
                     monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
+                    monster[monster_count].power = 8;
                     monster_count++;
                 }
 
@@ -1273,6 +1278,7 @@ void load_map(int k, Explorer_Position *ep, Monster *monster, Rooms *room1, Room
                     monster[monster_count].health = 30;
                     monster[monster_count].movement = 5;
                     monster[monster_count].room = room(i, counter / 2, room1, room2, room3, room4, room5, room6);
+                    monster[monster_count].power = 10;
                     monster_count++;
                 }
 
@@ -3433,8 +3439,8 @@ void monster_hit(Monster *monster, Explorer_Position *ep, Explorer *explorer)
                 (m_y == y + 1 && (m_x == x + 1 || m_x == x - 1 || m_x == x)) || 
                 (m_y == y - 1 && (m_x == x + 1 || m_x == x - 1 || m_x == x)))
             {
-                mvprintw(0, 25, "Opps! The %s hits you!", monster[i].name);
-                explorer->health -= 5;
+                mvprintw(0, 25, "Opps! The %s hits you! Damage : %d", monster[i].name, monster[i].power);
+                explorer->health -= monster[i].power;
             } 
         }          
     }
