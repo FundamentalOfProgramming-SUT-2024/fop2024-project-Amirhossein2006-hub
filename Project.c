@@ -39,6 +39,7 @@ typedef struct
 {
     char food[20];
     int count;
+    int time;
 } Food_Count;
 
 typedef struct
@@ -77,7 +78,6 @@ typedef struct
 typedef struct
 {
     char spell[20];
-    int id;
     int count;
     int time;
 } Spell_Count;
@@ -215,7 +215,17 @@ int main()
 
     game.difficulty = 0;
     game.color = 0;
-    food.count = 0;
+
+    food.count = 3;
+    strcpy(food.foods[0].food, "Normal Food");
+    food.foods[0].count = 0;
+    food.foods[0].time = -1;
+    strcpy(food.foods[1].food, "Perfect Food");
+    food.foods[1].count = 0;
+    food.foods[1].time = -1;
+    strcpy(food.foods[2].food, "Magic Food");
+    food.foods[2].count = 0;
+    food.foods[2].time = -1;
 
     weapon.count = 5;
     strcpy(weapon.weapons[0].weapon, "Mace");
@@ -224,27 +234,37 @@ int main()
     weapon.weapons[0].num_in_each = 0;
     weapon.weapons[0].board = 0;
     strcpy(weapon.weapons[1].weapon, "Sword");
-    weapon.weapons[1].count = 1;
+    weapon.weapons[1].count = 0;
     weapon.weapons[1].damage = 10;
     weapon.weapons[1].num_in_each = 0;
     weapon.weapons[1].board = 0;
     strcpy(weapon.weapons[2].weapon, "Dagger");
-    weapon.weapons[2].count = 5;
+    weapon.weapons[2].count = 0;
     weapon.weapons[2].damage = 12;
     weapon.weapons[2].num_in_each = 10;
     weapon.weapons[2].board = 5;
     strcpy(weapon.weapons[3].weapon, "Magic Wand");
-    weapon.weapons[3].count = 5;
+    weapon.weapons[3].count = 0;
     weapon.weapons[3].damage = 15;
     weapon.weapons[3].num_in_each = 8;
     weapon.weapons[3].board = 10;
     strcpy(weapon.weapons[4].weapon, "Normal Arrow");
-    weapon.weapons[4].count = 5;
+    weapon.weapons[4].count = 0;
     weapon.weapons[4].damage = 5;
     weapon.weapons[4].num_in_each = 20;
     weapon.weapons[4].board = 5;
 
-    spell.count = 0;
+    spell.count = 3;
+    strcpy(spell.spells[0].spell, "Health");
+    spell.spells[0].count = 0;
+    spell.spells[0].time = -1;
+    strcpy(spell.spells[1].spell, "Damage");
+    spell.spells[1].count = 0;
+    spell.spells[1].time = -1;
+    strcpy(spell.spells[2].spell, "Speed");
+    spell.spells[2].count = 0;
+    spell.spells[2].time = -1;
+
     code = 1000;
     ancient_key_value = 0;
     int ex = 0;
@@ -359,11 +379,11 @@ int main()
         else if (move == 'o')
         {
             int choice = spell_show(&spell, &explorer);
+            clear();
+            print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
+            print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
             if (choice >= 0)
             {
-                clear();
-                print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
-                print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                 mvprintw(0, 25, "Wow! Your drinked %s Spell!", spell.spells[choice].spell);
 
                 if (strcmp(spell.spells[choice].spell, "Health") == 0)
@@ -386,15 +406,20 @@ int main()
         }
         else if (move == 'p')
         {
-            if (food_show(&food))
+            int choice = food_show(&food);
+            clear();
+            print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
+            print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+            if (choice >= 0)
             {
-                clear();
-                print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
-                print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                 int a = random_renge(1, 4);
-                if (a != 4)
+                if (strcmp(food.foods[choice].food, "Magic Food") == 0)
+                    explorer.speed = 2;
+                else if (strcmp(food.foods[choice].food, "Perfect Food") == 0)
+                    explorer.power = 2;
+                else if (a != 4)
                 {
-                    mvprintw(0, 25, "Wow! You eat a Food!");
+                    mvprintw(0, 25, "Wow! You eat a %s!", food.foods[choice].food);
                     if (hunger < 17) hunger += 3;
                     else hunger = 20;
                 }
@@ -403,6 +428,15 @@ int main()
                     mvprintw(0, 25, "Opps! You eat a Rancid Food!");
                     explorer.health -= 2;
                 }
+
+                if (strcmp(spell.spells[choice].spell, "Normal Food") != 0) food.foods[choice].time = 20;
+
+                getch();
+            }
+            else if (choice < -1)
+            {
+                choice += 4;
+                mvprintw(0, 25, "The number of %s Foods is 0! You can't eat it any more!", food.foods[choice].food);
                 getch();
             }
             step_counter--;
@@ -542,6 +576,26 @@ int main()
                     mvprintw(0, 25, "Opps! The effect of Damage Spell have ended!");
                     explorer.power = 1;
                     spell.spells[i].time = -1;
+                }
+            }
+        }
+
+        for (int i = 0; i < food.count; i++)
+        {
+            if (food.foods[i].time != -1)
+            {
+                food.foods[i].time--;
+                if (food.foods[i].time == 0 && strcmp(food.foods[i].food, "Magic Food") == 0)
+                {
+                    mvprintw(0, 25, "Opps! The effect of Magic Food have ended!");
+                    explorer.speed = 1;
+                    food.foods[i].time = -1;
+                }
+                if (food.foods[i].time == 0 && strcmp(food.foods[i].food, "Perfect Food") == 0)
+                {
+                    mvprintw(0, 25, "Opps! The effect of Perfect Food have ended!");
+                    explorer.power = 1;
+                    food.foods[i].time = -1;
                 }
             }
         }
@@ -1426,10 +1480,12 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
         for (int j = room.s_x; j <= room.e_x; j++)
         {
             if (game_map[i][j] == 'T') mvprintw(i, j, ".");
-            else if (game_map[i][j] == 'F')
+            else if (game_map[i][j] == 'F' ||
+                     game_map[i][j] == 'Q' ||
+                     game_map[i][j] == 'E')
             {
                 attron(COLOR_PAIR(2));
-                mvprintw(i, j, "F");
+                mvprintw(i, j, "%c", game_map[i][j]);
                 attroff(COLOR_PAIR(2));
             }
             else if (game_map[i][j] == 'G')
@@ -2013,34 +2069,30 @@ int move_ivalue_help2(int y, int x)
     else return 0;
 }
 
-void find_food(char name[], Food *food)
-{
-    int ivalue = 0;
-    for (int i = 0; i < food->count; i++)
-    {
-        if (strcmp(food->foods[i].food, name) == 0)
-        {
-            ivalue = 1;
-            food->foods[i].count++;
-        }
-    }
-    if (ivalue == 0)
-    {
-        strcpy(food->foods[food->count].food, name);
-        food->foods[food->count++].count = 1;
-    }
-}
-
 void foods(Explorer_Position *ep, Explorer *explorer, Food *food)
 {
     char temp = game_map[ep->y][ep->x];
 
     if (temp == 'F')
     {
-        mvprintw(0, 25, "Wow! You reach Food! Score increases!");
-        find_food("Food", food);
+        mvprintw(0, 25, "Wow! You reached Normal Food! Score increases!");
+        food->foods[0].count++;
         game_map[ep->y][ep->x] = '.';
         explorer->score += 1;
+    }
+    else if (temp == 'Q')
+    {
+        mvprintw(0, 25, "Wow! You reached Perfect Food! Score increases!");
+        food->foods[1].count++;
+        game_map[ep->y][ep->x] = '.';
+        explorer->score += 2;
+    }
+    else if (temp == 'E')
+    {
+        mvprintw(0, 25, "Wow! You reached Magic Food! Score increases!");
+        food->foods[2].count++;
+        game_map[ep->y][ep->x] = '.';
+        explorer->score += 3;
     }
 }
 
@@ -2049,66 +2101,9 @@ int food_show(Food *food)
     WINDOW *win;
     win = newwin(12, 32, 10, 45); 
 
-    if (food->count > 0)
-    {   
-        int choice = 0;
+    int choice = 0;
 
-        while (1)
-        {
-            mvwprintw(win, 0, 0, "--------------------------------");
-            mvwprintw(win, 11, 0, "--------------------------------");
-            for (int i = 0; i < 12; i++)
-            {
-                mvwprintw(win, i, 0, "|");
-                mvwprintw(win, i, 31, "|");
-            }
-
-            for (int i = 0; i < food->count; i++)
-            {
-                mvwprintw(win, 1 + i, 5, "%s", food->foods[i].food);
-                mvwprintw(win, 1 + i, 27, "(%d)", food->foods[i].count);
-            }
-            mvwprintw(win, 1 + food->count, 5, "Back");
-            mvwprintw(win, 1 + choice, 2, "->");
-            mvwprintw(win, 10, 2, "Hunger: ");
-            for (int i = 0; i < hunger; i++)
-            {
-                mvwprintw(win, 10, 10 + i, "#");
-            }
-            wrefresh(win);
-            int c = getch();
-            if (c == KEY_UP)
-            {
-                if (choice != 0)
-                    choice--;
-                else
-                    choice = food->count;
-            }
-            else if (c == KEY_DOWN)
-            {
-                if (choice != food->count)
-                    choice++;
-                else
-                    choice = 0;
-            }
-            else if (c == 10)
-            {
-                break;
-            }            
-            wclear(win);
-        }
-
-        if (choice == food->count)
-            return 0;
-        
-        food->foods[choice].count--;
-        if(food->foods[choice].count == 0)
-            food->count--;
-        wrefresh(win);
-        delwin(win);
-        return 1;
-    }
-    else
+    while (1)
     {
         mvwprintw(win, 0, 0, "--------------------------------");
         mvwprintw(win, 11, 0, "--------------------------------");
@@ -2117,17 +2112,51 @@ int food_show(Food *food)
             mvwprintw(win, i, 0, "|");
             mvwprintw(win, i, 31, "|");
         }
-        mvwprintw(win, 5, 12, "NO FOOD!");
+
+        for (int i = 0; i < food->count; i++)
+        {
+            mvwprintw(win, 1 + i, 5, "%s", food->foods[i].food);
+            mvwprintw(win, 1 + i, 27, "(%d)", food->foods[i].count);
+        }
+        mvwprintw(win, 8, 5, "Back");
+        if (choice == food->count) mvwprintw(win, 8, 2, "->");
+        else mvwprintw(win, 1 + choice, 2, "->");
         mvwprintw(win, 10, 2, "Hunger: ");
         for (int i = 0; i < hunger; i++)
         {
             mvwprintw(win, 10, 10 + i, "#");
         }
         wrefresh(win);
-        getch();
-        delwin(win);
-        return 0;
+        int c = getch();
+        if (c == KEY_UP)
+        {
+            if (choice != 0)
+                choice--;
+            else
+                choice = food->count;
+        }
+        else if (c == KEY_DOWN)
+        {
+            if (choice != food->count)
+                choice++;
+            else
+                choice = 0;
+        }
+        else if (c == 10)
+        {
+            break;
+        }            
+        wclear(win);
     }
+
+    if (choice == food->count)
+        return 0;
+    else if (food->foods[choice].count == 0)
+        return (choice - 4);
+    food->foods[choice].count--;
+    wrefresh(win);
+    delwin(win);
+    return choice;
 }
 
 void gold(Explorer_Position *ep, Explorer *explorer)
@@ -2158,57 +2187,46 @@ void black_gold(Explorer_Position *ep, Explorer *explorer)
     }
 }
 
-void find_weapon(char name[], Weapon *weapon)
-{
-    for (int i = 0; i < weapon->count; i++)
-    {
-        if (strcmp(weapon->weapons[i].weapon, name) == 0)
-        {
-            weapon->weapons[i].count += weapon->weapons[i].num_in_each;
-        }
-    }
-}
-
 void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon)
 {
     char temp = game_map[ep->y][ep->x];
 
     if (temp == 'M')
     {
-        mvprintw(0, 25, "Wow! You reach Mace! Score increases!");
-        find_weapon("Mace", weapon);
+        mvprintw(0, 25, "Wow! You reached Mace! Score increases!");
+        weapon->weapons[0].count += weapon->weapons[0].num_in_each;
         game_map[ep->y][ep->x] = '.';
         explorer->score += 3;
     }
 
     else if (temp == 'D')
     {
-        mvprintw(0, 25, "Wow! You reach Dagger! Score increases!");
-        find_weapon("Dagger", weapon);
+        mvprintw(0, 25, "Wow! You reached Dagger! Score increases!");
+        weapon->weapons[2].count += weapon->weapons[2].num_in_each;
         game_map[ep->y][ep->x] = '.';
         explorer->score += 3;
     }
 
     else if (temp == 'W')
     {
-        mvprintw(0, 25, "Wow! You reach Magic Wand! Score increases!");
-        find_weapon("Magic Wand", weapon);
+        mvprintw(0, 25, "Wow! You reached Magic Wand! Score increases!");
+        weapon->weapons[3].count += weapon->weapons[3].num_in_each;
         game_map[ep->y][ep->x] = '.';
         explorer->score += 3;
     }
 
     else if (temp == 'A')
     {
-        mvprintw(0, 25, "Wow! You reach Normal Arrow! Score increases!");
-        find_weapon("Normal Arrow", weapon);
+        mvprintw(0, 25, "Wow! You reached Normal Arrow! Score increases!");
+        weapon->weapons[4].count += weapon->weapons[4].num_in_each;
         game_map[ep->y][ep->x] = '.';
         explorer->score += 3;
     }
 
     else if (temp == 'S')
     {
-        mvprintw(0, 25, "Wow! You reach Sword! Score increases!");
-        find_weapon("Sword", weapon);
+        mvprintw(0, 25, "Wow! You reached Sword! Score increases!");
+        weapon->weapons[1].count += weapon->weapons[1].num_in_each;
         game_map[ep->y][ep->x] = '.';
         explorer->score += 3;
     }
@@ -2304,51 +2322,30 @@ int weapon_show(Weapon *weapon, Explorer *explorer)
     return 1;
 }
 
-void find_spell(char name[], Spell *spell)
-{
-    int ivalue = 0;
-    for (int i = 0; i < spell->count; i++)
-    {
-        if (strcmp(spell->spells[i].spell, name) == 0)
-        {
-            ivalue = 1;
-            spell->spells[i].count++;
-        }
-    }
-    if (ivalue == 0)
-    {
-        strcpy(spell->spells[spell->count].spell, name);
-        spell->spells[spell->count].count = 1;
-        spell->spells[spell->count].id = spell->count;
-        spell->spells[spell->count].time = -1;
-        spell->count++;
-    }
-}
-
 void spells(Explorer_Position *ep, Explorer *explorer, Spell *spell)
 {
     char temp = game_map[ep->y][ep->x];
 
     if (temp == 'H')
     {
-        mvprintw(0, 25, "Wow! You reach Health Spell! Score increases!");
-        find_spell("Health", spell);
+        mvprintw(0, 25, "Wow! You reached Health Spell! Score increases!");
+        spell->spells[0].count++;
         game_map[ep->y][ep->x] = '.';
         explorer->score += 4;
     }
 
     else if (temp == 'Z')
     {
-        mvprintw(0, 25, "Wow! You reach Speed Spell! Score increases!");
-        find_spell("Speed", spell);
+        mvprintw(0, 25, "Wow! You reached Speed Spell! Score increases!");
+        spell->spells[2].count++;
         game_map[ep->y][ep->x] = '.';
         explorer->score += 4;
     }
 
     else if (temp == 'C')
     {
-        mvprintw(0, 25, "Wow! You reach Damage Spell! Score increases!");
-        find_spell("Damage", spell);
+        mvprintw(0, 25, "Wow! You reached Damage Spell! Score increases!");
+        spell->spells[1].count++;
         game_map[ep->y][ep->x] = '.';
         explorer->score += 4;
     }
@@ -2377,8 +2374,9 @@ int spell_show(Spell *spell, Explorer *explorer)
             mvwprintw(win, 1 + i, 20, "(%d)", spell->spells[i].count);
         }
 
-        mvwprintw(win, 1 + spell->count, 5, "Back");
-        mvwprintw(win, 1 + choice, 2, "->");
+        mvwprintw(win, 10, 5, "Back");
+        if (choice == spell->count) mvwprintw(win, 10, 2, "->");
+        else mvwprintw(win, 1 + choice, 2, "->");
         wrefresh(win);
         int c = getch();
         if (c == KEY_UP)
@@ -2403,13 +2401,13 @@ int spell_show(Spell *spell, Explorer *explorer)
     }
 
     if (choice == spell->count)
-        return -1;
+        return 0;
     else if (spell->spells[choice].count == 0)
-        return (spell->spells[choice].id - 4);
+        return (choice - 4);
     spell->spells[choice].count--;  
     wrefresh(win);
     delwin(win);
-    return spell->spells[choice].id;
+    return choice;
 }
 
 int end_game(Explorer_Position *ep, Explorer *explorer, Player *player)

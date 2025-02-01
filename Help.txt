@@ -22,8 +22,12 @@ Signs:
 		'K' -> Snake
 		'U' -> Undeed
 
+	//Foods:
+		'F' -> Normal Food
+		'Q' -> Perfect Food
+		'E' -> Magic Food
+		'F' -> Putrid Food
 	Other:
-		'F' -> Food
 		'^' -> Trap
 		'@' -> Locked Door
 		'&' -> Password Maker
