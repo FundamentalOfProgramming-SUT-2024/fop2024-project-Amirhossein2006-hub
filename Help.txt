@@ -1,6 +1,6 @@
 Signs:
 	Weapons:
-		//'M' -> Mace
+		'M' -> Mace
 		'D' -> Dagger
 		'W' -> Magic Wand
 		'A' -> Normal Arrow
@@ -15,14 +15,14 @@ Signs:
 		'G' -> Gold
 		'B' -> Black Gold
 
-	//Monsters:
+	Monsters:
 		'V' -> Deamon
 		'L' -> Fire Breathing Monster
 		'N' -> Gient
 		'K' -> Snake
 		'U' -> Undeed
 
-	//Foods:
+	Foods:
 		'F' -> Normal Food
 		'Q' -> Perfect Food
 		'E' -> Magic Food
@@ -64,6 +64,7 @@ Keys:
 
 	Cheat Codes:
 		'm' -> Show Map
+		'h' -> Full Health 
 
 Room Colors:
 	'White' -> Normal Room

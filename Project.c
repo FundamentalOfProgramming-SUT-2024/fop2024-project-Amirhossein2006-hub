@@ -541,6 +541,12 @@ start:
             corridor5.is_in = 1;
             continue;
         }
+        else if (move == 'h')
+        {
+            explorer.health = 100;
+            hunger = 20;
+            continue;
+        }
         else if (move == 'f' && move_ivalue_help(&ep))
         {
             move = tolower(getch());
