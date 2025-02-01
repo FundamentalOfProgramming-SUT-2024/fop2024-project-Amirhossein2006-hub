@@ -158,6 +158,7 @@ void stair(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2
 void stair_save(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5);
 int stair_check(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5, Monster *monster);
 int move_ivalue_help(Explorer_Position *ep);
+int move_ivalue_help2(int y, int x);
 void foods(Explorer_Position *ep, Explorer *explorer, Food *food);
 void find_food(char name[], Food *food);
 int food_show(Food *food);
@@ -1547,7 +1548,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
     init_pair(13, COLOR_RED, COLOR_BLACK);
     if (move == 's')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x] != 'O') 
+        if (move_ivalue_help(ep) && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x] != 'O' && move_ivalue_help2(ep->y + 1, ep->x))
         {
             ep->y++;
             if (game_map[ep->y][ep->x] == '_') 
@@ -1595,13 +1596,13 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 getch();
             }
         }
-        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] != '|')) ep->y++;
+        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] != '|') && move_ivalue_help2(ep->y + 1, ep->x)) ep->y++;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y + 1][ep->x] == '#' || game_map[ep->y + 1][ep->x] == '+')) ep->y++;
     }
 
     else if (move == 'w')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x] != 'O' && move_ivalue_help2(ep->y - 1, ep->x))
         {
             ep->y--;
             if (game_map[ep->y][ep->x] == '_')
@@ -1649,13 +1650,13 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 getch();
             }
         }
-        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] != '|')) ep->y--;
+        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] != '|') && move_ivalue_help2(ep->y - 1, ep->x)) ep->y--;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y - 1][ep->x] == '#' || game_map[ep->y - 1][ep->x] == '+')) ep->y--;
     }
 
     else if (move == 'd')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y][ep->x + 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y][ep->x + 1] != 'O' && move_ivalue_help2(ep->y, ep->x + 1))
         {
             ep->x++;
             if (game_map[ep->y][ep->x] == '/')
@@ -1703,13 +1704,13 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 getch();
             }
         }
-        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] != '=')) ep->x++;
+        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] != '=') && move_ivalue_help2(ep->y, ep->x + 1)) ep->x++;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y][ep->x + 1] == '#' || game_map[ep->y][ep->x + 1] == '+')) ep->x++;
     }
 
     else if (move == 'a')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y][ep->x - 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y][ep->x - 1] != 'O' && move_ivalue_help2(ep->y, ep->x - 1))
         {
             ep->x--;
             if (game_map[ep->y][ep->x] == '/')
@@ -1757,13 +1758,13 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
                 getch();
             }
         }
-        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x - 1] == '#' || game_map[ep->y][ep->x - 1] != '=')) ep->x--;
+        else if (game_map[ep->y][ep->x] == '+' && (game_map[ep->y][ep->x - 1] == '#' || game_map[ep->y][ep->x - 1] != '=') && move_ivalue_help2(ep->y, ep->x + 1)) ep->x--;
         else if (game_map[ep->y][ep->x] == '#' && (game_map[ep->y][ep->x - 1] == '#' || game_map[ep->y][ep->x - 1] == '+')) ep->x--;
     }
 
     else if (move == 'c')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x + 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x + 1] != 'O' && move_ivalue_help2(ep->y + 1, ep->x + 1))
         {
             ep->x++;
             ep->y++;
@@ -1772,7 +1773,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
 
     else if (move == 'z')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x - 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y + 1][ep->x] != '=' && game_map[ep->y + 1][ep->x - 1] != 'O' && move_ivalue_help2(ep->y + 1, ep->x - 1))
         {
             ep->y++;
             ep->x--;
@@ -1781,7 +1782,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
 
     else if (move == 'e')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x + 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x + 1] != '|' && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x + 1] != 'O' && move_ivalue_help2(ep->y - 1, ep->x + 1))
         {
             ep->x++;
             ep->y--;
@@ -1790,7 +1791,7 @@ void move_ivalue(int move, Explorer_Position *ep, Explorer *explorer, Game game,
 
     else if (move == 'q')
     {
-        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x - 1] != 'O')
+        if (move_ivalue_help(ep) && game_map[ep->y][ep->x - 1] != '|' && game_map[ep->y - 1][ep->x] != '=' && game_map[ep->y - 1][ep->x - 1] != 'O' && move_ivalue_help2(ep->y - 1, ep->x - 1))
         {
             ep->y--;
             ep->x--;
@@ -1989,6 +1990,18 @@ int move_ivalue_help(Explorer_Position *ep)
         game_map[ep->y][ep->x] == '>' || 
         game_map[ep->y][ep->x] == '<' ||
         game_map[ep->y][ep->x] == '&')
+        return 1;
+
+    else return 0;
+}
+
+int move_ivalue_help2(int y, int x)
+{
+    if (game_map[y][x] != 'V' &&
+        game_map[y][x] != 'L' &&
+        game_map[y][x] != 'N' &&
+        game_map[y][x] != 'k' &&
+        game_map[y][x] != 'U')
         return 1;
 
     else return 0;
