@@ -2126,6 +2126,10 @@ int food_show(Food *food)
         {
             mvwprintw(win, 10, 10 + i, "#");
         }
+        for (int i = hunger; i < 20; i++)
+        {
+            mvwprintw(win, 10, 10 + i, "-");
+        }
         wrefresh(win);
         int c = getch();
         if (c == KEY_UP)
@@ -2150,7 +2154,7 @@ int food_show(Food *food)
     }
 
     if (choice == food->count)
-        return 0;
+        return -1;
     else if (food->foods[choice].count == 0)
         return (choice - 4);
     food->foods[choice].count--;
