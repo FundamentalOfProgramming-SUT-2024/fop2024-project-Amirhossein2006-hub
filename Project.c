@@ -283,6 +283,8 @@ int main()
         break;
     }
 
+start:
+{
     int choice;
     while (1)
     {
@@ -314,6 +316,9 @@ int main()
         case 4:
             profile(&player);
             break;
+        case 5:
+            endwin();
+            return 0;
         }
 
         if (choice < 2) break;
@@ -345,10 +350,10 @@ int main()
             clear();
             mvprintw(15, 45, "Opps, You lose! Your health ended!");
             mvprintw(16, 45, "I hope to see you again :)");
-            mvprintw(17, 45, "Press any key to exit...");
+            mvprintw(17, 45, "Press any key to go to start menu...");
             save(0, &player, &explorer, &ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
             getch();
-            break;
+            goto start;
         }
 
         int move;
@@ -467,10 +472,10 @@ int main()
                 clear();
                 mvprintw(15, 45, "Have a nice day!");
                 mvprintw(16, 45, "I hope to see you again :)");
-                mvprintw(17, 45, "Press any key to exit...");
+                mvprintw(17, 45, "Press any key to go to start menu...");
                 if(player.id != 0) save(1, &player, &explorer, &ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
                 getch();
-                break;
+                goto start;
             }
             step_counter--;
         }
@@ -609,10 +614,10 @@ int main()
         if (end_game(&ep, &explorer, &player))
         {
             save(0, &player, &explorer, &ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
-            break;
+            goto start;
         }
     }
-
+}
     refresh();
     endwin();
     return 0;
@@ -1028,12 +1033,12 @@ void login(Player *player)
 int before_game_menu()
 {
     clear();
-    char menu_options[5][15] = {"New Game", "Load Game", "Settings", "Score Table", "Profile"};
+    char menu_options[6][15] = {"New Game", "Load Game", "Settings", "Score Table", "Profile", "exit"};
     int choice = 0;
 
     while (1)
     {
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 6; i++)
         {
             if (i == choice)
                 attron(A_REVERSE);
@@ -1049,11 +1054,11 @@ int before_game_menu()
             if (choice != 0)
                 choice--;
             else
-                choice = 4;
+                choice = 5;
         }
         else if (c == KEY_DOWN)
         {
-            if (choice != 4)
+            if (choice != 5)
                 choice++;
             else
                 choice = 0;
@@ -2424,7 +2429,7 @@ int end_game(Explorer_Position *ep, Explorer *explorer, Player *player)
         clear();
         mvprintw(15, 45, "Congradulations!!! You have finished the game.");
         mvprintw(16, 45, "I hope to see you again :)");
-        mvprintw(17, 45, "Press any key to exit...");
+        mvprintw(17, 45, "Press any key to go to start menu...");
         getch();
         player->finished_games++;
         return 1;
@@ -2642,49 +2647,52 @@ int exit_menu()
 
 void save(int status, Player *player, Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
 {
-    FILE *player_info = fopen("Players_Info.dat", "rb+");
-
-    fseek(player_info, (player->id - 1) * sizeof(Rooms), SEEK_SET);
-    player->experience = explorer->experience;
-    player->gold = explorer->gold;
-    player->score = explorer->score;
-    if (status) player->save_game = 1;
-    player->health = explorer->health;
-    player->level = explorer->level;
-    fwrite(player, sizeof(Player), 1, player_info);
-    fclose(player_info);
-
-    if (status)
+    if (player->id != 0)
     {
-        FILE *map;
-        int floor = explorer->level;
+        FILE *player_info = fopen("Players_Info.dat", "rb+");
 
-        switch (floor)
+        fseek(player_info, (player->id - 1) * sizeof(Rooms), SEEK_SET);
+        player->experience = explorer->experience;
+        player->gold = explorer->gold;
+        player->score = explorer->score;
+        if (status) player->save_game = 1;
+        player->health = explorer->health;
+        player->level = explorer->level;
+        fwrite(player, sizeof(Player), 1, player_info);
+        fclose(player_info);
+
+        if (status)
         {
-        case 1:
-            map = fopen("Floor_1.txt", "w");
-            break;
-        case 2:
-            map = fopen("Floor_2.txt", "w");
-            break;
-        case 3:
-            map = fopen("Floor_3.txt", "w");
-            break;
-        case 4:
-            map = fopen("Floor_4.txt", "w");
-            break;
-        }
+            FILE *map;
+            int floor = explorer->level;
 
-        game_map[ep->y][ep->x] = 'X';
-        for (int i = 0; i < 30; i++) {
-            for (int j = 0; j < 120; j++) {
-                fprintf(map, "%c", game_map[i][j]);
+            switch (floor)
+            {
+            case 1:
+                map = fopen("Floor_1.txt", "w");
+                break;
+            case 2:
+                map = fopen("Floor_2.txt", "w");
+                break;
+            case 3:
+                map = fopen("Floor_3.txt", "w");
+                break;
+            case 4:
+                map = fopen("Floor_4.txt", "w");
+                break;
             }
-            fprintf(map, "\n");
-        }
 
-        fclose(map);
-        stair_save(explorer, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
+            game_map[ep->y][ep->x] = 'X';
+            for (int i = 0; i < 30; i++) {
+                for (int j = 0; j < 120; j++) {
+                    fprintf(map, "%c", game_map[i][j]);
+                }
+                fprintf(map, "\n");
+            }
+
+            fclose(map);
+            stair_save(explorer, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
+        }
     }
 }
 
