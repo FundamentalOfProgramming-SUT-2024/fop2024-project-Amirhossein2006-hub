@@ -6,6 +6,9 @@
 #include <time.h>
 #include <wchar.h>
 #include <locale.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#include <stdio.h>
 
 typedef struct
 {
@@ -27,6 +30,7 @@ typedef struct
 {
     int difficulty;
     int color;
+    int music;
 } Game;
 
 typedef struct
@@ -192,6 +196,8 @@ void normal_arrow(int x, int y, Monster *monster, Explorer *explorer);
 void m_room(Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 void monster_move(int room, Monster *monster, Explorer_Position *ep);
 void monster_hit(Monster *monster, Explorer_Position *ep, Explorer *explorer);
+void initialize_SDL();
+void close_SDL();
 
 int main()
 {
@@ -215,6 +221,7 @@ int main()
 
     game.difficulty = 0;
     game.color = 0;
+    game.music = 0;
 
     food.count = 3;
     strcpy(food.foods[0].food, "Normal Food");
@@ -272,6 +279,7 @@ int main()
     explorer.current_weapon = weapon.weapons[0];
     explorer.power = 1;
     explorer.speed = 1;
+    Mix_Music *bgm;
 
     switch (menu())
     {
@@ -318,6 +326,8 @@ start:
             break;
         case 5:
             endwin();
+            Mix_FreeMusic(bgm);
+            close_SDL();
             return 0;
         }
 
@@ -328,6 +338,22 @@ start:
     room_position(&explorer, &room1, &room2, &room3, &room4, &room5, &room6);
     corridor_position(&explorer, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
     load_map(explorer.level, &ep, monster, &room1, &room2, &room3, &room4, &room5, &room6);
+
+    initialize_SDL();
+    switch (game.music)
+    {
+        case 0:
+            bgm = Mix_LoadMUS("Music_1.mp3");
+            break;
+        case 1:
+            bgm = Mix_LoadMUS("Music_2.mp3");
+            break;
+        case 2:
+            bgm = Mix_LoadMUS("Music_3.mp3");
+            break;   
+    }
+    Mix_PlayMusic(bgm, -1);
+
     while (1)
     {
         whitch_room(&ep, &room1, &room2, &room3, &room4, &room5, &room6, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
@@ -379,7 +405,15 @@ start:
                 print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
                 getch();
             }
-            step_counter--;
+            else
+            {
+                clear();
+                print_room(&ep, &explorer, game, room1, room2, room3, room4, room5, room6);
+                print_corridor(&ep, &explorer, game, corridor1, corridor2, corridor3, corridor4, corridor5);
+                getch();
+            }
+            
+            continue;
         }
         else if (move == 'o')
         {
@@ -407,7 +441,7 @@ start:
                 mvprintw(0, 25, "The number of %s Spell is 0! You can't drink it any more!", spell.spells[choice].spell);
                 getch();
             }
-            step_counter--;
+            continue;
         }
         else if (move == 'p')
         {
@@ -444,7 +478,7 @@ start:
                 mvprintw(0, 25, "The number of %s Foods is 0! You can't eat it any more!", food.foods[choice].food);
                 getch();
             }
-            step_counter--;
+            continue;
         }
         else if (move == 'm')
         {
@@ -459,6 +493,7 @@ start:
             corridor3.is_in = 1;
             corridor4.is_in = 1;
             corridor5.is_in = 1;
+            continue;
         }
         else if (move == 'f' && move_ivalue_help(&ep))
         {
@@ -477,7 +512,7 @@ start:
                 getch();
                 goto start;
             }
-            step_counter--;
+            continue;
         }
         else if (move == 32)
         {
@@ -531,6 +566,16 @@ start:
                 }
                 getch();
             }
+        }
+        else if (move == 'r')
+        {
+            Mix_ResumeMusic();
+            continue;
+        }
+        else if (move == 't')
+        {
+            Mix_PauseMusic();
+            continue;
         }
         else 
         {
@@ -1075,16 +1120,56 @@ int before_game_menu()
 void settings(Game *game)
 {
     clear();
+    mvprintw(8, 50, "Music:");
     mvprintw(13, 50, "Difficulty:");
+    mvprintw(14, 53, "Easy");
+    mvprintw(15, 53, "Medium");
+    mvprintw(16, 53, "Hard");
     mvprintw(18, 50, "Charecter Color:");
     mvprintw(19, 53, "Yellow");
     mvprintw(20, 53, "Red");
     mvprintw(21, 53, "Green");
     mvprintw(22, 53, "Blue");
+    char music[3][10] = {"Music 1", "Music 2", "Music 3"};
     char diff[3][10] = {"Easy", "Medium", "Hard"};
     char color[4][10] = {"Yellow", "Red", "Green", "Blue"};
     int choice = 0;
 
+    while (1)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (i == choice)
+                attron(A_REVERSE);
+            mvprintw(9 + i, 53, "%s", music[i]);
+            if (i == choice)
+                attroff(A_REVERSE);
+        }
+
+        int c = getch();
+
+        if (c == KEY_UP)
+        {
+            if (choice != 0)
+                choice--;
+            else
+                choice = 2;
+        }
+        else if (c == KEY_DOWN)
+        {
+            if (choice != 2)
+                choice++;
+            else
+                choice = 0;
+        }
+        else if (c == 10)
+        {
+            game->music = choice;
+            break;
+        }
+    }
+
+    choice = 0;
     while (1)
     {
         for (int i = 0; i < 3; i++)
@@ -1119,6 +1204,7 @@ void settings(Game *game)
         }
     }
 
+    choice = 0;
     while (1)
     {
         for (int i = 0; i < 4; i++)
@@ -2413,7 +2499,7 @@ int spell_show(Spell *spell, Explorer *explorer)
     }
 
     if (choice == spell->count)
-        return 0;
+        return -1;
     else if (spell->spells[choice].count == 0)
         return (choice - 4);
     spell->spells[choice].count--;  
@@ -3457,5 +3543,25 @@ void monster_hit(Monster *monster, Explorer_Position *ep, Explorer *explorer)
             } 
         }          
     }
+}
+
+void initialize_SDL()
+{
+    if (SDL_Init(SDL_INIT_AUDIO) < 0)
+    {
+        mvprintw(15, 50, "SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+        exit(1);
+    }
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        mvprintw(15, 50, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        exit(1);
+    }
+}
+
+void close_SDL()
+{
+    Mix_CloseAudio();
+    SDL_Quit();
 }
 

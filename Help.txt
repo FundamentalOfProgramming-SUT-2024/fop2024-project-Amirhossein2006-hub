@@ -57,6 +57,10 @@ Keys:
 		'o' -> Spells Menu
 		'p' -> Foods Menu
 		'esc' -> Exit Menu
+	
+	Music:
+		'r' -> Resume Music
+		't' -> Stop Music
 
 	Cheat Codes:
 		'm' -> Show Map
