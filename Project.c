@@ -308,8 +308,8 @@ start:
         {
             case 0:
             {
-                // while (system("./Map.out") != 0)
-                //     clear();
+                while (system("./Map.out") != 0)
+                    clear();
                 new_game(&ep, &explorer, monster, &room1, &room2, &room3, &room4, &room5, &room6);
                 break;
             }
