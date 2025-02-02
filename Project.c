@@ -285,7 +285,6 @@ int main()
     ancient_key_value = 0;
     int ex = 0;
     srand(time(NULL));
-    explorer.current_weapon = weapon.weapons[0];
     explorer.power = 1;
     explorer.speed = 1;
     Mix_Music *bgm;
@@ -347,6 +346,7 @@ start:
         if (choice < 2) break;
     }
 
+    explorer.current_weapon = weapon.weapons[0];
     int step_counter = 0;
     room_position(&explorer, &room1, &room2, &room3, &room4, &room5, &room6);
     corridor_position(&explorer, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
@@ -510,7 +510,7 @@ start:
                     if (hunger < 17) hunger += 3;
                     else hunger = 20;
                 }
-                else
+                else if (strcmp(food.foods[choice].food, "Normal Food") == 0)
                 {
                     mvprintw(0, 25, "Opps! You eat a Rancid Food!");
                     explorer.health -= 2;
@@ -832,7 +832,7 @@ void sign_in(Player *player)
     if (ivalue(username, password, email) == 0) sign_in(player);
     else
     {
-        FILE *players_info = fopen("Players_Info.dat", "ab");
+        FILE *players_info = fopen("Players_Info.dat", "rb+");
         FILE *id = fopen("id.txt", "r");
         int last_id;
         fscanf(id, "%d", &last_id);
@@ -854,6 +854,7 @@ void sign_in(Player *player)
         player->health = 100;
         player->level = 1;
 
+        fseek(players_info, (player->id - 1) * sizeof(Player), SEEK_SET);
         fwrite(player, sizeof(Player), 1, players_info);
         fclose(players_info);
     }
@@ -1325,7 +1326,7 @@ void score_table(Player *player)
 
     mvprintw(2, 9, "username");
     mvprintw(2, 25, "email");
-    mvprintw(2, 50, "score");
+    mvprintw(2, 49, "score");
     mvprintw(2, 61, "gold");
     mvprintw(2, 72, "experience");
 
