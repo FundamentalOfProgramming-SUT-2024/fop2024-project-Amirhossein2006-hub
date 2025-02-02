@@ -29,6 +29,7 @@ Signs:
 		'F' -> Putrid Food
 	Other:
 		'^' -> Trap
+		'O' -> Pillar
 		'@' -> Locked Door
 		'&' -> Password Maker
 		'*' -> Ancient Key

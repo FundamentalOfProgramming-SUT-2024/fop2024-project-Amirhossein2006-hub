@@ -202,8 +202,9 @@ void sword(int x, int y, Monster *monster, Explorer *explorer);
 void dagger(int x, int y, Monster *monster, Explorer *explorer);
 void magic_wand(int x, int y, Monster *monster, Explorer *explorer);
 void normal_arrow(int x, int y, Monster *monster, Explorer *explorer);
-void m_room(Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
+void monster_room(Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6);
 void monster_move(int room, Monster *monster, Explorer_Position *ep);
+int monster_move_help(int x, int y);
 void monster_hit(Monster *monster, Explorer_Position *ep, Explorer *explorer);
 void initialize_SDL();
 void close_SDL();
@@ -350,6 +351,7 @@ start:
     room_position(&explorer, &room1, &room2, &room3, &room4, &room5, &room6);
     corridor_position(&explorer, &corridor1, &corridor2, &corridor3, &corridor4, &corridor5);
     load_map(explorer.level, &ep, monster, &room1, &room2, &room3, &room4, &room5, &room6);
+    monster_room(monster, &room1, &room2, &room3, &room4, &room5, &room6);
 
     switch (game.difficulty)
     {
@@ -414,7 +416,7 @@ start:
         password(&ep, &explorer, &code);
         ancient_key(&ep, &explorer);
         monster_hit(monster, &ep, &explorer);
-        
+    
         if (time(NULL) - start_code < 30) mvprintw(0, 75, "Wow! Your code is %d", code);
         
         if (explorer.health <= 0)
@@ -502,7 +504,7 @@ start:
                     explorer.speed = 2;
                 else if (strcmp(food.foods[choice].food, "Perfect Food") == 0)
                     explorer.power = 2;
-                else if (a != 5)
+                if (a != 5)
                 {
                     mvprintw(0, 25, "Wow! You eat a %s!", food.foods[choice].food);
                     if (hunger < 17) hunger += 3;
@@ -566,7 +568,7 @@ start:
             }
             continue;
         }
-        else if (move == 32)
+        else if (move == 32 && game_map[ep.y][ep.x] != '#')
         {
             int x = ep.x;
             int y = ep.y;
@@ -1677,7 +1679,7 @@ void print_map(Explorer_Position *ep, Explorer *explorer, Game game, Rooms room1
             }
 
             else if (game_map[i][j] == 'V' ||
-                     game_map[i][j] == 'B' ||
+                     game_map[i][j] == 'L' ||
                      game_map[i][j] == 'N' ||
                      game_map[i][j] == 'K' ||
                      game_map[i][j] == 'U')
@@ -2081,13 +2083,15 @@ void stair(Explorer *explorer, Explorer_Position *ep, Rooms *room1, Rooms *room2
         fprintf(map, "\n");
     }
 
+    monster_count = 0;
     fclose(map);
     stair_save(explorer, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
     if (game_map[ep->y][ep->x] == '>') explorer->level++;
     else explorer->level--;
-    load_map(explorer->level, ep, monster, room1, room2, room3, room4, room5, room6);
     room_position(explorer, room1, room2, room3, room4, room5, room6);
     corridor_position(explorer, corridor1, corridor2, corridor3, corridor4, corridor5);
+    load_map(explorer->level, ep, monster, room1, room2, room3, room4, room5, room6);
+    monster_room(monster, room1, room2, room3, room4, room5, room6);
 }
 
 void stair_save(Explorer *explorer, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6, Corridors *corridor1, Corridors *corridor2, Corridors *corridor3, Corridors *corridor4, Corridors *corridor5)
@@ -2832,6 +2836,7 @@ void save(int status, Player *player, Explorer *explorer, Explorer_Position *ep,
             stair_save(explorer, room1, room2, room3, room4, room5, room6, corridor1, corridor2, corridor3, corridor4, corridor5);
         }
     }
+    monster_count = 0;
 }
 
 void room_them_x(int i, int j, Rooms room1, Rooms room2, Rooms room3, Rooms room4, Rooms room5, Rooms room6)
@@ -3032,6 +3037,14 @@ int room(int x, int y, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, R
     }
 
     return 0;
+}
+
+void monster_room(Monster *monster, Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Rooms *room5, Rooms *room6)
+{
+    for (int i = 0; i < monster_count; i++)
+    {
+        monster[i].room = room(monster[i].x, monster[i].y, room1, room2, room3, room4, room5, room6);
+    }
 }
 
 void mace(int x, int y, Monster *monster, Explorer *explorer)
@@ -3544,26 +3557,26 @@ void monster_move(int room, Monster *monster, Explorer_Position *ep)
             int y = ep->y;
 
             if (!((m_x == x + 1 && (m_y == y + 1 || m_y == y - 1 || m_y == y)) || 
-                (m_x == x - 1 && (m_y == y + 1 || m_y == y - 1 || m_y == y)) || 
-                (m_y == y + 1 && (m_x == x + 1 || m_x == x - 1 || m_x == x)) || 
-                (m_y == y - 1 && (m_x == x + 1 || m_x == x - 1 || m_x == x))))
+                  (m_x == x - 1 && (m_y == y + 1 || m_y == y - 1 || m_y == y)) || 
+                  (m_y == y + 1 && (m_x == x + 1 || m_x == x - 1 || m_x == x)) || 
+                  (m_y == y - 1 && (m_x == x + 1 || m_x == x - 1 || m_x == x))))
             {
                 char m = game_map[monster[i].y][monster[i].x];
                 game_map[monster[i].y][monster[i].x] = '.';
                 
-                if (m_x > x)
+                if (m_x > x && monster_move_help(m_x - 1, m_y))
                 {
                     monster[i].x--;
                 }
-                if (m_x < x)
+                if (m_x < x && monster_move_help(m_x + 1, m_y))
                 {
                     monster[i].x++;
                 }
-                if (m_y > y)
+                if (m_y > y && monster_move_help(m_x, m_y - 1))
                 {
                     monster[i].y--;
                 }
-                if (m_y < y)
+                if (m_y < y && monster_move_help(m_x, m_y + 1))
                 {
                     monster[i].y++;
                 }
@@ -3572,6 +3585,42 @@ void monster_move(int room, Monster *monster, Explorer_Position *ep)
             }           
         } 
     } 
+}
+
+int monster_move_help(int x, int y)
+{
+    if (game_map[y][x] != 'M' &&
+        game_map[y][x] != 'D' &&
+        game_map[y][x] != 'W' &&
+        game_map[y][x] != 'A' &&
+        game_map[y][x] != 'S' &&
+        game_map[y][x] != 'H' &&
+        game_map[y][x] != 'Z' &&
+        game_map[y][x] != 'C' &&
+        game_map[y][x] != 'G' &&
+        game_map[y][x] != 'B' &&
+        game_map[y][x] != 'V' &&
+        game_map[y][x] != 'L' &&
+        game_map[y][x] != 'N' &&
+        game_map[y][x] != 'K' &&
+        game_map[y][x] != 'U' &&
+        game_map[y][x] != 'F' &&
+        game_map[y][x] != 'Q' &&
+        game_map[y][x] != 'E' &&
+        game_map[y][x] != '^' &&
+        game_map[y][x] != 'O' &&
+        game_map[y][x] != '@' &&
+        game_map[y][x] != '&' &&
+        game_map[y][x] != '*' &&
+        game_map[y][x] != '>' &&
+        game_map[y][x] != '<' &&
+        game_map[y][x] != '|' &&
+        game_map[y][x] != '=' &&
+        game_map[y][x] != '+' &&
+        game_map[y][x] != '#' &&
+        game_map[y][x] != 'X')
+        return 1;
+    return 0;
 }
 
 void monster_hit(Monster *monster, Explorer_Position *ep, Explorer *explorer)
