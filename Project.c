@@ -507,7 +507,7 @@ start:
                 if (a != 5)
                 {
                     mvprintw(0, 25, "Wow! You eat a %s!", food.foods[choice].food);
-                    if (hunger < 17) hunger += 3;
+                    if (hunger < 15) hunger += 5;
                     else hunger = 20;
                 }
                 else if (strcmp(food.foods[choice].food, "Normal Food") == 0)
@@ -568,7 +568,7 @@ start:
             }
             continue;
         }
-        else if (move == 32 && game_map[ep.y][ep.x] != '#')
+        else if (move == 32 && game_map[ep.y][ep.x] != '#' && game_map[ep.y][ep.x] != '<')
         {
             int x = ep.x;
             int y = ep.y;
@@ -1324,11 +1324,12 @@ void score_table(Player *player)
         }
     }
 
-    mvprintw(2, 9, "username");
-    mvprintw(2, 25, "email");
-    mvprintw(2, 49, "score");
-    mvprintw(2, 61, "gold");
-    mvprintw(2, 72, "experience");
+    mvprintw(2, 9, "Username");
+    mvprintw(2, 25, "Email");
+    mvprintw(2, 41, "Score");
+    mvprintw(2, 52, "Gold");
+    mvprintw(2, 63, "Experience");
+    mvprintw(2, 79, "Finished Games");
 
     for (int i = 0; i < counter - 1; i++)
     {
@@ -1338,11 +1339,11 @@ void score_table(Player *player)
         if (strcmp(players[i].username, player->username) == 0)
             mvprintw(4 + 2 * i, 2, "->");
 
-        mvprintw(4 + 2 * i, 5, "(%1d) %-15s %-15s %10d %10d %10d", i + 1, players[i].username, players[i].email, players[i].score, players[i].gold, players[i].experience);
+        mvprintw(4 + 2 * i, 5, "(%1d) %-15s %-15s %-10d %-10d %-15d %-10d", i + 1, players[i].username, players[i].email, players[i].score, players[i].gold, players[i].experience, players[i].finished_games);
 
-        if (i == 0) mvprintw(4 + 2 * i, 87, "(((LEGEND)))");
-        if (i == 1) mvprintw(4 + 2 * i, 87, "(((GOAT)))");
-        if (i == 2) mvprintw(4 + 2 * i, 87, "(((CHAMPION)))");
+        if (i == 0) mvprintw(4 + 2 * i, 100, "(((LEGEND)))");
+        if (i == 1) mvprintw(4 + 2 * i, 100, "(((GOAT)))");
+        if (i == 2) mvprintw(4 + 2 * i, 100, "(((CHAMPION)))");
         if (i < 3)
             attroff(COLOR_PAIR(i + 1));
     }
@@ -3064,7 +3065,7 @@ void mace(int x, int y, Monster *monster, Explorer *explorer)
             if (monster[i].health > 0)
             {
                 monster[i].health -= 5 * explorer->power;
-                mvprintw(0, 20, "Wow! You hit a %s with Mace!                                        ", monster[i].name);
+                mvprintw(0, 20, "Wow! You hit a %s with Mace!                                                          ", monster[i].name);
                 explorer->score += 1;
                 if (monster[i].health <= 0)
                 {
@@ -3092,7 +3093,7 @@ void sword(int x, int y, Monster *monster, Explorer *explorer)
             if (monster[i].health > 0)
             {
                 monster[i].health -= 10 * explorer->power;
-                mvprintw(0, 20, "Wow! You hit a %s with Sword!                                        ", monster[i].name);
+                mvprintw(0, 20, "Wow! You hit a %s with Sword!                                                        ", monster[i].name);
                 explorer->score += 1;
                 if (monster[i].health <= 0)
                 {
@@ -3127,7 +3128,7 @@ void dagger(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y - i && monster[j].x == x)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Dagger!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Dagger!                                                      ", monster[j].name);
                         monster[j].health -= 12 * explorer->power;
                         explorer->score += 1;
                         if (monster[j].health <= 0)
@@ -3162,7 +3163,7 @@ void dagger(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y + i && monster[j].x == x)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Dagger!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Dagger!                                                      ", monster[j].name);
                         monster[j].health -= 12 * explorer->power;
                         explorer->score += 1;
                         if (monster[j].health <= 0)
@@ -3197,7 +3198,7 @@ void dagger(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y && monster[j].x == x + i)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Dagger!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Dagger!                                                       ", monster[j].name);
                         monster[j].health -= 12 * explorer->power;
                         explorer->score += 1;
                         if (monster[j].health <= 0)
@@ -3232,7 +3233,7 @@ void dagger(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y && monster[j].x == x - i)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Dagger!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Dagger!                                                           ", monster[j].name);
                         monster[j].health -= 12 * explorer->power;
                         explorer->score += 1;
                         if (monster[j].health <= 0)
@@ -3273,7 +3274,7 @@ void magic_wand(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y - i && monster[j].x == x)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Magic!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Magic!                                                     ", monster[j].name);
                         monster[j].health -= 15 * explorer->power;
                         monster[j].movement = 0;
                         explorer->score += 1;
@@ -3309,7 +3310,7 @@ void magic_wand(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y + i && monster[j].x == x)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Magic!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Magic!                                                     ", monster[j].name);
                         monster[j].health -= 15 * explorer->power;
                         monster[j].movement = 0;
                         explorer->score += 1;
@@ -3345,7 +3346,7 @@ void magic_wand(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y && monster[j].x == x + i)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Magic!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Magic!                                                      ", monster[j].name);
                         monster[j].health -= 15 * explorer->power;
                         monster[j].movement = 0;
                         explorer->score += 1;
@@ -3381,7 +3382,7 @@ void magic_wand(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y && monster[j].x == x - i)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Magic!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Magic!                                                       ", monster[j].name);
                         monster[j].health -= 15 * explorer->power;
                         monster[j].movement = 0;
                         explorer->score += 1;
@@ -3423,7 +3424,7 @@ void normal_arrow(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y - i && monster[j].x == x)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Normal Arrow!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Normal Arrow!                                                        ", monster[j].name);
                         monster[j].health -= 5 * explorer->power;
                         explorer->score += 1;
                         if (monster[j].health <= 0)
@@ -3458,7 +3459,7 @@ void normal_arrow(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y + i && monster[j].x == x)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Normal Arrow!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Normal Arrow!                                                       ", monster[j].name);
                         monster[j].health -= 5 * explorer->power;
                         explorer->score += 1;
                         if (monster[j].health <= 0)
@@ -3493,7 +3494,7 @@ void normal_arrow(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y && monster[j].x == x + i)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Normal Arrow!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Normal Arrow!                                                    ", monster[j].name);
                         monster[j].health -= 5 * explorer->power;
                         explorer->score += 1;
                         if (monster[j].health <= 0)
@@ -3528,7 +3529,7 @@ void normal_arrow(int x, int y, Monster *monster, Explorer *explorer)
                 {
                     if (monster[j].y == y && monster[j].x == x - i)
                     {
-                        mvprintw(0, 20, "Wow! You hit a %s with Normal Arrow!                                        ", monster[j].name);
+                        mvprintw(0, 20, "Wow! You hit a %s with Normal Arrow!                                                     ", monster[j].name);
                         monster[j].health -= 5 * explorer->power;
                         explorer->score += 1;
                         if (monster[j].health <= 0)
