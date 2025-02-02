@@ -572,7 +572,7 @@ void room_position2(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Room
     room3->door2_x = room3->s_x;
     room3->door2_y = room3->e_y - 2;
 
-    room4->type = 3;
+    room4->type = 2;
     room4->s_x = random_renge(2, 10);
     room4->s_y = random_renge(16, 20);
     room4->e_x = room4->s_x + random_renge(6, 15);
@@ -581,7 +581,7 @@ void room_position2(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Room
     room4->door1_x = room4->e_x;
     room4->door1_y = random_renge(room4->s_y + 2, room4->e_y - 2);
 
-    room5->type = 2;
+    room5->type = 3;
     room5->s_x = random_renge(65, 70);
     room5->s_y = random_renge(1, 5);
     room5->e_x = room5->s_x + random_renge(10, 15);
@@ -883,7 +883,7 @@ void room_position3(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Room
     room1->door1_y = random_renge(room1->s_y + 2, room1->e_y - 2);
     room1->door1_x = room1->e_x;
 
-    room2->type = 2;
+    room2->type = 3;
     room2->s_x = random_renge(15, 20);
     room2->s_y = random_renge(10, 11);
     room2->e_x = room2->s_x + random_renge(6, 10);
@@ -894,7 +894,7 @@ void room_position3(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Room
     room2->door2_x = random_renge(room2->s_x + 2, room2->e_x - 2);
     room2->door2_y = room2->e_y;
 
-    room3->type = 3;
+    room3->type = 2;
     room3->s_x = random_renge(33, 38);
     room3->s_y = random_renge(19, 20);
     room3->e_x = room3->s_x + random_renge(6, 10);
@@ -905,7 +905,7 @@ void room_position3(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Room
     room3->door2_x = room3->e_x;
     room3->door2_y = random_renge(room3->s_y + 3, room3->e_y - 3);
 
-    room4->type = 3;
+    room4->type = 2;
     room4->s_x = random_renge(50, 60);
     room4->s_y = random_renge(19, 20);
     room4->e_x = room4->s_x + random_renge(6, 10);
@@ -916,7 +916,7 @@ void room_position3(Rooms *room1, Rooms *room2, Rooms *room3, Rooms *room4, Room
     room4->door2_x = room4->e_x;
     room4->door2_y = random_renge(room4->s_y + 2, room4->e_y - 2);
 
-    room5->type = 2;
+    room5->type = 3;
     room5->s_x = random_renge(72, 77);
     room5->s_y = random_renge(10, 11);
     room5->e_x = room5->s_x + random_renge(6, 10);

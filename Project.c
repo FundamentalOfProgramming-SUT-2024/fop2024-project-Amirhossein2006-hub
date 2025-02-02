@@ -1359,11 +1359,12 @@ void profile(Player *player)
     clear();
 
     mvprintw(3, 5, "Username: %s", player->username);
-    mvprintw(5, 5, "E-Mail: %s", player->email);
-    mvprintw(7, 5, "Score: %d", player->score);
-    mvprintw(9, 5, "Gold Aquared: %d", player->gold);
-    mvprintw(11, 5, "Finished Games: %d", player->finished_games);
-    mvprintw(13, 5, "Experience: %d", player->experience);
+    mvprintw(5, 5, "Id: %d", player->id);
+    mvprintw(7, 5, "E-Mail: %s", player->email);
+    mvprintw(9, 5, "Score: %d", player->score);
+    mvprintw(11, 5, "Gold Aquared: %d", player->gold);
+    mvprintw(13, 5, "Finished Games: %d", player->finished_games);
+    mvprintw(15, 5, "Experience: %d", player->experience);
 
     attron(A_REVERSE);
     mvprintw(0, 0, "Press Any Key To Back");
@@ -2794,7 +2795,7 @@ void save(int status, Player *player, Explorer *explorer, Explorer_Position *ep,
     {
         FILE *player_info = fopen("Players_Info.dat", "rb+");
 
-        fseek(player_info, (player->id - 1) * sizeof(Rooms), SEEK_SET);
+        fseek(player_info, (player->id - 1) * sizeof(Player), SEEK_SET);
         player->experience = explorer->experience;
         player->gold = explorer->gold;
         player->score = explorer->score;
@@ -3565,19 +3566,19 @@ void monster_move(int room, Monster *monster, Explorer_Position *ep)
                 char m = game_map[monster[i].y][monster[i].x];
                 game_map[monster[i].y][monster[i].x] = '.';
                 
-                if (m_x > x && monster_move_help(m_x - 1, m_y))
+                if (m_x > x && monster_move_help(monster[i].x - 1, monster[i].y))
                 {
                     monster[i].x--;
                 }
-                if (m_x < x && monster_move_help(m_x + 1, m_y))
+                if (m_x < x && monster_move_help(monster[i].x + 1, monster[i].y))
                 {
                     monster[i].x++;
                 }
-                if (m_y > y && monster_move_help(m_x, m_y - 1))
+                if (m_y > y && monster_move_help(monster[i].x, monster[i].y - 1))
                 {
                     monster[i].y--;
                 }
-                if (m_y < y && monster_move_help(m_x, m_y + 1))
+                if (m_y < y && monster_move_help(monster[i].x, monster[i].y + 1))
                 {
                     monster[i].y++;
                 }
