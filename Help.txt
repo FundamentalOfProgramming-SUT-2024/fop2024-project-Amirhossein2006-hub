@@ -59,6 +59,9 @@ Keys:
 		'p' -> Foods Menu
 		'esc' -> Exit Menu
 	
+	Fight:
+		'SPACE' -> Use Weapon
+
 	Music:
 		'r' -> Resume Music
 		't' -> Stop Music
@@ -71,3 +74,14 @@ Room Colors:
 	'White' -> Normal Room
 	'Green' -> Spell Room
 	'Yellow' -> Treasure Room
+
+Important Rules:
+	You can see your hunger bar in Foods Menu.
+	Monsters don't follow you in corridors.
+	You can't fight in corridors and stairs.
+	Some times monsters go in you! In this case they don't damage you; But you can't move any more.
+	If a monster goes in you, You can fight them with Long Renge Weapons or Mace.
+	If you want to use Long Renge Weapons, first press SPACE and then select the way with W, S, D, or A.
+	If you eat food, hunger reduced. Your Health will full automatically if you are full!
+
+GOOD LUCK! 

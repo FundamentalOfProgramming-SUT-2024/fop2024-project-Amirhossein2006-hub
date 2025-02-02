@@ -3060,7 +3060,8 @@ void mace(int x, int y, Monster *monster, Explorer *explorer)
         if ((m_x == x + 1 && (m_y == y + 1 || m_y == y - 1 || m_y == y)) || 
             (m_x == x - 1 && (m_y == y + 1 || m_y == y - 1 || m_y == y)) || 
             (m_y == y + 1 && (m_x == x + 1 || m_x == x - 1 || m_x == x)) || 
-            (m_y == y - 1 && (m_x == x + 1 || m_x == x - 1 || m_x == x)))
+            (m_y == y - 1 && (m_x == x + 1 || m_x == x - 1 || m_x == x)) ||
+            (m_y == y && m_x == x))
         {
             if (monster[i].health > 0)
             {
