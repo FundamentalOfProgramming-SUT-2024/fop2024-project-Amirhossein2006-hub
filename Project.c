@@ -590,7 +590,7 @@ start:
                     mvprintw(0, 25, "You don't have any more Daggers!");
                 else
                 {
-                    mvprintw(0, 25, "Please select the way!");
+                    mvprintw(0, 25, "Please select the way!                                                      ");
                     dagger(x, y, monster, &explorer);
                     weapon.weapons[2].count--;
                 }
@@ -602,7 +602,7 @@ start:
                     mvprintw(0, 25, "You don't have any more Normal Arrows!");
                 else
                 {
-                    mvprintw(0, 25, "Please select the way!");
+                    mvprintw(0, 25, "Please select the way!                                                      ");
                     normal_arrow(x, y, monster, &explorer);
                     weapon.weapons[4].count--;
                 }
@@ -614,7 +614,7 @@ start:
                     mvprintw(0, 25, "You don't have any more Magic Wands!");
                 else
                 {
-                    mvprintw(0, 25, "Please select the way!");
+                    mvprintw(0, 25, "Please select the way!                                                      ");
                     magic_wand(x, y, monster, &explorer);
                     weapon.weapons[3].count--;
                 }
