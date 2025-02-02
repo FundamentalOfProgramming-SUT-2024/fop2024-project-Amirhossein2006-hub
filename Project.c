@@ -2383,6 +2383,7 @@ void weapons(Explorer_Position *ep, Explorer *explorer, Weapon *weapon)
     else if (temp == 'S')
     {
         mvprintw(0, 25, "Wow! You reached Sword! Score increases!");
+        if (weapon->weapons[1].count == 0) weapon->weapons[1].count = 1;
         weapon->weapons[1].count += weapon->weapons[1].num_in_each;
         game_map[ep->y][ep->x] = '.';
         explorer->score += 3;
