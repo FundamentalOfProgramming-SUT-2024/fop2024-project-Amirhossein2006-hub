@@ -724,7 +724,7 @@ start:
 
 int menu()
 {
-    char menu_options[2][15] = {"Sign In", "Login"};
+    char menu_options[2][15] = {"Sign Up", "Sign In"};
     int choice = 0;
 
     while (1)
